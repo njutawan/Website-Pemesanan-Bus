@@ -263,3 +263,69 @@ class URLNormalizationTest(TestCase):
         self.assertTrue(settings.APPEND_SLASH)
         self.assertFalse(settings.PREPEND_WWW)
         self.assertFalse(settings.SECURE_SSL_REDIRECT)  # default env: mati (preview HTTP)
+
+
+class ImagePipelineTest(TestCase):
+    """Konversi otomatis unggahan -> WebP (resize, EXIF, hapus asli)."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        import tempfile
+        cls._media = tempfile.mkdtemp()
+        from django.test import override_settings
+        cls._enable = override_settings(MEDIA_ROOT=cls._media)
+        cls._enable.enable()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._enable.disable()
+        super().tearDownClass()
+
+    @staticmethod
+    def _jpg(width=2000, height=1200, color=(200, 30, 30)):
+        import io
+        from PIL import Image
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        buf = io.BytesIO()
+        Image.new('RGB', (width, height), color).save(buf, 'JPEG', quality=90)
+        return SimpleUploadedFile('uji-foto.jpg', buf.getvalue(), 'image/jpeg')
+
+    def test_upload_jpg_otomatis_webp_dan_resize(self):
+        from django.core.files.storage import default_storage
+        from rental.models import Vehicle
+        v = Vehicle.objects.create(
+            name='Mobil Uji', slug='mobil-uji', category='MPV', year=2023,
+            seats=7, price_per_day=300000, image=self._jpg())
+        v.refresh_from_db()
+        self.assertTrue(v.image.name.endswith('.webp'))
+        self.assertTrue(default_storage.exists(v.image.name))
+        self.assertFalse(default_storage.exists('uji-foto.jpg'))  # asli dihapus
+        from PIL import Image
+        with default_storage.open(v.image.name) as f:
+            w, _ = Image.open(f).size
+        self.assertLessEqual(w, 1200)  # 2000px di-resize
+
+    def test_upload_webp_tidak_disentuh(self):
+        import io
+        from PIL import Image
+        from django.core.files.base import ContentFile
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from rental.models import Vehicle
+        buf = io.BytesIO()
+        Image.new('RGB', (300, 200), (10, 120, 60)).save(buf, 'WEBP')
+        v = Vehicle.objects.create(
+            name='Mobil WebP', slug='mobil-webp', category='SUV', year=2023,
+            seats=5, price_per_day=400000,
+            image=SimpleUploadedFile('langsung.webp', buf.getvalue(), 'image/webp'))
+        v.refresh_from_db()
+        self.assertTrue(v.image.name.endswith('langsung.webp'))
+
+    def test_pagemeta_og_image_juga_dikonversi(self):
+        from django.core.files.storage import default_storage
+        from core.models import PageMeta
+        pm = PageMeta.objects.create(
+            path='/uji-og/', og_image=self._jpg(width=2400, height=1260))
+        pm.refresh_from_db()
+        self.assertTrue(pm.og_image.name.endswith('.webp'))
+        self.assertFalse(default_storage.exists('uji-foto.jpg'))

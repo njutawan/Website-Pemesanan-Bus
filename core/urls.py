@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
-from django.conf.urls.static import static
-from django.urls import include, path
+from django.urls import include, path, re_path
+from django.views.static import serve
 from django.contrib.sitemaps.views import sitemap
 from django.views.decorators.cache import cache_page
 from django.views.i18n import JavaScriptCatalog
@@ -35,5 +35,10 @@ urlpatterns += [
     path('robots.txt', views.RobotsView.as_view(), name='robots'),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Media (foto mobil, bukti bayar) dilayani Django sebagai fallback dev/preview
+# (helper static() bawaan no-op saat DEBUG=0, maka re_path eksplisit).
+# Di produksi Nginx menyajikan /media/ langsung (location /media/) sehingga
+# request tidak pernah sampai ke sini — aman performanya.
+urlpatterns += [
+    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+]

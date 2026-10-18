@@ -32,7 +32,8 @@ class Vehicle(TimeStampedModel):
         help_text=_('Tambahan bila pelanggan minta disertai sopir. 0 = gratis.'))
     image = models.ImageField(
         _('foto mobil'), upload_to='vehicles/%Y/%m/',
-        default='vehicles/default-vehicle.jpg')
+        default='vehicles/default-vehicle.webp',
+        help_text=_('Otomatis dikonversi ke WebP (maks. lebar 1200px).'))
     description = models.TextField(_('deskripsi'), blank=True)
     is_available = models.BooleanField(_('tersedia'), default=True)
 
@@ -51,6 +52,13 @@ class Vehicle(TimeStampedModel):
                 i += 1
             self.slug = slug
         super().save(*args, **kwargs)
+        # Pipeline gambar: unggahan jpg/png otomatis jadi WebP (LCP/CLS).
+        if self.image and not str(self.image.name).lower().endswith('.webp'):
+            from core.img_tools import convert_to_webp
+            new_name = convert_to_webp(self.image)
+            if new_name:
+                self.image.name = new_name
+                super().save(update_fields=['image'])
 
     def get_absolute_url(self):
         from django.urls import reverse

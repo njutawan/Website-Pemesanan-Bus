@@ -36,5 +36,14 @@ class PageMeta(models.Model):
         verbose_name_plural = _('Metadata halaman (SEO)')
         ordering = ['path']
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.og_image and not str(self.og_image.name).lower().endswith('.webp'):
+            from core.img_tools import convert_to_webp
+            new_name = convert_to_webp(self.og_image, max_width=1600)
+            if new_name:
+                self.og_image.name = new_name
+                super().save(update_fields=['og_image'])
+
     def __str__(self):
         return self.path

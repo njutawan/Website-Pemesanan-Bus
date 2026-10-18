@@ -106,6 +106,12 @@ dwibahasa **Indonesia / English**.
   `content-visibility: auto` untuk section di bawah lipatan
 - **Server**: WhiteNoise (gzip + cache header panjang static), Nginx
   `gzip_static` + `open_file_cache` (`deploy/nginx.conf`)
+- **Pipeline unggahan WebP otomatis**: setiap foto mobil & og:image yang
+  diunggah otomatis diputar sesuai EXIF, di-resize (maks 1200px, og 1600px),
+  dan dikonversi ke **WebP q82** — berkas asli dihapus
+  (`core/img_tools.py`, lewat storage API sehingga aman untuk storage remote).
+  Media lama: backfill sekali dengan `python manage.py convert_media_webp`.
+  Bukti pembayaran sengaja tidak dikonversi (dokumen legal, disimpan asli).
 - **Minifikasi & penggabungan (`django-compressor`)**: Bootstrap 5.3.3
   di-vendor lokal (`static/vendor/bootstrap/`, tanpa CDN jsdelivr) lalu
   digabung + diminifikasi dengan CSS/JS tema via `{% compress %}` — beranda
