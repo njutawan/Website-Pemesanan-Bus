@@ -643,6 +643,28 @@ class SiloArchitectureTest(TestCase):
                       '/bus/rute/dari/kota-a/kota-b/', '/bus/rute/dari/kota-a/kota-c/'),
                 f'Tautan keluar silo: {t}')
 
+
+    def test_prev_next_dalam_silo(self):
+        """C: pagination linking — prev/next hanya di dalam silo yang sama."""
+        # rute PERTAMA (Kota B urut lebih dulu): tanpa prev, ada next
+        h1 = self.client.get('/bus/rute/dari/kota-a/kota-b/').content.decode()
+        self.assertNotIn('Rute sebelumnya', h1)
+        self.assertIn('Rute selanjutnya', h1)
+        self.assertIn('href="/bus/rute/dari/kota-a/kota-c/"', h1)
+        # rute TERAKHIR: ada prev, tanpa next
+        h2 = self.client.get('/bus/rute/dari/kota-a/kota-c/').content.decode()
+        self.assertIn('Rute sebelumnya', h2)
+        self.assertIn('href="/bus/rute/dari/kota-a/kota-b/"', h2)
+        self.assertNotIn('Rute selanjutnya', h2)
+
+    def test_breadcrumb_komponen_di_semua_halaman_seo(self):
+        """A: breadcrumb terlihat + JSON-LD hadir di semua halaman dalam."""
+        for url in ('/bus/rute/dari/kota-a/kota-b/', '/bus/rute/dari/kota-a/',
+                    '/bus/rute/', '/rental/mobil/mobil-silo/'):
+            html = self.client.get(url).content.decode()
+            self.assertIn('class="breadcrumb', html, url)      # terlihat (upward link)
+            self.assertIn('"BreadcrumbList"', html, url)       # data terstruktur
+
     def test_pillar_di_sitemap(self):
         xml = self.client.get('/sitemap.xml').content.decode()
         self.assertIn('/bus/rute/dari/kota-a/</loc>', xml)

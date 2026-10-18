@@ -765,6 +765,9 @@ msgstr "Nama lengkap"
 msgid "Nama sesuai KTP/KTM"
 msgstr "Nama sesuai KTP/KTM"
 
+msgid "Navigasi rute"
+msgstr ""
+
 msgid "Nilai Kami"
 msgstr "Nilai Kami"
 
@@ -990,6 +993,12 @@ msgstr ""
 
 msgid "Rute paling dicari"
 msgstr "Rute paling dicari"
+
+msgid "Rute sebelumnya"
+msgstr ""
+
+msgid "Rute selanjutnya"
+msgstr ""
 
 msgid "SUV (5–7 penumpang)"
 msgstr "SUV (5–7 penumpang)"

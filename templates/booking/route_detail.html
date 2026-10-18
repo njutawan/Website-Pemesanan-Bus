@@ -119,4 +119,25 @@
     <a href="{% url 'booking:route_hub' %}" class="btn btn-outline-secondary btn-sm">{% trans 'Lihat semua rute' %}</a>
   </div>
 </section>
+
+{% if prev_route or next_route %}
+<nav class="container pb-5 d-flex justify-content-between gap-3" aria-label="{% trans 'Navigasi rute' %}">
+  {% if prev_route %}
+  <a class="card route-card border shadow-sm text-decoration-none flex-fill" href="{{ prev_route.get_absolute_url }}">
+    <div class="card-body py-2 px-3">
+      <small class="text-muted d-block"><i class="fa-solid fa-arrow-left me-1"></i>{% trans 'Rute sebelumnya' %}</small>
+      <span class="fw-bold text-dark small">{{ prev_route.origin.name }} → {{ prev_route.destination.name }}</span>
+    </div>
+  </a>
+  {% else %}<div class="flex-fill"></div>{% endif %}
+  {% if next_route %}
+  <a class="card route-card border shadow-sm text-decoration-none flex-fill text-end" href="{{ next_route.get_absolute_url }}">
+    <div class="card-body py-2 px-3">
+      <small class="text-muted d-block">{% trans 'Rute selanjutnya' %}<i class="fa-solid fa-arrow-right ms-1"></i></small>
+      <span class="fw-bold text-dark small">{{ next_route.origin.name }} → {{ next_route.destination.name }}</span>
+    </div>
+  </a>
+  {% else %}<div class="flex-fill"></div>{% endif %}
+</nav>
+{% endif %}
 {% endblock %}

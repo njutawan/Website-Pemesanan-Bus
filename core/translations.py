@@ -1060,5 +1060,10 @@ TRANSLATIONS_EN = {
     "Kota asal lainnya": "Other departure cities",
     "Semua rute dari %(kota)s": "All routes from %(kota)s",
     "Saat ini %(kota)s – %(dest)s adalah satu-satunya rute aktif dari %(kota)s.": "Currently %(kota)s – %(dest)s is the only active route from %(kota)s.",
+
+    # ---- Prev/next navigasi rute ----
+    "Rute sebelumnya": "Previous route",
+    "Rute selanjutnya": "Next route",
+    "Navigasi rute": "Route navigation",
 }
 

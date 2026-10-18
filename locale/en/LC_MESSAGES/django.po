@@ -772,6 +772,9 @@ msgstr "Full name"
 msgid "Nama sesuai KTP/KTM"
 msgstr "Name as on your ID card"
 
+msgid "Navigasi rute"
+msgstr "Route navigation"
+
 msgid "Nilai Kami"
 msgstr "Our Values"
 
@@ -998,6 +1001,12 @@ msgstr "Other routes from %(kota)s"
 
 msgid "Rute paling dicari"
 msgstr "Most searched routes"
+
+msgid "Rute sebelumnya"
+msgstr "Previous route"
+
+msgid "Rute selanjutnya"
+msgstr "Next route"
 
 msgid "SUV (5–7 penumpang)"
 msgstr "SUV (5–7 passengers)"

@@ -70,6 +70,12 @@ dwibahasa **Indonesia / English**.
   * **Downward**: hub & pillar menautkan ke seluruh rute di bawahnya
   * **Lateral**: antar-rute hanya se-silo (kota asal sama, maks 4);
     pillar antar-kota saling menyandingkan (link antar-kategori)
+  * **Komponen otomatis**: breadcrumb terlihat + JSON-LD di semua halaman
+    dalam (upward link + data terstruktur SERP, markup = konten terlihat);
+    lateral terkunci per silo (sibling rute se-kota, "Mobil lainnya" rental —
+    tanpa widget acak); **navigasi prev/next** antar-rute dalam silo yang
+    sama (urut kota tujuan, 0 query — dari katalog cache) agar rute lama
+    tidak menjadi deep page
   * **Anti lintas-silo**: link kontekstual dalam `<main>` halaman rute
     tidak pernah keluar ke silo lain (dijaga test; navbar/footer = global
     chrome di luar cakupan)

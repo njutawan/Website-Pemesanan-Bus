@@ -369,8 +369,13 @@ class RouteDetailView(TemplateView):
         )
         # Internal linking: rute se-kota asal (sibling) — PageRank mengalir
         # antar halaman rute; maks 4 agar equity tidak terlalu terpecah.
-        sibling_routes = [r for r in cached_route_catalog()
-                          if r.origin_id == route.origin_id and r.pk != route.pk][:4]
+        silo = [r for r in cached_route_catalog() if r.origin_id == route.origin_id]
+        sibling_routes = [r for r in silo if r.pk != route.pk][:4]
+        # Prev/next dalam silo (urut kota tujuan) — artikel lama tetap dirayap.
+        _pos = next((i for i, r in enumerate(silo) if r.pk == route.pk), None)
+        prev_route = silo[_pos - 1] if _pos is not None and _pos > 0 else None
+        next_route = (silo[_pos + 1]
+                      if _pos is not None and _pos + 1 < len(silo) else None)
 
         origin, dest = route.origin.name, route.destination.name
         crumb = breadcrumb_items(
@@ -399,6 +404,8 @@ class RouteDetailView(TemplateView):
         return render(request, self.template_name, {
             'route': route,
             'sibling_routes': sibling_routes,
+            'prev_route': prev_route,
+            'next_route': next_route,
             'schedules': schedules,
             'today': timezone.localdate(),
             'faq': faq,
