@@ -10,6 +10,8 @@ from booking.models import (
     Booking, BookingSeat, Bus, City, Route, Schedule, Seat,
 )
 from core.admin import admin_site
+from core.audit import log_event
+from core.validators import csv_safe
 
 
 class ProofStatusFilter(admin.SimpleListFilter):
@@ -155,6 +157,8 @@ class BookingAdmin(admin.ModelAdmin):
         if '_confirm' in request.POST:
             if obj.status == Booking.Status.PENDING:
                 obj.mark_confirmed()
+                log_event('PAYMENT_CONFIRMED', request=request, target=obj.code,
+                          metadata={'channel': 'bus'})
                 self.message_user(
                     request, _('Booking %s dikonfirmasi.') % obj.code,
                     messages.SUCCESS)
@@ -170,6 +174,8 @@ class BookingAdmin(admin.ModelAdmin):
         count = 0
         for booking in queryset.filter(status=Booking.Status.PENDING):
             booking.mark_confirmed()
+            log_event('PAYMENT_CONFIRMED', request=request, target=booking.code,
+                      metadata={'channel': 'bus', 'batch': True})
             count += 1
         self.message_user(request, f'{count} booking dikonfirmasi.')
 
@@ -177,6 +183,8 @@ class BookingAdmin(admin.ModelAdmin):
     def cancel_bookings(self, request, queryset):
         count = queryset.filter(status__in=[Booking.Status.PENDING, Booking.Status.CONFIRMED]) \
             .update(status=Booking.Status.CANCELLED)
+        log_event('PAYMENT_CANCELLED', request=request, success=True,
+                  metadata={'channel': 'bus', 'count': count, 'batch': True})
         self.message_user(request, f'{count} booking dibatalkan.')
 
     @admin.action(description=_('Ekspor CSV yang dipilih'))
@@ -198,11 +206,14 @@ class BookingAdmin(admin.ModelAdmin):
                 f'{b.schedule.route.origin.name} → {b.schedule.route.destination.name}',
                 b.travel_date.strftime('%Y-%m-%d'),
                 b.schedule.departure_time.strftime('%H:%M'),
-                b.schedule.bus.name, seats, b.contact_name, b.contact_phone,
-                b.contact_email, int(b.total_price), b.get_status_display(),
-                b.payment_method or '-',
+                b.schedule.bus.name, seats,
+                csv_safe(b.contact_name), csv_safe(b.contact_phone),
+                csv_safe(b.contact_email), int(b.total_price),
+                b.get_status_display(), b.payment_method or '-',
                 timezone_local(b.paid_at), timezone_local(b.created_at),
             ])
+        log_event('EXPORT', request=request, success=True,
+                  metadata={'channel': 'bus', 'rows': queryset.count()})
         return response
 
 

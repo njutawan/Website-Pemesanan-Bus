@@ -299,7 +299,7 @@ class URLNormalizationTest(TestCase):
         self.assertEqual(r['Location'], '/tentang/?utm_source=ig')  # query utuh
 
     def test_kode_booking_kapital_tidak_diredirect(self):
-        # path resolve (kode NT-XXXXXX memang kapital) -> lewat ke view -> 404
+        # path resolve (kode NT-XXXXXXXX memang kapital) -> lewat ke view -> 404
         r = self.client.get('/bus/booking/NT-ABC123/')
         self.assertEqual(r.status_code, 404)
         self.assertNotIn('Location', r)

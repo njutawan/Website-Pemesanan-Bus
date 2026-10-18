@@ -1,9 +1,8 @@
 {% extends "admin/base_site.html" %}
-{% load i18n booking_extras %}
+{% load i18n booking_extras static %}
 
 {% block extrastyle %}
   {{ block.super }}
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -216,6 +215,7 @@
 
 {% block footer %}
 {{ block.super }}
+<script src="{% static 'vendor/chart.js/chart.umd.min.js' %}"></script>
 <script>
 (function () {
   var safeParse = function (id) {

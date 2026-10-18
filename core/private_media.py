@@ -27,6 +27,7 @@ view ini alih-alih menyajikannya dari disk, sehingga kontrol akses yang
 sama berlaku ada/tidaknya Nginx dan apapun nilai ``DEBUG``.
 """
 import posixpath
+from pathlib import Path
 from urllib.parse import unquote
 
 from django.conf import settings
@@ -46,8 +47,13 @@ def _normalize_media_path(path):
     seperti ``vehicles/../payment_proofs/x.jpg`` tidak bisa menyelundup
     melewati pemeriksaan awalan.
     """
-    normalized = posixpath.normpath(unquote(str(path or ''))).lstrip('/')
-    return '' if normalized == '.' else normalized
+    raw = unquote(str(path or ''))
+    if '\x00' in raw or '\\' in raw:
+        return ''
+    normalized = posixpath.normpath(raw).lstrip('/')
+    if normalized == '.' or normalized.startswith('../'):
+        return ''
+    return normalized
 
 
 def grant_private_media_access(request, file_name):
@@ -87,12 +93,25 @@ def serve_media(request, path):
     if not normalized:
         raise Http404('Berkas tidak ditemukan.')
 
+    # Output validation: hanya format gambar yang dikenal yang boleh disajikan.
+    # Mencegah berkas .html/.svg/.php yang terunggah dieksekusi browser/server.
+    allowed = tuple(getattr(
+        settings, 'MEDIA_ALLOWED_EXTENSIONS', ('.jpg', '.jpeg', '.png', '.webp')))
+    if Path(normalized).suffix.lower() not in allowed:
+        raise Http404('Berkas tidak ditemukan.')
+
     is_public = normalized.startswith(PUBLIC_MEDIA_PREFIXES)
     if not is_public and not _can_access_private_media(request, normalized):
         raise Http404('Berkas tidak ditemukan.')
 
     response = static_serve(
         request, normalized, document_root=settings.MEDIA_ROOT)
+    # Berkas media TIDAK boleh dirender sebagai dokumen/script, walau isi
+    # berkas aneh. CSP sandbox + nosniff berlaku untuk publik maupun privat.
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['Content-Security-Policy'] = "default-src 'none'; sandbox"
     if not is_public:
         response.headers['Cache-Control'] = 'private, no-store'
+    else:
+        response.headers.setdefault('Cache-Control', 'public, max-age=604800')
     return response

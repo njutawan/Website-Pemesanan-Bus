@@ -1,4 +1,5 @@
-"""Model inti: metadata SEO per halaman, dikelola lewat /admin/."""
+"""Model inti: metadata SEO per halaman, audit keamanan, dikelola lewat /admin/."""
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -36,6 +37,18 @@ class PageMeta(models.Model):
         verbose_name = _('Metadata halaman (SEO)')
         verbose_name_plural = _('Metadata halaman (SEO)')
         ordering = ['path']
+
+    def clean(self):
+        path = (self.path or '').strip()
+        if not path.startswith('/') or path.startswith('//'):
+            raise ValidationError({
+                'path': _('Path internal wajib diawali satu "/" (bukan URL penuh).')
+            })
+        if '://' in path or '\\' in path:
+            raise ValidationError({
+                'path': _('Skema/domain luar dan backslash tidak diizinkan.')
+            })
+        self.path = path
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -91,3 +104,52 @@ class SeoKeyword(models.Model):
         if not u.endswith('/'):
             u += '/'
         self.url = u + query + frag
+
+
+class AuditLog(models.Model):
+    """Jejak audit keamanan — hanya superuser yang boleh membacanya.
+
+    Data sensitif (password, token, email, telepon, nama, URL bukti bayar)
+    TIDAK disimpan di sini. Kode booking disamarkan oleh ``core.audit``;
+    metadata hanya berisi field operasional yang aman. Retensi default 180
+    hari (``AUDIT_RETENTION_DAYS``).
+    """
+
+    class Action(models.TextChoices):
+        LOGIN_SUCCESS = 'LOGIN_SUCCESS', _('Login berhasil')
+        LOGIN_FAILED = 'LOGIN_FAILED', _('Login gagal')
+        LOGOUT = 'LOGOUT', _('Logout')
+        BOOKING_CREATED = 'BOOKING_CREATED', _('Booking dibuat')
+        PROOF_UPLOADED = 'PROOF_UPLOADED', _('Bukti bayar diunggah')
+        PAYMENT_CONFIRMED = 'PAYMENT_CONFIRMED', _('Pembayaran dikonfirmasi')
+        PAYMENT_CANCELLED = 'PAYMENT_CANCELLED', _('Booking dibatalkan')
+        EXPORT = 'EXPORT', _('Ekspor data admin')
+        RATE_LIMITED = 'RATE_LIMITED', _('Rate limit terlampaui')
+        ADMIN_IP_DENIED = 'ADMIN_IP_DENIED', _('Akses admin ditolak (IP)')
+        WEBHOOK_REJECTED = 'WEBHOOK_REJECTED', _('Webhook ditolak')
+        SECURITY_EVENT = 'SECURITY_EVENT', _('Peristiwa keamanan lain')
+
+    created_at = models.DateTimeField(_('waktu'), auto_now_add=True, db_index=True)
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL, verbose_name=_('pelaku'), null=True, blank=True,
+        on_delete=models.SET_NULL, related_name='audit_events')
+    action = models.CharField(
+        _('aksi'), max_length=32, choices=Action.choices, db_index=True)
+    success = models.BooleanField(_('berhasil'), default=True)
+    target = models.CharField(_('target (disamarkan)'), max_length=120, blank=True)
+    ip = models.GenericIPAddressField(_('IP'), null=True, blank=True)
+    user_agent = models.CharField(_('user agent'), max_length=255, blank=True)
+    request_id = models.CharField(_('request id'), max_length=64, blank=True)
+    metadata = models.JSONField(_('metadata aman'), default=dict, blank=True)
+
+    class Meta:
+        verbose_name = _('log audit')
+        verbose_name_plural = _('log audit')
+        ordering = ('-created_at',)
+        indexes = [
+            models.Index(fields=['action', 'created_at'], name='audit_action_time_ix'),
+            models.Index(fields=['ip', 'created_at'], name='audit_ip_time_ix'),
+        ]
+
+    def __str__(self):
+        return f'{self.created_at:%Y-%m-%d %H:%M} {self.action} {self.target}'

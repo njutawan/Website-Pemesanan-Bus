@@ -22,7 +22,7 @@ plus **rental mobil** — lengkap dengan panel admin, SEO siap ranking, dan dwib
 
 <br>
 
-<a href="#quick-start"><strong>Mulai Cepat</strong></a> · <a href="#fitur"><strong>Fitur</strong></a> · <a href="#alur-pemesanan"><strong>Alur Pemesanan</strong></a> · <a href="#deploy"><strong>Deploy</strong></a> · <a href="#stack"><strong>Stack</strong></a>
+<a href="#quick-start"><strong>Mulai Cepat</strong></a> · <a href="#fitur"><strong>Fitur</strong></a> · <a href="#alur-pemesanan"><strong>Alur Pemesanan</strong></a> · <a href="#deploy"><strong>Deploy</strong></a> · <a href="#stack"><strong>Stack</strong></a> · [**Keamanan**](SECURITY.md)
 
 <br><br>
 
@@ -68,7 +68,7 @@ plus **rental mobil** — lengkap dengan panel admin, SEO siap ranking, dan dwib
 - Pencarian jadwal (kota asal, tujuan, tanggal, jumlah penumpang)
 - **Denah kursi interaktif** — layout mengikuti kelas bus (Ekonomi 2-2, AC 2-2,
   Eksekutif 2-1, Sleeper 1-1), kursi terisi otomatis terkunci
-- Kode booking unik (format `NT-XXXXXX`), ringkasan harga real-time
+- Kode booking unik (format `NT-XXXXXXXX`, 8 karakter acak), ringkasan harga real-time
 - **Pembayaran transfer manual / QRIS** + unggah bukti (JPG/PNG)
 - Verifikasi admin 1-klik dari panel admin (aksi *Konfirmasi pembayaran*)
 - Kedaluwarsa otomatis: kursi dilepas jika tidak dibayar dalam 2 jam (bisa diatur)
@@ -78,7 +78,7 @@ plus **rental mobil** — lengkap dengan panel admin, SEO siap ranking, dan dwib
 ### Rental Mobil
 - Katalog mobil dengan filter kategori (MPV / SUV / Van / Bus kecil)
 - Detail unit + spesifikasi + estimasi harga live (hari × harga + opsi sopir)
-- Pemesanan sewa → kode `SEWA-XXXXXX` → upload bukti → verifikasi admin
+- Pemesanan sewa → kode `SEWA-XXXXXXXX` → upload bukti → verifikasi admin
 
 ### Umum
 - **Dwibahasa**: Indonesia (`/`) & English (`/en/`) — URL terpisah, ramah SEO
@@ -190,7 +190,7 @@ plus **rental mobil** — lengkap dengan panel admin, SEO siap ranking, dan dwib
   ke bcrypt pada login berikutnya
 - **Standardisasi URL (anti-duplikat kanonik)**: `APPEND_SLASH = True`
   (`/bus` → 301 `/bus/`), middleware `LowercasePathMiddleware`
-  (`/BUS/` → 301 `/bus/`; kode booking kapital `NT-XXXXXX` tidak disentuh),
+  (`/BUS/` → 301 `/bus/`; kode booking kapital `NT-XXXXXXXX` tidak disentuh),
   standar domain **tanpa www** (`PREPEND_WWW = False`; `www` → apex 301 di
   Nginx), dan paksa HTTPS via env `DJANGO_SSL_REDIRECT=1` (lapis kedua —
   redirect utama HTTP→HTTPS ada di blok Nginx, lengkap HSTS). Canonical
@@ -228,8 +228,9 @@ plus **rental mobil** — lengkap dengan panel admin, SEO siap ranking, dan dwib
   (`core/img_tools.py`, lewat storage API sehingga aman untuk storage remote).
   Media lama: backfill sekali dengan `python manage.py convert_media_webp`.
   Bukti pembayaran sengaja tidak dikonversi (dokumen legal, disimpan asli).
-- **Minifikasi & penggabungan (`django-compressor`)**: Bootstrap 5.3.3
-  di-vendor lokal (`static/vendor/bootstrap/`, tanpa CDN jsdelivr) lalu
+- **Minifikasi & penggabungan (`django-compressor`)**: Bootstrap 5.3.8
+  dan Chart.js 4.5.1 di-vendor lokal (`static/vendor/`, lengkap dengan
+  LICENSE, tanpa CDN jsdelivr) lalu
   digabung + diminifikasi dengan CSS/JS tema via `{% compress %}` — beranda
   hanya memuat **1 berkas CSS + 1 berkas JS** (CSS 244KB → 34KB, JS 82KB →
   24KB setelah gzip). Output di-pra-gzip otomatis
@@ -280,11 +281,16 @@ python manage.py runserver
 
 Buka http://127.0.0.1:8000 — beranda Indonesia, http://127.0.0.1:8000/en/ untuk Inggris.
 
-**Akun admin demo**: username `admin` · password `admin123` → http://127.0.0.1:8000/admin/
-(ganti segera di produksi, atau set env `DJANGO_ADMIN_PASSWORD` sebelum seed).
+**Akun admin**: username `admin`. Jika `DJANGO_ADMIN_PASSWORD` tidak diisi
+saat `seed_data` berjalan dengan `DEBUG=1`, sebuah password acak dibuat dan
+**dicetak sekali** di output perintah — salin dari sana. Jika `DEBUG=0`,
+`seed_data` **menolak membuat admin** tanpa `DJANGO_ADMIN_PASSWORD` (min. 12 karakter,
+bukan password umum). Seed juga memperingatkan bila akun admin lama masih
+memakai password bawaan versi sebelumnya.
 
 Perintah lain: `python manage.py seed_data --flush` (hapus data demo),
-`python manage.py test` (14 unit test).
+`python manage.py test` (181 unit test),
+`python manage.py security_audit` (audit 20 kontrol keamanan).
 
 ### 2b. Alternatif: Docker Compose (PostgreSQL)
 
@@ -318,7 +324,7 @@ docker compose down -v                     # berhenti + hapus data database
 
 1. Beranda → cari `Jember → Surabaya` → pilih jadwal
 2. Pilih kursi di denah (kursi merah = terisi) → **Lanjut Isi Data**
-3. Isi nama + WhatsApp → **Buat Booking** → kode `NT-XXXXXX` terbit
+3. Isi nama + WhatsApp → **Buat Booking** → kode `NT-XXXXXXXX` terbit
 4. Transfer/QRIS sesuai instruksi → unggah bukti
 5. Login admin → menu *Booking tiket* → pilih booking → aksi
    **Konfirmasi pembayaran yang dipilih** → e-tiket aktif di halaman booking
@@ -341,7 +347,15 @@ Ganti gambar `static/img/qris-placeholder.png` dengan QRIS asli Anda, serta
 rekening pada `PAYMENT_DETAILS`.
 
 Variabel environment produksi: `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=0`,
-`DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS`.
+`DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS`, `POSTGRES_*` (wajib,
+`sslmode=require`), `REDIS_URL`, `DJANGO_ADMIN_ALLOWED_IPS`,
+`DJANGO_ADMIN_PASSWORD`, serta `DJANGO_PAYMENT_WEBHOOK_SECRET` bila memakai
+gateway pembayaran. Salin [`.env.example`](.env.example) → `.env` dan isi
+nilainya; jangan pernah commit `.env`.
+
+> Sejak hardening, `docker compose up` **gagal cepat** bila
+> `POSTGRES_PASSWORD` kosong, dan tidak ada lagi password admin bawaan di
+> `docker-compose.yml` maupun `.env.example`.
 
 ---
 
@@ -380,18 +394,52 @@ Jadwalkan tiap 5 menit, mis. lewat cron di host:
 
 ```cron
 */5 * * * * cd /var/www/website-pemesanan-bus && .venv/bin/python manage.py expire_stale_bookings && .venv/bin/python manage.py expire_stale_rental_bookings
+0 3 * * * cd /var/www/website-pemesanan-bus && .venv/bin/python manage.py purge_audit_logs
 ```
 
-Di Docker Compose, kedua perintah yang sama dijadwalkan dari host:
-`docker compose exec -T web python manage.py expire_stale_bookings && docker compose exec -T web python manage.py expire_stale_rental_bookings`.
+Di Docker Compose, kedua perintah kedaluwarsa itu dijadwalkan dari host:
+`docker compose exec -T web python manage.py expire_stale_bookings && docker compose exec -T web python manage.py expire_stale_rental_bookings`,
+dan `purge_audit_logs` cukup dijalankan sekali sehari.
 
-Konfigurasi Nginx reverse proxy lengkap (static/media/cache/gzip/HTTPS) tersedia di
+Konfigurasi Nginx reverse proxy lengkap (TLS 1.2/1.3, header keamanan,
+rate limit, static/media/cache/gzip/HTTPS) tersedia di
 [`deploy/nginx.conf`](deploy/nginx.conf). Produksi sebaiknya juga:
-- Ganti `DJANGO_SECRET_KEY` & `DJANGO_DEBUG=0`
+- Ganti `DJANGO_SECRET_KEY` & set `DJANGO_DEBUG=0` (lihat `python manage.py check --deploy`)
 - PostgreSQL murni: sesuaikan env `POSTGRES_*` (lihat `.env.example`), `sslmode=require` di produksi
-- Cache bersama: set `REDIS_URL` (otomatis di Docker Compose) — tanpa ini LocMem per-proses
-- Aktifkan kembali `XFrameOptionsMiddleware` di `core/settings.py`
-- Ganti password admin demo
+- Cache bersama: set `REDIS_URL` (otomatis di Docker Compose) — tanpa ini rate limit hanya per-proses
+- Set `DJANGO_ADMIN_ALLOWED_IPS` (default contoh: loopback + LAN `192.168.0.0/16`) agar `/admin/` tidak terbuka untuk publik
+- Set `DJANGO_ADMIN_PASSWORD` sebelum seed; jangan pernah memakai password contoh
+- Jalankan `python manage.py security_audit` sebelum go-live (lihat `SECURITY.md`)
+- Uji backup/restore: `deploy/backup.sh`, `deploy/verify_backup.sh` (lihat `deploy/BACKUP.md`)
+
+> `XFrameOptionsMiddleware` aktif otomatis saat `SECURE_SSL_REDIRECT=1`
+> (mode HTTPS). Di mode pengembangan, `frame-ancestors` sengaja tidak dipasang
+> agar preview di iframe tetap bisa dibuka; produksi selalu `DENY`.
+
+### 20 kontrol keamanan
+
+| # | Kontrol | Implementasi |
+|---|---|---|
+| 1 | Rate limit | `core.middleware.RateLimitMiddleware` + `RATELIMIT_RULES` (global, POST, login admin, booking bus/rental, cek booking, upload bukti) → 429 + `Retry-After`; Nginx `limit_req`/`limit_conn` |
+| 2 | CORS ketat | `CorsMiddleware`: hanya origin eksplisit di `CORS_ALLOWED_ORIGINS`, wildcard ditolak, preflight 403 |
+| 3 | CSRF | `CsrfViewMiddleware` + token di semua form; cookie `SameSite=Lax/Strict` & `Secure` di produksi |
+| 4 | SSRF | Tidak ada HTTP client keluar / subprocess / eval di kode aplikasi (dijaga test) |
+| 5 | Path traversal | Normalisasi path media, allowlist ekstensi, 404 untuk `.php/.html/.js/.svg/.map`, `nosniff` + `Content-Security-Policy: sandbox` |
+| 6 | Validasi input | `core.validators`: kode publik `NT-/SEWA-` 8 karakter, label kursi, tanggal, ukuran & piksel gambar; form Django ketat |
+| 7 | Validasi output | Autoescape, JSON-LD `\u003c`, `csv_safe` (anti formula injection), escaping URL di `auto_internal_link` |
+| 8 | Admin | Login wajib staff, allowlist IP opsional, rate limit login, audit semua percobaan |
+| 9 | Password default | Tidak ada password bawaan di seed/compose/.env; wajib env di produksi; blocklist password lemah |
+| 10 | Audit | `AuditLog` (login, booking, bukti bayar, ekspor, rate limit) read-only untuk superuser, PII disamarkan |
+| 11 | Webhook | N/A selama transfer manual; HMAC-SHA256 `t=…,v1=…`, toleransi waktu, anti-replay idempoten (`core/payments.py`). Aktifkan gateway **tanpa** secret → `core.E015` menolak start |
+| 12 | Payment server | Transfer manual/QRIS tanpa callback & tanpa data kartu (N/A); helper webhook siap bila gateway hosted ditambahkan |
+| 13 | Anti-tamper harga | Harga selalu dihitung server dari `Schedule`/`Vehicle` (`select_for_update`), field harga dari klien diabaikan |
+| 14 | IDOR | Kode acak 8 karakter + rate limit + grant media per-sesi; bukti bayar tidak bisa diakses publik |
+| 15 | Log | `RedactSecretsFilter` (password/token/DSN/email/telepon) + audit masking + log Nginx menyamarkan kode booking |
+| 16 | Source map | Tidak ada `.map` di repo; middleware & Nginx mengembalikan 404 |
+| 17 | Dependency | Versi minimum patch keamanan di `requirements.txt`, Dependabot mingguan, `pip-audit` di CI |
+| 18 | Backup/restore | `deploy/backup.sh`, `restore.sh`, `verify_backup.sh` + drill di CI (`deploy/BACKUP.md`) |
+| 19 | Header | CSP hash-based, HSTS, XFO, nosniff, Referrer-Policy, Permissions-Policy, COOP/CORP |
+| 20 | Test pra-rilis | `python manage.py test` + `security_audit` + `check --deploy` di CI, termasuk test keamanan |
 
 ---
 
@@ -409,7 +457,9 @@ Konfigurasi Nginx reverse proxy lengkap (static/media/cache/gzip/HTTPS) tersedia
 ├── static/                # CSS tema, JS (seat-map, countdown, rental), gambar
 ├── locale/                # django.po/mo (id, en) — dihasilkan compile_i18n
 ├── media/                 # Unggahan runtime (bukti bayar, foto mobil) — gitignored
-└── deploy/nginx.conf      # Config Nginx produksi
+├── deploy/                # nginx.conf, backup.sh, restore.sh, verify_backup.sh, BACKUP.md
+├── SECURITY.md            # Laporan audit 20 kontrol + checklist go-live
+└── .github/               # CI (test, audit, drill backup) + Dependabot
 ```
 
 <a id="stack"></a>

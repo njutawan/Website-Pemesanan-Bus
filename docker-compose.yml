@@ -4,7 +4,7 @@
 # Jalankan:
 #   docker compose up --build
 #   → web  : http://localhost:8000   (migrasi + seed data otomatis)
-#   → admin: http://localhost:8000/admin/  (admin / admin123)
+#   → admin: http://localhost:8000/admin/  (password acak dicetak saat seed)
 #
 # Berhenti:   docker compose down
 # Hapus data: docker compose down -v   (-v menghapus volume PostgreSQL)
@@ -17,7 +17,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-nusantartrans}
       POSTGRES_USER: ${POSTGRES_USER:-nusantar}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nusantar}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD wajib diisi di .env (openssl rand -base64 24)}
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
@@ -58,11 +58,12 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-nusantartrans}
       POSTGRES_USER: ${POSTGRES_USER:-nusantar}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nusantar}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD wajib diisi di .env (openssl rand -base64 24)}
       POSTGRES_HOST: db            # nama service db di jaringan compose
       POSTGRES_PORT: "5432"
       REDIS_URL: redis://redis:6379/1   # cache TTFB (django RedisCache)
-      DJANGO_ADMIN_PASSWORD: ${DJANGO_ADMIN_PASSWORD:-admin123}
+      DJANGO_ADMIN_PASSWORD: ${DJANGO_ADMIN_PASSWORD:-}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-1}
     depends_on:
       db:
         condition: service_healthy

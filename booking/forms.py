@@ -1,11 +1,11 @@
 """Form alur pemesanan tiket: pencarian jadwal & data pemesan."""
 from django import forms
 from django.core.exceptions import ValidationError
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from booking.models import City
 from core.settings import MAX_SEATS_PER_BOOKING
+from core.validators import clean_phone, validate_travel_date
 
 
 class SearchForm(forms.Form):
@@ -26,9 +26,7 @@ class SearchForm(forms.Form):
 
     def clean_date(self):
         date = self.cleaned_data['date']
-        if date < timezone.localdate():
-            raise ValidationError(_('Tanggal perjalanan tidak boleh di masa lalu.'))
-        return date
+        return validate_travel_date(date)
 
     def clean(self):
         cleaned = super().clean()
@@ -42,7 +40,7 @@ class SearchForm(forms.Form):
 class PassengerForm(forms.Form):
     """Data kontak pemesan sebelum booking dibuat."""
     contact_name = forms.CharField(
-        label=_('Nama lengkap'), max_length=100,
+        label=_('Nama lengkap'), min_length=2, max_length=100,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Nama sesuai KTP/KTM')}))
     contact_phone = forms.CharField(
         label=_('No. WhatsApp'), max_length=20,
@@ -56,8 +54,4 @@ class PassengerForm(forms.Form):
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
 
     def clean_contact_phone(self):
-        import re
-        phone = re.sub(r'[\s\-]', '', self.cleaned_data['contact_phone'])
-        if not re.fullmatch(r'\+?\d{9,16}', phone):
-            raise ValidationError(_('Nomor telepon tidak valid. Contoh: 081234567890'))
-        return phone
+        return clean_phone(self.cleaned_data['contact_phone'])

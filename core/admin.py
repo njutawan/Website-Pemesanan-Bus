@@ -8,16 +8,18 @@ aktivitas terbaru.
 """
 from datetime import timedelta
 
+from django import forms
 from django.contrib import admin
 from django.contrib.redirects.admin import RedirectAdmin as DjangoRedirectAdmin
 from django.contrib.redirects.models import Redirect
+from django.core.exceptions import ValidationError
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import TruncDate
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from booking.models import Booking, BookingSeat
-from core.models import PageMeta, SeoKeyword
+from core.models import AuditLog, PageMeta, SeoKeyword
 from rental.models import RentalBooking
 
 
@@ -52,10 +54,69 @@ class PageMetaAdmin(admin.ModelAdmin):
     )
 
 
-# Manajemen redirect — muncul di panel admin: /admin/ → "Redirects".
-# Isi "old path" (URL lama) & "new path" (URL baru). Middleware bawaan
-# memancarkan 301 permanen (terbaik untuk SEO) hanya untuk URL yang 404.
-admin_site.register(Redirect, DjangoRedirectAdmin)
+def _validate_internal_path(value, label):
+    path = (value or '').strip()
+    if not path.startswith('/') or path.startswith('//'):
+        raise ValidationError(
+            _('%(label)s wajib path internal yang diawali satu "/".')
+            % {'label': label})
+    if '://' in path or '\\' in path:
+        raise ValidationError(
+            _('%(label)s tidak boleh memuat skema/domain luar atau backslash.')
+            % {'label': label})
+    return path
+
+
+class SafeRedirectForm(forms.ModelForm):
+    """Cegah open redirect: old/new path wajib internal."""
+
+    class Meta:
+        model = Redirect
+        fields = '__all__'
+
+    def clean_old_path(self):
+        return _validate_internal_path(
+            self.cleaned_data.get('old_path'), _('URL lama'))
+
+    def clean_new_path(self):
+        return _validate_internal_path(
+            self.cleaned_data.get('new_path'), _('URL baru'))
+
+
+@admin.register(Redirect, site=admin_site)
+class SafeRedirectAdmin(DjangoRedirectAdmin):
+    """Manajemen 301 hanya untuk tujuan internal (anti open redirect)."""
+
+    form = SafeRedirectForm
+
+
+@admin.register(AuditLog, site=admin_site)
+class AuditLogAdmin(admin.ModelAdmin):
+    """Log audit read-only; hanya superuser yang boleh melihat."""
+
+    list_display = ('created_at', 'action', 'success', 'actor', 'target', 'ip')
+    list_filter = ('action', 'success')
+    search_fields = ('target', 'ip', 'actor__username')
+    date_hierarchy = 'created_at'
+    readonly_fields = (
+        'created_at', 'actor', 'action', 'success', 'target', 'ip',
+        'user_agent', 'request_id', 'metadata')
+    list_per_page = 50
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_view_permission(self, request, obj=None):
+        return bool(request.user.is_active and request.user.is_superuser)
+
+    def has_module_permission(self, request):
+        return bool(request.user.is_active and request.user.is_superuser)
 
 
 def build_dashboard_context() -> dict:

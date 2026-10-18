@@ -194,7 +194,7 @@ TRANSLATIONS_ID = {
     'Booking dengan kode <strong>%(code)s</strong> tidak ditemukan. Periksa kembali penulisannya.':
         'Booking dengan kode <strong>%(code)s</strong> tidak ditemukan. Periksa kembali penulisannya.',
     'Lihat Status': 'Lihat Status',
-    'Kode booking terlihat seperti: NT-A7K2QP': 'Kode booking terlihat seperti: NT-A7K2QP',
+    'Kode booking terlihat seperti: NT-A7K2QP9M': 'Kode booking terlihat seperti: NT-A7K2QP9M',
 
     # ---- Halaman rute (SEO) ----
     'Tiket Bus %(origin)s ke %(dest)s — Jadwal & Harga': 'Tiket Bus %(origin)s ke %(dest)s — Jadwal & Harga',
@@ -761,7 +761,7 @@ TRANSLATIONS_EN = {
     'Booking dengan kode <strong>%(code)s</strong> tidak ditemukan. Periksa kembali penulisannya.':
         'No booking found with code <strong>%(code)s</strong>. Please check it again.',
     'Lihat Status': 'View Status',
-    'Kode booking terlihat seperti: NT-A7K2QP': 'A booking code looks like: NT-A7K2QP',
+    'Kode booking terlihat seperti: NT-A7K2QP9M': 'A booking code looks like: NT-A7K2QP9M',
 
     # Halaman rute (SEO)
     'Tiket Bus %(origin)s ke %(dest)s — Jadwal & Harga': 'Bus Tickets %(origin)s to %(dest)s — Schedule & Prices',

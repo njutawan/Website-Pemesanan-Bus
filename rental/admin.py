@@ -9,6 +9,8 @@ from django.utils.translation import gettext_lazy as _
 
 from rental.models import RentalBooking, Vehicle
 from core.admin import admin_site
+from core.audit import log_event
+from core.validators import csv_safe
 
 
 class RentalProofFilter(admin.SimpleListFilter):
@@ -89,6 +91,8 @@ class RentalBookingAdmin(admin.ModelAdmin):
         if '_confirm' in request.POST:
             if obj.status == RentalBooking.Status.PENDING:
                 obj.mark_confirmed()
+                log_event('PAYMENT_CONFIRMED', request=request, target=obj.code,
+                          metadata={'channel': 'rental'})
                 self.message_user(
                     request, _('Pesanan sewa %s dikonfirmasi.') % obj.code,
                     messages.SUCCESS)
@@ -104,6 +108,8 @@ class RentalBookingAdmin(admin.ModelAdmin):
         count = 0
         for booking in queryset.filter(status=RentalBooking.Status.PENDING):
             booking.mark_confirmed()
+            log_event('PAYMENT_CONFIRMED', request=request, target=booking.code,
+                      metadata={'channel': 'rental', 'batch': True})
             count += 1
         self.message_user(request, f'{count} pesanan sewa dikonfirmasi.')
 
@@ -112,6 +118,8 @@ class RentalBookingAdmin(admin.ModelAdmin):
         count = queryset.filter(
             status__in=[RentalBooking.Status.PENDING, RentalBooking.Status.CONFIRMED]
         ).update(status=RentalBooking.Status.CANCELLED)
+        log_event('PAYMENT_CANCELLED', request=request, success=True,
+                  metadata={'channel': 'rental', 'count': count, 'batch': True})
         self.message_user(request, f'{count} pesanan dibatalkan.')
 
     @admin.action(description=_('Ekspor CSV yang dipilih'))
@@ -128,9 +136,12 @@ class RentalBookingAdmin(admin.ModelAdmin):
                 b.code, b.vehicle.name,
                 b.pickup_date.strftime('%Y-%m-%d'),
                 b.return_date.strftime('%Y-%m-%d'),
-                b.days, 'Ya' if b.with_driver else 'Tidak', b.pickup_location,
-                b.contact_name, b.contact_phone, int(b.total_price),
+                b.days, 'Ya' if b.with_driver else 'Tidak',
+                csv_safe(b.pickup_location), csv_safe(b.contact_name),
+                csv_safe(b.contact_phone), int(b.total_price),
                 b.get_status_display(), b.payment_method or '-',
                 b.created_at.strftime('%Y-%m-%d %H:%M'),
             ])
+        log_event('EXPORT', request=request, success=True,
+                  metadata={'channel': 'rental', 'rows': queryset.count()})
         return response

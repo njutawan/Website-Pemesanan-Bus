@@ -70,7 +70,7 @@ class BookingTest(TestCase):
 
     def test_kode_booking_format(self):
         b = self._booking(['1A'])
-        self.assertRegex(b.code, r'^NT-[A-Z2-9]{6}$')
+        self.assertRegex(b.code, r'^NT-[A-Z2-9]{8}$')
 
     def test_kursi_terkunci_status_aktif(self):
         b = self._booking(['1A', '1B'])
