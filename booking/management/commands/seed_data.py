@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 
 from django.contrib.auth import get_user_model
+from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
 from booking.models import Bus, City, Route, Schedule
@@ -326,5 +327,11 @@ class Command(BaseCommand):
                 path=path, defaults={'title': title, 'description': description})
         self.stdout.write(self.style.SUCCESS(
             f'✔ SEO: {PageMeta.objects.count()} metadata halaman'))
+
+        # Foto demo disalin sebagai .jpg; hasilkan varian WebP-nya agar
+        # <source srcset="...|webp_url"> tidak 404. Konversi juga
+        # menjangkau kendaraan lama yang luput dari hook konversi model
+        # (mis. baris yang sudah ada tidak ter-save ulang oleh get_or_create).
+        call_command('convert_media_webp', stdout=self.stdout)
 
         self.stdout.write(self.style.SUCCESS('Seed selesai. 🚍'))

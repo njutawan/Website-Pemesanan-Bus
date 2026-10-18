@@ -1,9 +1,12 @@
 """Context processor: pengaturan situs, hreflang, dan metadata SEO halaman."""
 from django.conf import settings
+from django.core.cache import cache
 
 from core.models import PageMeta
 from django.urls import translate_url
 from django.utils.translation import get_language
+
+PAGE_META_CACHE_KEY = 'seo:pagemeta:all'
 
 
 def site_settings(request):
@@ -46,6 +49,23 @@ def language_alternates(request):
     return {'LANGUAGE_ALTERNATES': alternates, 'CURRENT_LANGUAGE': current}
 
 
+def _cached_page_metas():
+    """Seluruh PageMeta sebagai ``{path: PageMeta}`` dari cache (1 query/TTL).
+
+    Context processor berjalan di SETIAP request untuk path apapun
+    (termasuk URL dinamis berkode booking), jadi query per-path akan
+    selalu menembak DB. Tabel PageMeta kecil (metadata per halaman
+    statis), sehingga memuat semuanya sekali per TTL jauh lebih murah:
+    request berikutnya — untuk path manapun, termasuk yang tidak punya
+    PageMeta — 0 query. Perubahan via admin tetap langsung segar karena
+    sinyal post_save/post_delete PageMeta menghapus cache (core.apps).
+    """
+    return cache.get_or_set(
+        PAGE_META_CACHE_KEY,
+        lambda: {pm.path: pm for pm in PageMeta.objects.all()},
+        getattr(settings, 'CACHE_TTL_DEFAULT', 600))
+
+
 def seo(request):
     """
     Metadata halaman (model PageMeta dari /admin/) untuk title,
@@ -55,9 +75,10 @@ def seo(request):
     '/en/', coba path tanpa prefiks (baris tanpa prefiks berlaku untuk
     kedua bahasa). Tidak ada -> templat memakai default.
     """
-    pm = PageMeta.objects.filter(path=request.path).first()
+    page_metas = _cached_page_metas()
+    pm = page_metas.get(request.path)
     if pm is None and request.path.startswith('/en/'):
-        pm = PageMeta.objects.filter(path=request.path[3:]).first()
+        pm = page_metas.get(request.path[3:])
     ctx = {'page_meta': pm}
     if pm and pm.og_image:
         ctx['page_meta_og_image'] = request.build_absolute_uri(pm.og_image.url)

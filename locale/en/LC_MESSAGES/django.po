@@ -693,6 +693,13 @@ msgstr ""
 "Sorry, an unexpected error occurred. Our technical team has been notified. "
 "Please try again shortly or reach us on WhatsApp."
 
+msgid ""
+"Maaf, unit ini sudah dipesan pada tanggal yang tumpang tindih. Silakan pilih"
+" tanggal atau unit lain."
+msgstr ""
+"Sorry, this unit is already booked for overlapping dates. Please choose "
+"other dates or another unit."
+
 msgid "Maksimal sewa 30 hari. Untuk lebih, hubungi kami."
 msgstr "Maximum rental is 30 days. For longer periods, contact us."
 
@@ -963,8 +970,8 @@ msgstr "Choose destination city"
 msgid "Pilih kursi"
 msgstr "Choose a seat"
 
-msgid "Pilih minimal 1 kursi (maksimal 6)."
-msgstr "Select at least 1 seat (maximum 6)."
+msgid "Pilih minimal 1 kursi (maksimal %(max)s)."
+msgstr "Select at least 1 seat (maximum %(max)s)."
 
 msgid "Pilihanmu"
 msgstr "Your pick"

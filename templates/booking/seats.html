@@ -91,8 +91,7 @@
             <span class="text-muted">{% trans 'Total' %}</span>
             <span class="fw-bold fs-4 text-primary" id="seatTotal">Rp 0</span>
           </div>
-          <form method="post" action="{% url 'booking:create' schedule.id %}" id="seatForm">
-            {% csrf_token %}
+          <form method="get" action="{% url 'booking:create' schedule.id %}" id="seatForm">
             <input type="hidden" name="date" value="{{ travel_date|date:'Y-m-d' }}">
             <input type="hidden" name="seats" id="seatsInput" value="">
             <button class="btn btn-accent w-100 btn-lg" type="submit" id="btnContinue" disabled>

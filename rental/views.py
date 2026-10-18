@@ -1,7 +1,11 @@
 """View rental: katalog mobil, detail, form sewa, upload bukti bayar."""
+from urllib.parse import urlencode
+
 from django.contrib import messages
+from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.conf import settings
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.utils.translation import gettext as _
@@ -9,9 +13,10 @@ from django.views.decorators.cache import never_cache
 from django.views.generic import TemplateView, View
 
 from core.forms import PaymentProofForm
+from core.private_media import grant_private_media_access
 from core.seo import HOME_CRUMB, breadcrumb_items, breadcrumb_schema
 from rental.forms import RentalForm
-from rental.models import RentalBooking, Vehicle
+from rental.models import RentalBooking, Vehicle, has_overlapping_rental
 
 
 class VehicleListView(TemplateView):
@@ -98,21 +103,39 @@ class CreateRentalView(View):
                           {'vehicle': vehicle, 'form': form}, status=400)
 
         cleaned = form.cleaned_data
-        booking = RentalBooking.objects.create(
-            vehicle=vehicle,
-            pickup_date=cleaned['pickup_date'],
-            return_date=cleaned['return_date'],
-            pickup_location=cleaned['pickup_location'],
-            with_driver=cleaned['with_driver'],
-            contact_name=cleaned['contact_name'],
-            contact_phone=cleaned['contact_phone'],
-            contact_email=cleaned['contact_email'],
-            days=cleaned['days'],
-            total_price=self.calc_total(vehicle, cleaned['days'], cleaned['with_driver']),
-        )
+        # Kunci baris unit lalu periksa overlap & buat booking secara atomik:
+        # dua request bersamaan untuk unit yang sama tidak bisa sama-sama
+        # lolos cek dan berakhir sebagai double-booking.
+        with transaction.atomic():
+            locked = get_object_or_404(
+                Vehicle.objects.select_for_update(),
+                pk=vehicle.pk, is_available=True)
+            if has_overlapping_rental(
+                    locked, cleaned['pickup_date'], cleaned['return_date']):
+                form.add_error(
+                    None,
+                    _('Maaf, unit ini sudah dipesan pada tanggal yang tumpang tindih. Silakan pilih tanggal atau unit lain.'))
+                return render(request, self.template_name,
+                              {'vehicle': locked, 'form': form}, status=409)
+
+            booking = RentalBooking.objects.create(
+                vehicle=locked,
+                pickup_date=cleaned['pickup_date'],
+                return_date=cleaned['return_date'],
+                pickup_location=cleaned['pickup_location'],
+                with_driver=cleaned['with_driver'],
+                contact_name=cleaned['contact_name'],
+                contact_phone=cleaned['contact_phone'],
+                contact_email=cleaned['contact_email'],
+                days=cleaned['days'],
+                total_price=self.calc_total(
+                    locked, cleaned['days'], cleaned['with_driver']),
+            )
         messages.success(
             request, _('Pesanan sewa berhasil dibuat! Selesaikan pembayaran sebelum batas waktu.'))
-        return redirect('rental:detail_booking', code=booking.code)
+        detail_url = reverse(
+            'rental:detail_booking', kwargs={'code': booking.code})
+        return redirect(f'{detail_url}?{urlencode({"baru": 1})}')
 
 
 @method_decorator(never_cache, name='dispatch')
@@ -123,6 +146,10 @@ class RentalDetailView(TemplateView):
     def get(self, request, code):
         booking = get_object_or_404(
             RentalBooking.objects.select_related('vehicle'), code__iexact=code)
+        # Kode sewa adalah kredensial pemilik halaman ini: izinkan sesi ini
+        # memuat thumbnail buktinya sendiri dari media privat.
+        grant_private_media_access(
+            request, booking.payment_proof.name if booking.payment_proof else None)
         return render(request, self.template_name, {
             'booking': booking,
             'proof_form': PaymentProofForm(initial={'payment_method': 'bca'}),
@@ -147,6 +174,7 @@ class UploadRentalProofView(View):
             booking.payment_method = form.cleaned_data['payment_method']
             booking.payment_proof = form.cleaned_data['payment_proof']
             booking.save(update_fields=['payment_method', 'payment_proof', 'updated_at'])
+            grant_private_media_access(request, booking.payment_proof.name)
             messages.success(
                 request,
                 _('Bukti pembayaran terkirim. Tim kami verifikasi maksimal 15 menit.'))

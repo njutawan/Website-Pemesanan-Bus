@@ -1,6 +1,7 @@
 """Model rental mobil: armada sewa & pemesanan sewa."""
 from datetime import timedelta
 
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -85,6 +86,11 @@ class RentalBooking(TimeStampedModel):
         CONFIRMED = 'CONFIRMED', _('Terkonfirmasi')
         COMPLETED = 'COMPLETED', _('Selesai')
         CANCELLED = 'CANCELLED', _('Dibatalkan')
+        EXPIRED = 'EXPIRED', _('Kedaluwarsa')
+
+    # Status yang masih "memegang" unit pada rentang tanggalnya.
+    # COMPLETED sudah selesai/dikembalikan & CANCELLED batal: tidak mengunci.
+    LOCKING_STATUSES = [Status.PENDING, Status.CONFIRMED]
 
     code = models.CharField(_('kode sewa'), max_length=16, unique=True, db_index=True)
     vehicle = models.ForeignKey(
@@ -123,7 +129,7 @@ class RentalBooking(TimeStampedModel):
 
     @property
     def payment_deadline(self):
-        return self.created_at + timedelta(hours=2)
+        return self.created_at + timedelta(hours=settings.PAYMENT_TIMEOUT_HOURS)
 
     @property
     def is_payment_overdue(self):
@@ -139,3 +145,36 @@ class RentalBooking(TimeStampedModel):
 
     def __str__(self):
         return self.code
+
+
+def has_overlapping_rental(vehicle, pickup_date, return_date, *, exclude_pk=None):
+    """True bila unit sudah terpesan pada rentang yang tumpang tindih.
+
+    Tanggal sewa bersifat INKLUSIF (selaras ``RentalForm``: ambil dan
+    kembali pada hari yang sama dihitung 1 hari), jadi dua rentang yang
+    berbagi satu tanggal pun bertabrakan:
+    ``existing.pickup <= new.return AND existing.return >= new.pickup``.
+    Hanya status pengunci (PENDING/CONFIRMED) yang diperiksa.
+    """
+    qs = RentalBooking.objects.filter(
+        vehicle=vehicle,
+        status__in=RentalBooking.LOCKING_STATUSES,
+        pickup_date__lte=return_date,
+        return_date__gte=pickup_date,
+    )
+    if exclude_pk is not None:
+        qs = qs.exclude(pk=exclude_pk)
+    return qs.exists()
+
+
+def expire_stale_rental_bookings() -> int:
+    """Tandai EXPIRED untuk sewa PENDING yang lewat batas bayar (unit lepas).
+
+    Dipanggil dari management command ``expire_stale_rental_bookings``
+    yang dijadwalkan cron/periodic task — BUKAN dari request handler,
+    agar GET halaman publik tidak menulis (UPDATE) ke database.
+    """
+    deadline = timezone.now() - timedelta(hours=settings.PAYMENT_TIMEOUT_HOURS)
+    return RentalBooking.objects.filter(
+        status=RentalBooking.Status.PENDING, created_at__lt=deadline
+    ).update(status=RentalBooking.Status.EXPIRED)

@@ -162,6 +162,46 @@ class SEOTest(TestCase):
         self.assertIn('rel="canonical" href="http://testserver/"', html)
 
 
+class PageMetaCacheTest(TestCase):
+    """SEO context processor: PageMeta dimuat 1 query per TTL, bukan per request."""
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+        self.addCleanup(cache.clear)
+
+    def test_cache_dingin_1_query_lalu_0_dan_segar_setelah_simpan(self):
+        from django.test import RequestFactory
+        from core.context_processors import seo
+        from core.models import PageMeta
+        pm = PageMeta.objects.create(path='/bus/', title='Judul ID')
+        PageMeta.objects.create(path='/en/bus/', title='Custom EN title')
+        factory = RequestFactory()
+
+        # Cache dingin: satu query memuat seluruh peta PageMeta.
+        with self.assertNumQueries(1):
+            ctx_en = seo(factory.get('/en/bus/'))
+        self.assertEqual(ctx_en['page_meta'].title, 'Custom EN title')
+
+        # Request berikutnya — path lain maupun tanpa PageMeta — 0 query.
+        with self.assertNumQueries(0):
+            ctx_id = seo(factory.get('/bus/'))
+            ctx_missing = seo(factory.get('/path-tanpa-meta/'))
+        self.assertEqual(ctx_id['page_meta'].title, 'Judul ID')
+        self.assertIsNone(ctx_missing['page_meta'])
+
+        # Simpan/hapus via model memberi sinyal invalidasi cache
+        # (core.apps) -> request berikutnya memuat ulang sekali.
+        pm.title = 'Judul Baru'
+        pm.save()
+        with self.assertNumQueries(1):
+            self.assertEqual(
+                seo(factory.get('/bus/'))['page_meta'].title, 'Judul Baru')
+        pm.delete()
+        with self.assertNumQueries(1):
+            self.assertIsNone(seo(factory.get('/bus/'))['page_meta'])
+
+
 def _extract_jsonld(html):
     """Ambil & parse semua blok <script type="application/ld+json">."""
     import json
@@ -483,6 +523,137 @@ class SecurityHeadersTest(TestCase):
         # mode default (tanpa DJANGO_SSL_REDIRECT): tidak ada header XFO
         r = self.client.get('/')
         self.assertNotIn('X-Frame-Options', r)
+
+
+class PrivateMediaTest(TestCase):
+    """Bukti pembayaran di /media/ privat; foto kendaraan & OG tetap publik."""
+
+    FILES = {
+        'vehicles/uji-publik.webp': b'publik-mobil',
+        'meta/uji-og.webp': b'publik-og',
+        'payment_proofs/2026/10/bukti-bus.jpg': b'rahasia-bus',
+        'rental_proofs/2026/10/bukti-rental.jpg': b'rahasia-rental',
+        'dokumen-lain/uji.txt': b'rahasia-lain',
+    }
+
+    def setUp(self):
+        import tempfile
+        from pathlib import Path
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self._override = override_settings(MEDIA_ROOT=self._tmp.name)
+        self._override.enable()
+        self.addCleanup(self._override.disable)
+        root = Path(self._tmp.name)
+        for relative, content in self.FILES.items():
+            path = root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(content)
+
+    @staticmethod
+    def _content(response):
+        if response.streaming:
+            return b''.join(response.streaming_content)
+        return response.content
+
+    def test_media_publik_bebas_diakses(self):
+        for relative in ('vehicles/uji-publik.webp', 'meta/uji-og.webp'):
+            with self.subTest(relative=relative):
+                r = self.client.get(f'/media/{relative}')
+                self.assertEqual(r.status_code, 200)
+                self.assertEqual(self._content(r), self.FILES[relative])
+
+    def test_bukti_bayar_anonim_dan_non_staf_ditolak(self):
+        for relative in ('payment_proofs/2026/10/bukti-bus.jpg',
+                         'rental_proofs/2026/10/bukti-rental.jpg',
+                         'dokumen-lain/uji.txt'):
+            with self.subTest(relative=relative):
+                r = self.client.get(f'/media/{relative}')
+                self.assertEqual(r.status_code, 404)
+                self.assertNotIn(self.FILES[relative], self._content(r))
+
+        from django.contrib.auth import get_user_model
+        user = get_user_model().objects.create_user(
+            username='pengguna-biasa', password='RahasiaUji#123')
+        self.client.force_login(user)
+        r = self.client.get('/media/payment_proofs/2026/10/bukti-bus.jpg')
+        self.assertEqual(r.status_code, 404)
+
+    def test_bukti_bayar_staf_bisa_diakses_tanpa_cache(self):
+        from django.contrib.auth import get_user_model
+        staff = get_user_model().objects.create_user(
+            username='staf-uji', password='RahasiaUji#123', is_staff=True)
+        self.client.force_login(staff)
+        r = self.client.get('/media/payment_proofs/2026/10/bukti-bus.jpg')
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(
+            self._content(r), self.FILES['payment_proofs/2026/10/bukti-bus.jpg'])
+        self.assertEqual(r['Cache-Control'], 'private, no-store')
+
+    def test_alias_traversal_tidak_bisa_menyelundup_ke_bukti(self):
+        r = self.client.get('/media/vehicles/../payment_proofs/2026/10/bukti-bus.jpg')
+        self.assertEqual(r.status_code, 404)
+        self.assertNotIn(
+            self.FILES['payment_proofs/2026/10/bukti-bus.jpg'], self._content(r))
+
+    def test_sesi_pemilik_detail_rental_bisa_memuat_thumbnail_sendiri(self):
+        from datetime import date
+        from django.test import Client
+        from rental.models import RentalBooking, Vehicle
+        vehicle = Vehicle.objects.create(
+            name='Toyota Bukti', category='MPV', year=2023,
+            transmission='MATIC', seats=7, price_per_day=400000)
+        booking = RentalBooking.objects.create(
+            vehicle=vehicle, pickup_date=date.today(), return_date=date.today(),
+            pickup_location='Jember', contact_name='Uji',
+            contact_phone='081234567890', days=1, total_price=400000,
+            payment_proof='rental_proofs/2026/10/bukti-rental.jpg')
+        url = '/media/rental_proofs/2026/10/bukti-rental.jpg'
+
+        # Tanpa sesi pemilik (belum membuka detail berkode) tetap tertolak.
+        self.assertEqual(Client().get(url).status_code, 404)
+
+        r = self.client.get(f'/rental/sewa/{booking.code}/')
+        self.assertEqual(r.status_code, 200)
+        r = self.client.get(url)
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(
+            self._content(r), self.FILES['rental_proofs/2026/10/bukti-rental.jpg'])
+        # Izin sesi hanya untuk berkas persis itu, bukan bukti booking lain.
+        self.assertEqual(
+            self.client.get(
+                '/media/payment_proofs/2026/10/bukti-bus.jpg').status_code, 404)
+
+    def test_sesi_pemilik_detail_booking_bus_bisa_memuat_thumbnail_sendiri(self):
+        from datetime import date, timedelta
+        from booking.models import Booking, Bus, City, Route, Schedule
+        asal = City.objects.create(name='Kota Bukti A', slug='kota-bukti-a', province='Jawa Timur')
+        tujuan = City.objects.create(name='Kota Bukti B', slug='kota-bukti-b', province='Jawa Timur')
+        route = Route.objects.create(
+            origin=asal, destination=tujuan, distance_km=100, duration_minutes=120)
+        bus = Bus.objects.create(
+            code='NT-BUKTI', name='Bus Bukti', plate_number='N 1111 BK',
+            bus_class='EKONOMI', rows=2)
+        schedule = Schedule.objects.create(
+            route=route, bus=bus, departure_time='08:00',
+            arrival_time='10:00', price=50000)
+        booking = Booking.objects.create(
+            schedule=schedule, travel_date=date.today() + timedelta(days=1),
+            contact_name='Uji', contact_phone='081234567890', seats_qty=1,
+            total_price=50000,
+            payment_proof='payment_proofs/2026/10/bukti-bus.jpg')
+        url = '/media/payment_proofs/2026/10/bukti-bus.jpg'
+
+        self.assertEqual(self.client.get(url).status_code, 404)
+        r = self.client.get(f'/bus/booking/{booking.code}/')
+        self.assertEqual(r.status_code, 200)
+        r = self.client.get(url)
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(
+            self._content(r), self.FILES['payment_proofs/2026/10/bukti-bus.jpg'])
+        self.assertEqual(
+            self.client.get(
+                '/media/rental_proofs/2026/10/bukti-rental.jpg').status_code, 404)
 
 
 class ErrorPagesTest(TestCase):

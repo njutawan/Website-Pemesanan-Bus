@@ -213,6 +213,16 @@ main { flex: 1 0 auto; }
 .seat-btn.selected { background: var(--nt-gold); border-color: var(--nt-gold); color: var(--nt-navy-dark); box-shadow: 0 4px 10px rgba(255,195,0,.45); }
 .seat-btn.taken { background: #b9c2cc; border-color: #b9c2cc; color: #f2f5f8; cursor: not-allowed; }
 .legend-dot { display: inline-block; width: 12px; height: 12px; border-radius: 4px; vertical-align: middle; }
+/* Goyangan saat pilihan kursi melebihi jumlah penumpang (seat-map.js) */
+.needs-shake { animation: nt-shake .35s ease; }
+@keyframes nt-shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .needs-shake { animation: none; }
+}
 
 /* ---------- Booking detail ---------- */
 .booking-code {
