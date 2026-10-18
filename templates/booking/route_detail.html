@@ -18,6 +18,8 @@
       <ol class="breadcrumb mb-0">
         <li class="breadcrumb-item"><a class="text-white-50" href="{% url 'home' %}">{% trans 'Beranda' %}</a></li>
         <li class="breadcrumb-item"><a class="text-white-50" href="{% url 'booking:search' %}">{% trans 'Tiket Bus' %}</a></li>
+        <li class="breadcrumb-item"><a class="text-white-50" href="{% url 'booking:route_hub' %}">{% trans 'Semua Rute' %}</a></li>
+        <li class="breadcrumb-item"><a class="text-white-50" href="{% url 'booking:city_routes' route.origin.slug %}">{% blocktranslate with kota=route.origin.name %}Dari {{ kota }}{% endblocktranslate %}</a></li>
         <li class="breadcrumb-item active text-white" aria-current="page">{{ route.origin.name }} → {{ route.destination.name }}</li>
       </ol>
     </nav>
@@ -97,7 +99,7 @@
   <div class="row g-3">
     {% for r in sibling_routes %}
     <div class="col-md-6 col-lg-3">
-      <a class="text-decoration-none" href="{% url 'booking:route_detail' r.slug %}">
+      <a class="text-decoration-none" href="{{ r.get_absolute_url }}">
         <div class="card route-card border shadow-sm h-100">
           <div class="card-body py-3">
             <div class="fw-bold text-dark small">{{ r.origin.name }} → {{ r.destination.name }}</div>

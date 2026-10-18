@@ -26,7 +26,7 @@
       <div class="row g-3">
         {% for r in routes %}
         <div class="col-md-6">
-          <a class="text-decoration-none" href="{% url 'booking:route_detail' r.slug %}">
+          <a class="text-decoration-none" href="{{ r.get_absolute_url }}">
             <div class="card route-card border shadow-sm h-100">
               <div class="card-body py-3 d-flex justify-content-between align-items-center gap-2">
                 <div>

@@ -125,7 +125,7 @@ class SEOTest(TestCase):
         self.assertIn('<priority>0.9</priority>', xml)  # /bus/ & /rental/ statis
 
     def test_get_absolute_url(self):
-        self.assertEqual(self.route.get_absolute_url(), '/bus/rute/kota-a-kota-b/')
+        self.assertEqual(self.route.get_absolute_url(), '/bus/rute/dari/kota-a/kota-b/')
         self.assertEqual(self.vehicle.get_absolute_url(), '/rental/mobil/avanza/')
 
     def test_pagemeta_menimpa_default_dan_fallback_ke_en(self):
@@ -214,22 +214,23 @@ class JSONLDTest(TestCase):
         self.assertIn('contactPoint', lb)
 
     def test_breadcrumb_list_dinamis(self):
-        data, types = self._types('/bus/rute/kota-a-kota-b/')
+        data, types = self._types('/bus/rute/dari/kota-a/kota-b/')
         self.assertIn('BreadcrumbList', types)
         bc = next(d for d in data if d['@type'] == 'BreadcrumbList')
-        self.assertEqual(len(bc['itemListElement']), 3)
+        self.assertEqual(len(bc['itemListElement']), 5)  # beranda..semua rute..pillar..artikel
         self.assertEqual(bc['itemListElement'][0]['name'], 'Beranda')
         self.assertIn('item', bc['itemListElement'][1])  # URL absolut
-        self.assertNotIn('item', bc['itemListElement'][2])  # halaman saat ini
+        self.assertIn('item', bc['itemListElement'][3])  # URL pillar
+        self.assertNotIn('item', bc['itemListElement'][4])  # halaman saat ini
 
     def test_route_bustrip_dan_faqpage(self):
-        data, types = self._types('/bus/rute/kota-a-kota-b/')
+        data, types = self._types('/bus/rute/dari/kota-a/kota-b/')
         self.assertIn('BusTrip', types)
         self.assertIn('FAQPage', types)
         faq = next(d for d in data if d['@type'] == 'FAQPage')
         self.assertEqual(len(faq['mainEntity']), 3)
         # FAQ harus juga terlihat di halaman (syarat kepatuhan Google)
-        html = self.client.get('/bus/rute/kota-a-kota-b/').content.decode()
+        html = self.client.get('/bus/rute/dari/kota-a/kota-b/').content.decode()
         self.assertIn('accordion', html)
 
     def test_vehicle_product_offer(self):
@@ -369,7 +370,7 @@ class PerformanceTest(TestCase):
         from django.db import connection
         from django.test.utils import CaptureQueriesContext
         with CaptureQueriesContext(connection) as ctx:
-            self.assertEqual(self.client.get('/bus/rute/kota-a-kota-b/').status_code, 200)
+            self.assertEqual(self.client.get('/bus/rute/dari/kota-a/kota-b/').status_code, 200)
         # Sebelum optimasi: 19 query (COUNT kursi per bus + City per baris).
         # Sesudah: <=5 query — agregasi & relasi digabung via annotate+select_related.
         self.assertLessEqual(len(ctx.captured_queries), 5)
@@ -389,7 +390,7 @@ class PerformanceTest(TestCase):
         self.assertIn('booking_sched_date_ix', names)
 
     def test_cache_page_header_halaman_semi_statis(self):
-        for url in ('/tentang/', '/kontak/', '/rental/', '/bus/rute/kota-a-kota-b/'):
+        for url in ('/tentang/', '/kontak/', '/rental/', '/bus/rute/dari/kota-a/kota-b/'):
             r = self.client.get(url)
             self.assertIn('max-age=900', r['Cache-Control'], url)
 
@@ -494,7 +495,7 @@ class ErrorPagesTest(TestCase):
         self.assertIn('id="id_origin"', html)     # form pencarian
         self.assertIn('id="id_destination"', html)
         self.assertIn('id="id_date"', html)
-        self.assertIn('jember-surabaya', html)    # saran rute populer
+        self.assertIn('/bus/rute/dari/jember/surabaya/', html)  # saran rute populer
 
     def test_404_url_model_tak_ada_juga_branded(self):
         r = self.client.get('/bus/rute/tidak-ada-999/')
@@ -550,8 +551,8 @@ class InternalLinkingTest(TestCase):
         self.assertEqual(r.status_code, 200)
         html = r.content.decode()
         self.assertIn('Dari Kota A', html)                 # regroup per kota asal
-        self.assertIn('href="/bus/rute/kota-a-kota-b/"', html)
-        self.assertIn('href="/bus/rute/kota-a-kota-c/"', html)
+        self.assertIn('href="/bus/rute/dari/kota-a/kota-b/"', html)
+        self.assertIn('href="/bus/rute/dari/kota-a/kota-c/"', html)
         self.assertIn('BreadcrumbList', html)
 
     def test_hub_di_sitemap(self):
@@ -560,9 +561,9 @@ class InternalLinkingTest(TestCase):
         self.assertIn('/bus/rute/</loc>', xml)
 
     def test_route_detail_memuat_link_sibling_dan_hub(self):
-        html = self.client.get('/bus/rute/kota-a-kota-b/').content.decode()
+        html = self.client.get('/bus/rute/dari/kota-a/kota-b/').content.decode()
         self.assertIn('Rute lain dari Kota A', html)
-        self.assertIn('href="/bus/rute/kota-a-kota-c/"', html)  # sibling
+        self.assertIn('href="/bus/rute/dari/kota-a/kota-c/"', html)  # sibling
         self.assertIn('href="/bus/rute/"', html)                 # ke hub
 
     def test_footer_beranda_menunjuk_hub(self):
@@ -605,8 +606,8 @@ class SiloArchitectureTest(TestCase):
         self.assertEqual(r.status_code, 200)
         html = r.content.decode()
         self.assertIn('Bus dari Kota A', html)
-        self.assertIn('href="/bus/rute/kota-a-kota-b/"', html)   # downward
-        self.assertIn('href="/bus/rute/kota-a-kota-c/"', html)   # downward
+        self.assertIn('href="/bus/rute/dari/kota-a/kota-b/"', html)   # downward
+        self.assertIn('href="/bus/rute/dari/kota-a/kota-c/"', html)   # downward
         self.assertIn('href="/bus/rute/"', html)                 # upward ke hub
 
     def test_pillar_kota_tanpa_rute_404_jujur(self):
@@ -616,21 +617,21 @@ class SiloArchitectureTest(TestCase):
         self.assertEqual(r.status_code, 404)
 
     def test_upward_link_wajib_di_semua_rute(self):
-        for slug in ('kota-a-kota-b', 'kota-a-kota-c'):
-            html = self.client.get(f'/bus/rute/{slug}/').content.decode()
+        for slug, dest in (('kota-a-kota-b', 'kota-b'), ('kota-a-kota-c', 'kota-c')):
+            html = self.client.get(f'/bus/rute/dari/kota-a/{dest}/').content.decode()
             # upward: pillar silo & hub — tanpa syarat sibling ada/tidak
             self.assertIn('href="/bus/rute/dari/kota-a/"', html, slug)
             self.assertIn('href="/bus/rute/"', html, slug)
 
     def test_lateral_hanya_dalam_silo_yang_sama(self):
-        html = self.client.get('/bus/rute/kota-a-kota-b/').content.decode()
-        self.assertIn('href="/bus/rute/kota-a-kota-c/"', html)  # se-silo
+        html = self.client.get('/bus/rute/dari/kota-a/kota-b/').content.decode()
+        self.assertIn('href="/bus/rute/dari/kota-a/kota-c/"', html)  # se-silo
 
     def test_tidak_ada_link_lintas_silo_dari_artikel(self):
         # Link KONTEKSTUAL (dalam <main>) di halaman rute tidak boleh keluar silo.
         # Navbar/footer = global chrome semua situs — di luar cakupan aturan.
         import re
-        html = self.client.get('/bus/rute/kota-a-kota-b/').content.decode()
+        html = self.client.get('/bus/rute/dari/kota-a/kota-b/').content.decode()
         main = re.search(r'<main id="main">(.*?)</main>', html, re.S).group(1)
         tautan = set(re.findall(r'href="(/[^"]*)"', main))
         liar = [t for t in tautan if t.startswith('/rental/')]
@@ -639,7 +640,7 @@ class SiloArchitectureTest(TestCase):
         for t in (t for t in tautan if t.startswith('/bus/rute/')):
             self.assertTrue(
                 t in ('/bus/rute/', '/bus/rute/dari/kota-a/',
-                      '/bus/rute/kota-a-kota-b/', '/bus/rute/kota-a-kota-c/'),
+                      '/bus/rute/dari/kota-a/kota-b/', '/bus/rute/dari/kota-a/kota-c/'),
                 f'Tautan keluar silo: {t}')
 
     def test_pillar_di_sitemap(self):

@@ -52,9 +52,9 @@
         <div class="card-body p-4">
           <h6 class="fw-bold mb-2"><i class="fa-solid fa-fire text-warning me-1"></i>{% trans 'Rute paling dicari' %}</h6>
           <div class="d-flex flex-wrap gap-2">
-            <a class="badge class-badge text-decoration-none p-2" href="{% url 'booking:route_detail' 'jember-surabaya' %}">Jember → Surabaya</a>
-            <a class="badge class-badge text-decoration-none p-2" href="{% url 'booking:route_detail' 'jember-denpasar' %}">Jember → Denpasar</a>
-            <a class="badge class-badge text-decoration-none p-2" href="{% url 'booking:route_detail' 'jember-jakarta' %}">Jember → Jakarta</a>
+            <a class="badge class-badge text-decoration-none p-2" href="{% url 'booking:route_detail' 'jember' 'surabaya' %}">Jember → Surabaya</a>
+            <a class="badge class-badge text-decoration-none p-2" href="{% url 'booking:route_detail' 'jember' 'denpasar' %}">Jember → Denpasar</a>
+            <a class="badge class-badge text-decoration-none p-2" href="{% url 'booking:route_detail' 'jember' 'jakarta' %}">Jember → Jakarta</a>
           </div>
         </div>
       </div>

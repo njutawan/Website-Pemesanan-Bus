@@ -73,6 +73,15 @@ dwibahasa **Indonesia / English**.
   * **Anti lintas-silo**: link kontekstual dalam `<main>` halaman rute
     tidak pernah keluar ke silo lain (dijaga test; navbar/footer = global
     chrome di luar cakupan)
+  * **Model kategori**: kategori = kota asal, **1 level (flat)** —
+    `ForeignKey` standar (`Route.origin → City`) sudah cukup;
+    django-mptt/treebeard tidak diperlukan (sub-kategori bertingkat tidak
+    ada). Keunikan pasangan dijamin `unique_together (origin, destination)`
+  * **URL hierarkis** (struktur `/kategori/artikel`): artikel rute
+    bersarang di silonya — `/bus/rute/dari/jember/surabaya/`; breadcrumb
+    terlihat & JSON-LD kini 5 tingkat (Beranda → Tiket Bus → Semua Rute →
+    Dari {kota} → rute). URL lama flat (`/bus/rute/jember-surabaya/`)
+    otomatis **301 permanen** ke struktur baru (equity tidak hilang)
   * Semua tautan dari satu katalog cache `hub:routes` (0 query hangat);
     filter `?kategori=` rental diberi `noindex, follow` (konsolidasi kanonik)
 - **Halaman error terindeks bersih**: `404.html` & `500.html` branded —

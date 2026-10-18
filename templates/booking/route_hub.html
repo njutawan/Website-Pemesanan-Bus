@@ -34,7 +34,7 @@
             {% for r in city.list %}
             <li>
               <a class="d-flex justify-content-between align-items-center gap-2 text-decoration-none"
-                 href="{% url 'booking:route_detail' r.slug %}">
+                 href="{{ r.get_absolute_url }}">
                 <span class="fw-semibold text-dark small">{{ r.origin.name }} → {{ r.destination.name }}</span>
                 <small class="text-muted text-nowrap">{% if r.min_price %}{% trans 'mulai' %} {{ r.min_price|to_idr }}{% endif %}</small>
               </a>

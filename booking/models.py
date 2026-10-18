@@ -70,8 +70,10 @@ class Route(TimeStampedModel):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
+        # URL hierarkis: /bus/rute/dari/<asal>/<tujuan>/ — kategori di depan
         from django.urls import reverse
-        return reverse('booking:route_detail', kwargs={'slug': self.slug})
+        return reverse('booking:route_detail', kwargs={
+            'city_slug': self.origin.slug, 'dest_slug': self.destination.slug})
 
     @property
     def duration_display(self):

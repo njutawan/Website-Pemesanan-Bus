@@ -14,5 +14,8 @@ urlpatterns = [
     path('rute/', views.RouteHubView.as_view(), name='route_hub'),
     # Pillar per kota — WAJIB sebelum pola <slug> detail agar tak tertangkap
     path('rute/dari/<slug:city_slug>/', views.CityRoutePillarView.as_view(), name='city_routes'),
-    path('rute/<slug:slug>/', views.RouteDetailView.as_view(), name='route_detail'),
+    # Artikel bersarang di kategorinya: /bus/rute/dari/jember/surabaya/
+    path('rute/dari/<slug:city_slug>/<slug:dest_slug>/', views.RouteDetailView.as_view(), name='route_detail'),
+    # URL rute lama (flat) -> 301 permanen ke struktur hierarkis baru
+    path('rute/<slug:slug>/', views.RouteDetailRedirectView.as_view(), name='route_detail_legacy'),
 ]

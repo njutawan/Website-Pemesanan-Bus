@@ -15,7 +15,8 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.views.decorators.cache import cache_page, never_cache
-from django.views.generic import FormView, TemplateView, View
+from django.urls import reverse
+from django.views.generic import FormView, RedirectView, TemplateView, View
 
 from booking.forms import PassengerForm, SearchForm
 from booking.templatetags.booking_extras import to_idr
@@ -283,6 +284,18 @@ class RouteHubView(TemplateView):
                 HOME_CRUMB, (_('Tiket Bus'), '/bus/'), (_('Semua Rute'), None))),
         })
 
+class RouteDetailRedirectView(RedirectView):
+    """URL rute lama (/bus/rute/jember-surabaya/) -> 301 permanen ke URL
+    hierarkis baru (/bus/rute/dari/jember/surabaya/) — equity tidak hilang.
+    """
+    permanent = True
+
+    def get_redirect_url(self, slug):
+        route = get_object_or_404(
+            Route.objects.select_related('origin', 'destination'), slug=slug)
+        return route.get_absolute_url()
+
+
 class CityRoutePillarView(TemplateView):
     """Pillar per silo: SEMUA rute dari satu kota asal (kategori).
 
@@ -333,16 +346,19 @@ class CheckBookingView(FormView):
 
 
 class RouteDetailView(TemplateView):
-    """Halaman SEO per rute: /bus/rute/jember-surabaya/ — daftar jadwal + harga."""
+    """Halaman SEO per rute — URL hierarkis sesuai silo:
+    /bus/rute/dari/jember/surabaya/ (kategori -> artikel).
+    """
     template_name = 'booking/route_detail.html'
 
     @method_decorator(cache_page(60 * 15))
-    def get(self, request, slug):
+    def get(self, request, city_slug, dest_slug):
         route = get_object_or_404(
-            Route.objects.select_related('origin', 'destination'), slug=slug)
+            Route.objects.select_related('origin', 'destination'),
+            origin__slug=city_slug, destination__slug=dest_slug)
         # Daftar jadwal jarang berubah — cache per rute (queryset -> list).
         schedules = cache.get_or_set(
-            f'route:{slug}:schedules',
+            f'route:{route.slug}:schedules',
             lambda: list(
                 Schedule.objects.filter(route=route, is_active=True)
                 .select_related('bus', 'route__origin', 'route__destination')
@@ -358,7 +374,10 @@ class RouteDetailView(TemplateView):
 
         origin, dest = route.origin.name, route.destination.name
         crumb = breadcrumb_items(
-            HOME_CRUMB, (_('Tiket Bus'), '/bus/'), (f'{origin} → {dest}', None))
+            HOME_CRUMB, (_('Tiket Bus'), '/bus/'), (_('Semua Rute'), '/bus/rute/'),
+            (_('Dari %(kota)s') % {'kota': origin},
+             reverse('booking:city_routes', kwargs={'city_slug': route.origin.slug})),
+            (f'{origin} → {dest}', None))
 
         # FAQ nyata (tampil di halaman + FAQPage JSON-LD) dari data rute.
         faq = [{'q': _('Berapa lama perjalanan bus dari %(origin)s ke %(destination)s?') % {

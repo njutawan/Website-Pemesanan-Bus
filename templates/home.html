@@ -159,7 +159,7 @@
     <div class="row g-4">
       {% for route in popular_routes %}
       <div class="col-md-6 col-lg-4">
-        <a href="{% url 'booking:route_detail' route.slug %}" class="text-decoration-none">
+        <a href="{{ route.get_absolute_url }}" class="text-decoration-none">
           <div class="card route-card h-100 border-0 shadow-sm">
             <div class="card-body d-flex align-items-center gap-3">
               <div class="route-avatar"><i class="fa-solid fa-bus-simple"></i></div>
