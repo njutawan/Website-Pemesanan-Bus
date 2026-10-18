@@ -47,35 +47,38 @@
       <div class="col-lg-10">
         <form method="get" action="{% url 'booking:search' %}" class="search-card shadow-lg rounded-4 p-3 p-md-4" id="searchForm">
           <div class="row g-3 align-items-end">
-            <div class="col-md-3">
-              <label class="form-label small fw-semibold text-muted" for="id_origin">
-                <i class="fa-solid fa-location-dot text-primary me-1"></i>{% trans 'Dari' %}</label>
-              {{ form.origin }}
-            </div>
-            <div class="col-md-1 text-center swap-col">
-              <button type="button" class="btn btn-sm btn-outline-primary rounded-circle swap-btn"
-                      title="{% trans 'Tukar asal & tujuan' %}" data-swap
+            <!-- Pasangan kota + tombol tukar melayang di tengah -->
+            <div class="col-md-6 position-relative city-pair">
+              <div class="row g-3">
+                <div class="col-6">
+                  <label class="form-label small fw-semibold text-muted" for="id_origin">
+                    <i class="fa-solid fa-location-dot text-primary me-1"></i>{% trans 'Dari' %}</label>
+                  {{ form.origin }}
+                </div>
+                <div class="col-6">
+                  <label class="form-label small fw-semibold text-muted" for="id_destination">
+                    <i class="fa-solid fa-flag-checkered text-primary me-1"></i>{% trans 'Ke' %}</label>
+                  {{ form.destination }}
+                </div>
+              </div>
+              <button type="button" class="swap-btn-float" data-swap
+                      title="{% trans 'Tukar asal & tujuan' %}"
                       aria-label="{% trans 'Tukar asal & tujuan' %}">
                 <i class="fa-solid fa-right-left"></i>
               </button>
             </div>
-            <div class="col-md-3">
-              <label class="form-label small fw-semibold text-muted" for="id_destination">
-                <i class="fa-solid fa-flag-checkered text-primary me-1"></i>{% trans 'Ke' %}</label>
-              {{ form.destination }}
-            </div>
-            <div class="col-md-2">
+            <div class="col-md-2 col-6">
               <label class="form-label small fw-semibold text-muted" for="id_date">
                 <i class="fa-regular fa-calendar text-primary me-1"></i>{% trans 'Tanggal' %}</label>
               {{ form.date }}
             </div>
-            <div class="col-md-1">
+            <div class="col-md-2 col-6">
               <label class="form-label small fw-semibold text-muted" for="id_passengers">
-                <i class="fa-solid fa-user-group text-primary me-1"></i>{% trans 'Org' %}</label>
+                <i class="fa-solid fa-user-group text-primary me-1"></i>{{ form.passengers.label }}</label>
               {{ form.passengers }}
             </div>
-            <div class="col-md-2 d-grid">
-              <button class="btn btn-accent" type="submit">
+            <div class="col-md-2 col-12 d-grid">
+              <button class="btn btn-accent text-nowrap" type="submit">
                 <i class="fa-solid fa-magnifying-glass me-1"></i>{% trans 'Cari Bus' %}
               </button>
             </div>
