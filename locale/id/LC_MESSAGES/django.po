@@ -12,6 +12,9 @@ msgstr ""
 msgid "#1 Travel & Rental di Jawa Timur"
 msgstr "#1 Travel & Rental di Jawa Timur"
 
+msgid "%(n)s rute aktif — pilih kota asal untuk melihat jadwal & harga."
+msgstr ""
+
 msgid "(belum ada)"
 msgstr "(belum ada)"
 
@@ -306,8 +309,16 @@ msgid ""
 " EN. Halaman detail (rute/mobil) memakai judul objek."
 msgstr ""
 
+msgid ""
+"Daftar lengkap semua rute bus antar kota Nusantara Trans: jadwal "
+"keberangkatan, durasi perjalanan, dan harga tiket per kelas armada."
+msgstr ""
+
 msgid "Dari"
 msgstr "Dari"
+
+msgid "Dari %(kota)s"
+msgstr ""
 
 msgid "Dasbor"
 msgstr "Dasbor"
@@ -631,6 +642,9 @@ msgstr "Lihat mobil lain"
 
 msgid "Lihat semua"
 msgstr "Lihat semua"
+
+msgid "Lihat semua rute"
+msgstr ""
 
 msgid "Lokasi ambil"
 msgstr "Lokasi ambil"
@@ -957,6 +971,9 @@ msgstr "Rute Terpopuler — 30 Hari"
 msgid "Rute ini belum tersedia"
 msgstr "Rute ini belum tersedia"
 
+msgid "Rute lain dari %(kota)s"
+msgstr ""
+
 msgid "Rute paling dicari"
 msgstr "Rute paling dicari"
 
@@ -987,6 +1004,12 @@ msgstr "Semua"
 
 msgid "Semua Modul"
 msgstr "Semua Modul"
+
+msgid "Semua Rute"
+msgstr ""
+
+msgid "Semua Rute Bus"
+msgstr ""
 
 msgid ""
 "Semua armada dirawat rutin dan diperiksa sebelum berangkat. Pilih kelas yang"

@@ -90,4 +90,25 @@
   </div>
 </section>
 {% endif %}
+
+{% if sibling_routes %}
+<section class="container pb-5">
+  <h2 class="h5 fw-bold mb-3"><i class="fa-solid fa-diagram-project text-warning me-2"></i>{% blocktranslate with kota=route.origin.name %}Rute lain dari {{ kota }}{% endblocktranslate %}</h2>
+  <div class="row g-3">
+    {% for r in sibling_routes %}
+    <div class="col-md-6 col-lg-3">
+      <a class="text-decoration-none" href="{% url 'booking:route_detail' r.slug %}">
+        <div class="card route-card border shadow-sm h-100">
+          <div class="card-body py-3">
+            <div class="fw-bold text-dark small">{{ r.origin.name }} → {{ r.destination.name }}</div>
+            <small class="text-muted">{% if r.min_price %}{% trans 'mulai' %} {{ r.min_price|to_idr }}{% endif %}</small>
+          </div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+  <a href="{% url 'booking:route_hub' %}" class="btn btn-outline-primary btn-sm mt-3">{% trans 'Lihat semua rute' %} <i class="fa-solid fa-arrow-right ms-1"></i></a>
+</section>
+{% endif %}
 {% endblock %}

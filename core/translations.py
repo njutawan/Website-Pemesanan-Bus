@@ -1042,5 +1042,14 @@ TRANSLATIONS_EN = {
 
     # ---- Halaman 404 ----
     "Atau langsung cari jadwal di sini:": "Or search a schedule right here:",
+
+    # ---- Hub rute (internal linking) ----
+    "Semua Rute Bus": "All Bus Routes",
+    "Semua Rute": "All Routes",
+    "%(n)s rute aktif — pilih kota asal untuk melihat jadwal & harga.": "%(n)s active routes — pick a departure city to see schedules & prices.",
+    "Dari %(kota)s": "From %(kota)s",
+    "Rute lain dari %(kota)s": "Other routes from %(kota)s",
+    "Lihat semua rute": "View all routes",
+    "Daftar lengkap semua rute bus antar kota Nusantara Trans: jadwal keberangkatan, durasi perjalanan, dan harga tiket per kelas armada.": "Complete list of Nusantara Trans intercity bus routes: departure schedules, trip durations, and ticket prices per bus class.",
 }
 

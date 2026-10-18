@@ -17,6 +17,7 @@ class StaticViewSitemap(Sitemap):
         return [
             ('home', 1.0, 'daily'),
             ('booking:search', 0.9, 'daily'),
+            ('booking:route_hub', 0.8, 'weekly'),
             ('booking:check', 0.4, 'monthly'),
             ('rental:index', 0.9, 'daily'),
             ('about', 0.5, 'monthly'),

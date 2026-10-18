@@ -12,6 +12,10 @@ msgstr ""
 msgid "#1 Travel & Rental di Jawa Timur"
 msgstr "#1 Travel & Car Rental in East Java"
 
+msgid "%(n)s rute aktif — pilih kota asal untuk melihat jadwal & harga."
+msgstr ""
+"%(n)s active routes — pick a departure city to see schedules & prices."
+
 msgid "(belum ada)"
 msgstr ""
 
@@ -307,8 +311,18 @@ msgstr ""
 "Match the URL exactly. '/bus/' applies to both ID & EN; '/en/bus/' is EN-"
 "only. Detail pages (route/vehicle) use the object title."
 
+msgid ""
+"Daftar lengkap semua rute bus antar kota Nusantara Trans: jadwal "
+"keberangkatan, durasi perjalanan, dan harga tiket per kelas armada."
+msgstr ""
+"Complete list of Nusantara Trans intercity bus routes: departure schedules, "
+"trip durations, and ticket prices per bus class."
+
 msgid "Dari"
 msgstr "From"
+
+msgid "Dari %(kota)s"
+msgstr "From %(kota)s"
 
 msgid "Dasbor"
 msgstr "Dashboard"
@@ -633,6 +647,9 @@ msgstr "See other vehicles"
 
 msgid "Lihat semua"
 msgstr "See all"
+
+msgid "Lihat semua rute"
+msgstr "View all routes"
 
 msgid "Lokasi ambil"
 msgstr "Pick-up location"
@@ -960,6 +977,9 @@ msgstr "Top Routes — 30 Days"
 msgid "Rute ini belum tersedia"
 msgstr "This route isn't available"
 
+msgid "Rute lain dari %(kota)s"
+msgstr "Other routes from %(kota)s"
+
 msgid "Rute paling dicari"
 msgstr "Most searched routes"
 
@@ -990,6 +1010,12 @@ msgstr "All"
 
 msgid "Semua Modul"
 msgstr "All Modules"
+
+msgid "Semua Rute"
+msgstr "All Routes"
+
+msgid "Semua Rute Bus"
+msgstr "All Bus Routes"
 
 msgid ""
 "Semua armada dirawat rutin dan diperiksa sebelum berangkat. Pilih kelas yang"

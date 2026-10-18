@@ -60,6 +60,15 @@ dwibahasa **Indonesia / English**.
   tidak akan tertimpa)
 
 ### 🔍 SEO
+- **Internal linking & arsitektur kategori**: hub **`/bus/rute/`**
+  (indeks seluruh rute, dikelompokkan per kota asal — masuk sitemap,
+  footer, & tombol "Lihat semua" beranda) menjamin setiap halaman rute
+  berjarak ≤2 klik dari beranda; halaman rute saling bertaut via
+  **sibling links** "Rute lain dari {kota}" (maks 4) sehingga PageRank
+  menyebar rata ke semua rute, bukan hanya yang tampil di beranda.
+  Semua tautan berasal dari satu katalog cache `hub:routes` (0 query
+  hangat); filter `?kategori=` rental diberi `noindex, follow`
+  (konsolidasi kanonik — tidak memecah equity)
 - **Halaman error terindeks bersih**: `404.html` & `500.html` branded —
   status HTTP **tetap 404/500** (tanpa redirect — redirect dianggap
   *soft 404* oleh Google dan merusak reputasi domain). Halaman 404

@@ -27,6 +27,22 @@ from booking.models import (
 from core.forms import PaymentProofForm
 
 
+def cached_route_catalog():
+    """Semua rute aktif + jumlah jadwal & harga termurah — satu sumber utk
+    hub /bus/rute/, saran populer /bus/, dan link sibling antar rute.
+    Dihitung 1x per TTL cache (0 query saat hangat)."""
+    return cache.get_or_set(
+        'hub:routes',
+        lambda: list(
+            Route.objects
+            .annotate(n_schedules=Count('schedules', distinct=True),
+                      min_price=Min('schedules__price'))
+            .filter(n_schedules__gt=0)
+            .select_related('origin', 'destination')
+            .order_by('origin__name', 'destination__name')),
+        getattr(settings, 'CACHE_TTL_DEFAULT', 600))
+
+
 class SearchView(View):
     """Halaman /bus/ — form pencarian + daftar hasil jadwal."""
     template_name = 'booking/search.html'
@@ -66,17 +82,8 @@ class SearchView(View):
                 HOME_CRUMB, (_('Tiket Bus'), None))),
         }
         if not searched:
-            # Saran rute populer — jarang berubah, cache 10 menit (0 query hangat).
-            ctx['popular_routes'] = cache.get_or_set(
-                'popular:routes',
-                lambda: list(
-                    Route.objects
-                    .annotate(n_schedules=Count('schedules', distinct=True),
-                              min_price=Min('schedules__price'))
-                    .filter(n_schedules__gt=0)
-                    .select_related('origin', 'destination')
-                    .order_by('origin__name', 'destination__name')[:6]),
-                getattr(settings, 'CACHE_TTL_DEFAULT', 600))
+            # Saran rute populer — dari katalog bersama (cache 10 menit).
+            ctx['popular_routes'] = cached_route_catalog()[:6]
         return render(request, self.template_name, ctx)
 
 
@@ -258,6 +265,22 @@ class UploadProofView(View):
         return redirect('booking:detail', code=booking.code)
 
 
+class RouteHubView(TemplateView):
+    """Hub internal linking: indeks SEMUA rute, dikelompokkan per kota asal.
+
+    Setiap halaman rute menerima link dari sini (kedalaman 2 klik dari
+    beranda) — memastikan equity PageRank menyebar rata ke seluruh rute,
+    bukan hanya yang kebetulan tampil di beranda/footer.
+    """
+    template_name = 'booking/route_hub.html'
+
+    def get(self, request):
+        return render(request, self.template_name, {
+            'routes': cached_route_catalog(),
+            'schema_breadcrumbs': breadcrumb_schema(request, breadcrumb_items(
+                HOME_CRUMB, (_('Tiket Bus'), '/bus/'), (_('Semua Rute'), None))),
+        })
+
 class CheckBookingView(FormView):
     """Cek status booking lewat kode (dipakai dari navbar/footer)."""
     template_name = 'booking/check.html'
@@ -296,6 +319,11 @@ class RouteDetailView(TemplateView):
             ),
             getattr(settings, 'CACHE_TTL_DEFAULT', 600) // 2,
         )
+        # Internal linking: rute se-kota asal (sibling) — PageRank mengalir
+        # antar halaman rute; maks 4 agar equity tidak terlalu terpecah.
+        sibling_routes = [r for r in cached_route_catalog()
+                          if r.origin_id == route.origin_id and r.pk != route.pk][:4]
+
         origin, dest = route.origin.name, route.destination.name
         crumb = breadcrumb_items(
             HOME_CRUMB, (_('Tiket Bus'), '/bus/'), (f'{origin} → {dest}', None))
@@ -319,6 +347,7 @@ class RouteDetailView(TemplateView):
 
         return render(request, self.template_name, {
             'route': route,
+            'sibling_routes': sibling_routes,
             'schedules': schedules,
             'today': timezone.localdate(),
             'faq': faq,

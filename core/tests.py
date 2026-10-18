@@ -175,6 +175,10 @@ class JSONLDTest(TestCase):
     """Structured data: Organization/LocalBusiness, BreadcrumbList, BusTrip,
     FAQPage, Product — semua JSON valid dari context view."""
 
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()  # LocMem tidak ikut rollback DB antar test class
+
     @classmethod
     def setUpTestData(cls):
         from booking.models import Bus, City, Route, Schedule
@@ -518,3 +522,53 @@ class ErrorPagesTest(TestCase):
         self.assertEqual(r.status_code, 500)
         self.assertIn('Ada gangguan', r.content.decode())
         self.assertIn('nt-navbar', r.content.decode())
+
+
+class InternalLinkingTest(TestCase):
+    """Arsitektur hub & sibling: PageRank menyebar ke semua halaman rute."""
+
+    @classmethod
+    def setUpTestData(cls):
+        from booking.models import Bus, City, Route, Schedule
+        a = City.objects.create(name='Kota A', slug='kota-a')
+        b = City.objects.create(name='Kota B', slug='kota-b')
+        c = City.objects.create(name='Kota C', slug='kota-c')
+        bus = Bus.objects.create(code='NT-INT', name='Bus Inti', plate_number='E 7000 XX')
+        for dest, km, menit in ((b, 100, 120), (c, 80, 90)):
+            r = Route.objects.create(
+                origin=a, destination=dest, distance_km=km, duration_minutes=menit)
+            Schedule.objects.create(
+                route=r, bus=bus, departure_time='07:00',
+                arrival_time='09:00', price=90000)
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+
+    def test_hub_semua_rute_dikelompokkan_per_kota(self):
+        r = self.client.get('/bus/rute/')
+        self.assertEqual(r.status_code, 200)
+        html = r.content.decode()
+        self.assertIn('Dari Kota A', html)                 # regroup per kota asal
+        self.assertIn('href="/bus/rute/kota-a-kota-b/"', html)
+        self.assertIn('href="/bus/rute/kota-a-kota-c/"', html)
+        self.assertIn('BreadcrumbList', html)
+
+    def test_hub_di_sitemap(self):
+        xml = self.client.get('/sitemap.xml').content.decode()
+        # domain-agnostic: Site bawaan test = example.com
+        self.assertIn('/bus/rute/</loc>', xml)
+
+    def test_route_detail_memuat_link_sibling_dan_hub(self):
+        html = self.client.get('/bus/rute/kota-a-kota-b/').content.decode()
+        self.assertIn('Rute lain dari Kota A', html)
+        self.assertIn('href="/bus/rute/kota-a-kota-c/"', html)  # sibling
+        self.assertIn('href="/bus/rute/"', html)                 # ke hub
+
+    def test_footer_beranda_menunjuk_hub(self):
+        html = self.client.get('/').content.decode()
+        self.assertIn('href="/bus/rute/"', html)
+
+    def test_filter_kategori_rental_noindex_follow(self):
+        r = self.client.get('/rental/?kategori=MPV')
+        self.assertEqual(r['X-Robots-Tag'], 'noindex, follow')

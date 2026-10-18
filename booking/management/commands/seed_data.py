@@ -158,6 +158,9 @@ PAGE_META = [
     ('/bus/', 'Cari & Pesan Tiket Bus Antar Kota — Nusantara Trans',
      'Jadwal bus lengkap antar kota Jawa. Pilih kursi favorit, bayar transfer '
      'atau QRIS, e-tiket langsung terbit.'),
+    ('/bus/rute/', 'Semua Rute Bus Antar Kota — Nusantara Trans',
+     'Daftar lengkap semua rute bus antar kota: jadwal keberangkatan, durasi '
+     'perjalanan, dan harga tiket mulai per kelas armada.'),
     ('/rental/', 'Rental Mobil Lepas Kunci & Dengan Sopir — Nusantara Trans',
      'Sewa mobil harian: MPV, SUV, hingga minibus. Harga transparan per hari, '
      'bebas pilih lepas kunci atau dengan sopir.'),

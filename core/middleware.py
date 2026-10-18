@@ -41,7 +41,7 @@ class XRobotsTagMiddleware:
     """
 
     NOINDEX_PREFIXES = ('/admin/', '/media/')
-    SEARCH_PARAMS = {'origin', 'destination', 'kode', 'code'}
+    SEARCH_PARAMS = {'origin', 'destination', 'kode', 'code', 'kategori'}
 
     def __init__(self, get_response):
         self.get_response = get_response

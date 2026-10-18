@@ -11,5 +11,6 @@ urlpatterns = [
     path('booking/<str:code>/', views.BookingDetailView.as_view(), name='detail'),
     path('booking/<str:code>/upload/', views.UploadProofView.as_view(), name='upload_proof'),
     path('cek-booking/', views.CheckBookingView.as_view(), name='check'),
+    path('rute/', views.RouteHubView.as_view(), name='route_hub'),
     path('rute/<slug:slug>/', views.RouteDetailView.as_view(), name='route_detail'),
 ]
