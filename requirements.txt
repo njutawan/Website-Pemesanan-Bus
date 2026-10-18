@@ -6,3 +6,4 @@ psycopg[binary]>=3.1  # driver PostgreSQL (tidak dipakai bila tetap di SQLite)
 django-compressor>=4.5  # minifikasi & gabung CSS/JS
 redis>=5.0  # client Redis utk cache (aktif bila REDIS_URL terisi)
 polib>=1.2  # untuk kompilasi berkas .po -> .mo (python manage.py compile_i18n)
+bcrypt>=4.1  # hasher PASSWORD_HASHERS (password admin & user)

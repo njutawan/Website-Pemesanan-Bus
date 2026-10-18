@@ -72,6 +72,11 @@ dwibahasa **Indonesia / English**.
   dan flag noindex per path. Baris tanpa prefiks (`/bus/`) berlaku untuk ID &
   EN; buat `/en/bus/` bila ingin judul khusus EN. Prioritas:
   **PageMeta > judul halaman/objek > default templat**
+- **Password bcrypt**: `PASSWORD_HASHERS` memakai
+  `BCryptSHA256PasswordHasher` (cost 12, pre-hash SHA-256 agar password
+  panjang tidak terpotong 72-byte) untuk semua password baru — termasuk
+  admin. Hash PBKDF2 lama tetap bisa login dan **otomatis ter-upgrade**
+  ke bcrypt pada login berikutnya
 - **Standardisasi URL (anti-duplikat kanonik)**: `APPEND_SLASH = True`
   (`/bus` → 301 `/bus/`), middleware `LowercasePathMiddleware`
   (`/BUS/` → 301 `/bus/`; kode booking kapital `NT-XXXXXX` tidak disentuh),

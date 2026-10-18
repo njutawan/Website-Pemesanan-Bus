@@ -281,7 +281,7 @@ class Command(BaseCommand):
             )
             self.stdout.write(self.style.SUCCESS(
                 '✔ Admin demo: username=admin password=admin123 '
-                '(GANTI di produksi!)'))
+                '(hash bcrypt — GANTI di produksi!)'))
         else:
             self.stdout.write('• Admin sudah ada, dilewati.')
 

@@ -43,6 +43,20 @@ CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # =============================================================================
+# Keamanan password: bcrypt (algoritma hashing anti-brute-force, faktor biaya
+# bisa dinaikkan seiring waktu). BCryptSHA256 = pre-hash SHA-256 agar password
+# >72 byte tidak terpotong. Hasher lama dipertahankan sebagai fallback agar
+# hash PBKDF2 bawaan masih bisa login & OTOMATIS ter-upgrade ke bcrypt
+# pada login berikutnya.
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.ScryptPasswordHasher',
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+]
+
+# =============================================================================
 # Standardisasi URL & kanonik (SEO)
 # =============================================================================
 # /bus -> 301 /bus/ (CommonMiddleware). Semua pola URL memakai trailing slash.

@@ -394,3 +394,39 @@ class PerformanceTest(TestCase):
         self.assertIn('Kota A', html)  # kartu rute populer kini terisi
         # kedua kali: tetap 200 (dari cache)
         self.assertEqual(self.client.get('/bus/').status_code, 200)
+
+
+class PasswordHashingTest(TestCase):
+    """Keamanan password: bcrypt utama, hash lama PBKDF2 auto-upgrade."""
+
+    def test_password_baru_terhash_bcrypt(self):
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        u = User.objects.create_user('budi', password='RahasiaKuat#2026')
+        self.assertTrue(u.password.startswith('bcrypt_sha256$'))
+        self.assertIn('$12$', u.password)  # cost factor bcrypt
+        self.assertTrue(u.check_password('RahasiaKuat#2026'))
+        self.assertFalse(u.check_password('tebakan-salah'))
+
+    def test_superuser_admin_pakai_bcrypt(self):
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        User.objects.create_superuser(
+            'adminx', email='a@x.id', password='AdminPass#1')
+        admin = User.objects.get(username='adminx')
+        self.assertTrue(admin.password.startswith('bcrypt_sha256$'))
+
+    def test_hash_pbkdf2_lama_masih_login_dan_auto_upgrade(self):
+        from django.contrib.auth import get_user_model
+        from django.contrib.auth.hashers import PBKDF2PasswordHasher
+        User = get_user_model()
+        u = User.objects.create_user('sri', password='x')
+        hasher = PBKDF2PasswordHasher()
+        u.password = hasher.encode('RahasiaLama#1', hasher.salt())
+        u.save()
+        self.assertTrue(u.password.startswith('pbkdf2_sha256$'))
+        # login sukses dengan hash lama...
+        self.assertTrue(self.client.login(username='sri', password='RahasiaLama#1'))
+        # ...dan hash otomatis di-upgrade ke bcrypt
+        u.refresh_from_db()
+        self.assertTrue(u.password.startswith('bcrypt_sha256$'))
