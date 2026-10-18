@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans 'Tentang Kami' %} — {{ SITE_NAME }}{% endblock %}
+{% block og_title %}{% trans 'Tentang Kami' %} — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="page-hero text-center">
+  <div class="container py-5">
+    <h1 class="fw-800 text-white mb-2">{% trans 'Tentang Nusantara Trans' %}</h1>
+    <p class="text-white-75 mb-0">{% trans 'Menghubungkan kota-kota di Jawa Timur & Bali sejak 2015' %}</p>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <span class="text-uppercase small fw-bold text-primary">{% trans 'Cerita Kami' %}</span>
+        <h2 class="fw-800 mb-3">{% trans 'Berawal dari Satu Bus, Kini Layani 7+ Kota' %}</h2>
+        <p class="text-muted">{% blocktrans %}Nusantara Trans dimulai tahun 2015 dari satu bus ekonomi rute Jember–Surabaya. Dukungan pelanggan membuat kami bertumbuh: kini kami mengoperasikan armada bus berbagai kelas dan layanan rental mobil dengan sopir berpengalaman.{% endblocktrans %}</p>
+        <p class="text-muted">{% blocktrans %}Kami percaya perjalanan darat seharusnya mudah dipesan: pilih kursi sendiri, bayar dari mana saja, dan dapatkan e-tiket tanpa antre di loket.{% endblocktrans %}</p>
+        <div class="d-flex gap-3 flex-wrap mt-4">
+          <a href="{% url 'booking:search' %}" class="btn btn-accent px-4"><i class="fa-solid fa-ticket me-1"></i>{% trans 'Pesan Tiket' %}</a>
+          <a href="{% url 'contact' %}" class="btn btn-outline-primary px-4">{% trans 'Hubungi Kami' %}</a>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <img src="{% static 'img/fleet-bus.jpg' %}" class="img-fluid rounded-4 shadow" alt="{% trans 'Armada Nusantara Trans' %}" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row text-center g-4" id="statsRow">
+      {% if stats %}
+      <div class="col-6 col-lg-3">
+        <div class="stat-box"><i class="fa-solid fa-city"></i><span class="h3 fw-800 d-block mt-2">{{ stats.cities }}+</span><span class="text-muted">{% trans 'Kota Terlayani' %}</span></div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="stat-box"><i class="fa-solid fa-route"></i><span class="h3 fw-800 d-block mt-2">{{ stats.routes }}+</span><span class="text-muted">{% trans 'Rute Harian' %}</span></div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="stat-box"><i class="fa-solid fa-bus"></i><span class="h3 fw-800 d-block mt-2">{{ stats.buses }}</span><span class="text-muted">{% trans 'Armada Bus' %}</span></div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="stat-box"><i class="fa-solid fa-car"></i><span class="h3 fw-800 d-block mt-2">{{ stats.vehicles }}</span><span class="text-muted">{% trans 'Mobil Rental' %}</span></div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-800">{% trans 'Nilai Kami' %}</h2>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4 text-center">
+          <div class="feature-icon mx-auto"><i class="fa-solid fa-stopwatch"></i></div>
+          <h5 class="fw-bold mt-3">{% trans 'Tepat Waktu' %}</h5>
+          <p class="text-muted small mb-0">{% blocktrans %}Berangkat & tiba sesuai jadwal adalah janji utama kami.{% endblocktrans %}</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4 text-center">
+          <div class="feature-icon mx-auto"><i class="fa-solid fa-heart"></i></div>
+          <h5 class="fw-bold mt-3">{% trans 'Ramah Pelanggan' %}</h5>
+          <p class="text-muted small mb-0">{% blocktrans %}Sopir dan CS terlatih membantu dengan sepenuh hati.{% endblocktrans %}</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4 text-center">
+          <div class="feature-icon mx-auto"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+          <h5 class="fw-bold mt-3">{% trans 'Armada Terawat' %}</h5>
+          <p class="text-muted small mb-0">{% blocktrans %}Servis berkala & pemeriksaan sebelum setiap keberangkatan.{% endblocktrans %}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

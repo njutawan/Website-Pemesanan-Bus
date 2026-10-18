@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load i18n booking_extras static %}
+
+{% block title %}{% trans 'Pilih Kursi' %} — {{ schedule.route.origin.name }} → {{ schedule.route.destination.name }} | {{ SITE_NAME }}{% endblock %}
+{% block og_title %}{% trans 'Pilih Kursi Bus' %} — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="page-hero-sm">
+  <div class="container py-4">
+    <h1 class="h3 fw-800 text-white mb-1">
+      {{ schedule.route.origin.name }} <i class="fa-solid fa-arrow-right-long text-warning"></i> {{ schedule.route.destination.name }}
+    </h1>
+    <p class="text-white-75 mb-0 small">
+      <i class="fa-regular fa-calendar me-1"></i>{{ travel_date|date:'l, d F Y' }}
+      · <i class="fa-regular fa-clock me-1"></i>{{ schedule.departure_time|date:'H:i' }} WIB
+      · {{ schedule.bus.name }} ({{ schedule.get_bus_class_display }})
+    </p>
+  </div>
+</section>
+
+<div class="container py-5">
+  {% include 'includes/steps.html' %}
+
+  <div class="row g-4">
+    <!-- Denah kursi -->
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+          <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0"><i class="fa-solid fa-couch text-primary me-2"></i>{% trans 'Denah Kursi' %}</h5>
+            <div class="d-flex gap-3 small text-muted">
+              <span><span class="legend-dot bg-primary"></span> {% trans 'Tersedia' %}</span>
+              <span><span class="legend-dot bg-secondary"></span> {% trans 'Terisi' %}</span>
+              <span><span class="legend-dot bg-warning"></span> {% trans 'Pilihanmu' %}</span>
+            </div>
+          </div>
+
+          <div class="seat-map mx-auto" id="seatMap"
+               data-max="{{ passengers }}"
+               data-price="{{ schedule.price }}">
+            <div class="driver-zone"><i class="fa-solid fa-user"></i><small>{% trans 'Sopir' %}</small></div>
+            {% regroup seats by row as seat_rows %}
+            {% for row in seat_rows %}
+            <div class="seat-row">
+              <span class="row-label">{{ row.grouper }}</span>
+              {% for seat in row.list %}
+                {% if seat.col == schedule.bus.aisle_after %}<span class="aisle-gap"></span>{% endif %}
+                <button type="button"
+                        class="seat-btn {% if seat.is_taken %}taken{% endif %}"
+                        data-label="{{ seat.label }}"
+                        {% if seat.is_taken %}disabled{% endif %}
+                        aria-label="{% blocktranslate with label=seat.label %}Kursi {{ label }}{% endblocktranslate %}">
+                  <i class="fa-solid {% if schedule.bus.bus_class == 'SLEEPER' %}fa-bed{% else %}fa-chair{% endif %}"></i>
+                  <small>{{ seat.label }}</small>
+                </button>
+              {% endfor %}
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="text-center text-muted small mt-3">
+            <i class="fa-solid fa-circle-info me-1"></i>
+            {% blocktranslate count taken_count=taken_count %}1 kursi sudah terisi pada tanggal ini.{% plural %}{{ taken_count }} kursi sudah terisi pada tanggal ini.{% endblocktranslate %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ringkasan -->
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm rounded-4 position-sticky" style="top:90px">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-3"><i class="fa-solid fa-receipt text-primary me-2"></i>{% trans 'Ringkasan' %}</h5>
+          <ul class="list-unstyled small text-muted mb-3 trip-summary">
+            <li><i class="fa-solid fa-bus me-2 text-primary"></i>{{ schedule.bus.name }} · {{ schedule.get_bus_class_display }}</li>
+            <li><i class="fa-solid fa-route me-2 text-primary"></i>{{ schedule.route.origin.name }} → {{ schedule.route.destination.name }}</li>
+            <li><i class="fa-regular fa-calendar me-2 text-primary"></i>{{ travel_date|date:'d F Y' }}</li>
+            <li><i class="fa-regular fa-clock me-2 text-primary"></i>{{ schedule.departure_time|date:'H:i' }} → {{ schedule.arrival_time|date:'H:i' }}{% if schedule.arrives_next_day %} (+1{% trans ' hari' %}){% endif %}</li>
+          </ul>
+          <hr>
+          <div class="d-flex justify-content-between small">
+            <span class="text-muted">{% trans 'Kursi dipilih' %}</span>
+            <span><strong id="seatCount">0</strong>/{{ passengers }}</span>
+          </div>
+          <div class="d-flex justify-content-between small mb-3">
+            <span class="text-muted">{% trans 'Nomor kursi' %}</span>
+            <span id="seatLabels" class="fw-semibold">—</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">{% trans 'Total' %}</span>
+            <span class="fw-bold fs-4 text-primary" id="seatTotal">Rp 0</span>
+          </div>
+          <form method="post" action="{% url 'booking:create' schedule.id %}" id="seatForm">
+            {% csrf_token %}
+            <input type="hidden" name="date" value="{{ travel_date|date:'Y-m-d' }}">
+            <input type="hidden" name="seats" id="seatsInput" value="">
+            <button class="btn btn-accent w-100 btn-lg" type="submit" id="btnContinue" disabled>
+              {% trans 'Lanjut Isi Data' %} <i class="fa-solid fa-arrow-right ms-1"></i>
+            </button>
+          </form>
+          <p class="small text-muted text-center mt-3 mb-0">
+            <i class="fa-regular fa-clock me-1"></i>
+            {% blocktranslate with h=PAYMENT_TIMEOUT_HOURS %}Kursi dikunci {{ h }} jam setelah booking dibuat.{% endblocktranslate %}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/seat-map.js' %}"></script>
+{% endblock %}

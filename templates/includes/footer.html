@@ -1,0 +1,59 @@
+{% load i18n %}
+<footer class="nt-footer pt-5 pb-4 mt-auto">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <a class="navbar-brand d-inline-flex align-items-center gap-2 mb-3" href="{% url 'home' %}">
+          <span class="brand-icon"><i class="fa-solid fa-bus"></i></span>
+          <span class="brand-text">Nusantara<em>Trans</em></span>
+        </a>
+        <p class="text-white-50 mb-3">{% blocktrans %}Melayani perjalanan bus antar kota & penyewaan mobil di Jawa Timur dan sekitarnya sejak 2015. Aman, nyaman, tepat waktu.{% endblocktrans %}</p>
+        <div class="d-flex gap-2">
+          <a href="#" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" class="social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" class="social-btn" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+          <a href="https://wa.me/{{ WHATSAPP_NUMBER }}" class="social-btn" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+        </div>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <h6 class="text-white fw-bold mb-3">{% trans 'Perusahaan' %}</h6>
+        <ul class="footer-links">
+          <li><a href="{% url 'about' %}">{% trans 'Tentang Kami' %}</a></li>
+          <li><a href="{% url 'contact' %}">{% trans 'Kontak' %}</a></li>
+          <li><a href="{% url 'booking:check' %}">{% trans 'Cek Booking' %}</a></li>
+          <li><a href="{% url 'rental:index' %}">{% trans 'Rental Mobil' %}</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-3">
+        <h6 class="text-white fw-bold mb-3">{% trans 'Rute Populer' %}</h6>
+        <ul class="footer-links">
+          <li><a href="{% url 'booking:route_detail' 'jember-surabaya' %}">Jember → Surabaya</a></li>
+          <li><a href="{% url 'booking:route_detail' 'jember-denpasar' %}">Jember → Denpasar</a></li>
+          <li><a href="{% url 'booking:route_detail' 'jember-jakarta' %}">Jember → Jakarta</a></li>
+          <li><a href="{% url 'booking:search' %}">{% trans 'Semua rute…' %}</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-3">
+        <h6 class="text-white fw-bold mb-3">{% trans 'Kontak' %}</h6>
+        <ul class="footer-links text-white-50">
+          <li><i class="fa-solid fa-location-dot me-2 text-warning"></i>{{ CONTACT.address }}</li>
+          <li><i class="fa-solid fa-phone me-2 text-warning"></i>{{ CONTACT.phone }}</li>
+          <li><i class="fa-solid fa-envelope me-2 text-warning"></i>{{ CONTACT.email }}</li>
+          <li><i class="fa-solid fa-clock me-2 text-warning"></i>{{ CONTACT.hours }}</li>
+        </ul>
+        <div class="mt-3 small text-white-50">
+          <i class="fa-solid fa-shield-halved me-2 text-warning"></i>{% trans 'Pembayaran: Transfer Bank & QRIS' %}
+        </div>
+      </div>
+    </div>
+
+    <hr class="border-secondary mt-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 small text-white-50">
+      <span>© {% now 'Y' %} {{ SITE_NAME }}. {% trans 'Semua hak dilindungi.' %}</span>
+      <span><i class="fa-solid fa-code me-1"></i>{% blocktrans %}Dibangun dengan Django & Bootstrap{% endblocktrans %}</span>
+    </div>
+  </div>
+</footer>

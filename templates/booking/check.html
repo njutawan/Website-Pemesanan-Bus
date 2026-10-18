@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans 'Cek Booking' %} — {{ SITE_NAME }}{% endblock %}
+{% block og_title %}{% trans 'Cek Status Booking' %} — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="page-hero-sm">
+  <div class="container py-4">
+    <h1 class="h3 fw-800 text-white mb-1"><i class="fa-solid fa-magnifying-glass me-2"></i>{% trans 'Cek Booking' %}</h1>
+    <p class="text-white-75 mb-0 small">{% trans 'Masukkan kode booking untuk melihat status & e-tiket.' %}</p>
+  </div>
+</section>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4 p-md-5">
+          {% if not_found %}
+          <div class="alert alert-warning small">
+            <i class="fa-solid fa-triangle-exclamation me-1"></i>
+            {% blocktrans with code=code %}Booking dengan kode <strong>{{ code }}</strong> tidak ditemukan. Periksa kembali penulisannya.{% endblocktrans %}
+          </div>
+          {% endif %}
+          <form method="post" action="{% url 'booking:check' %}">
+            {% csrf_token %}
+            <label class="form-label fw-semibold" for="codeInput">{% trans 'Kode Booking' %}</label>
+            <div class="input-group input-group-lg mb-3">
+              <span class="input-group-text"><i class="fa-solid fa-ticket"></i></span>
+              <input type="text" class="form-control text-uppercase" id="codeInput" name="code"
+                     placeholder="NT-XXXXXX" value="{{ code }}" required>
+            </div>
+            <button class="btn btn-accent w-100 btn-lg" type="submit">
+              <i class="fa-solid fa-magnifying-glass me-2"></i>{% trans 'Lihat Status' %}
+            </button>
+          </form>
+          <p class="small text-muted text-center mt-3 mb-0">
+            {% blocktrans %}Kode booking terlihat seperti: NT-A7K2QP{% endblocktrans %}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

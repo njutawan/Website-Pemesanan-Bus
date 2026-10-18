@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load i18n booking_extras static %}
+
+{% block title %}{% trans 'Sewa' %} {{ booking.code }} — {{ SITE_NAME }}{% endblock %}
+{% block og_title %}{% trans 'Detail Pesanan Sewa' %} {{ booking.code }} — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="page-hero-sm">
+  <div class="container py-4">
+    <h1 class="h3 fw-800 text-white mb-1"><i class="fa-solid fa-key me-2"></i>{% trans 'Detail Pesanan Sewa' %}</h1>
+    <p class="text-white-75 mb-0 small">{% trans 'Simpan kode pesanan & screenshot halaman ini.' %}</p>
+  </div>
+</section>
+
+<div class="container py-5">
+  {% if is_new and booking.status == 'PENDING' %}
+  <div class="alert alert-success rounded-4 shadow-sm">
+    <h5 class="alert-heading fw-bold"><i class="fa-solid fa-circle-check me-2"></i>{% trans 'Pesanan Sewa Berhasil Dibuat!' %}</h5>
+    {% blocktranslate with h=PAYMENT_TIMEOUT_HOURS name=booking.vehicle.name %}Unit {{ name }} kami pegang selama {{ h }} jam. Selesaikan pembayaran di bawah ini.{% endblocktranslate %}
+  </div>
+  {% endif %}
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm rounded-4 mb-4 ticket-card">
+        <div class="card-body p-4">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+              <small class="text-muted d-block">{% trans 'Kode Pesanan' %}</small>
+              <span class="booking-code">{{ booking.code }}</span>
+            </div>
+            {% if booking.status == 'PENDING' %}
+              <span class="status-badge pending"><i class="fa-solid fa-hourglass-half me-1"></i>{{ booking.get_status_display }}</span>
+            {% elif booking.status == 'CONFIRMED' %}
+              <span class="status-badge confirmed"><i class="fa-solid fa-circle-check me-1"></i>{{ booking.get_status_display }}</span>
+            {% elif booking.status == 'COMPLETED' %}
+              <span class="status-badge confirmed"><i class="fa-solid fa-flag-checkered me-1"></i>{{ booking.get_status_display }}</span>
+            {% else %}
+              <span class="status-badge cancelled"><i class="fa-solid fa-ban me-1"></i>{{ booking.get_status_display }}</span>
+            {% endif %}
+          </div>
+          <hr class="ticket-dash">
+          <div class="row g-3 small">
+            <div class="col-sm-6">
+              <div class="text-muted">{% trans 'Mobil' %}</div>
+              <strong>{{ booking.vehicle.name }}</strong>
+            </div>
+            <div class="col-sm-6">
+              <div class="text-muted">{% trans 'Penyewa' %}</div>
+              <strong>{{ booking.contact_name }}</strong>
+            </div>
+            <div class="col-sm-6">
+              <div class="text-muted">{% trans 'Ambil' %}</div>
+              <strong>{{ booking.pickup_date|date:'d F Y' }}</strong>
+            </div>
+            <div class="col-sm-6">
+              <div class="text-muted">{% trans 'Kembali' %}</div>
+              <strong>{{ booking.return_date|date:'d F Y' }}</strong>
+            </div>
+            <div class="col-sm-6">
+              <div class="text-muted">{% trans 'Lokasi ambil' %}</div>
+              <strong>{{ booking.pickup_location }}</strong>
+            </div>
+            <div class="col-sm-6">
+              <div class="text-muted">{% trans 'Sopir' %}</div>
+              <strong>{% if booking.with_driver %}{% trans 'Ya, dengan sopir' %}{% else %}{% trans 'Lepas kunci' %}{% endif %}</strong>
+            </div>
+            <div class="col-sm-6">
+              <div class="text-muted">{% trans 'Lama sewa' %}</div>
+              <strong>{{ booking.days }} {% trans 'hari' %}</strong>
+            </div>
+            <div class="col-sm-6">
+              <div class="text-muted">{% trans 'Total' %}</div>
+              <strong class="text-primary fs-5">{{ booking.total_price|to_idr }}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% if booking.status == 'PENDING' and not booking.is_payment_overdue %}
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-3"><i class="fa-solid fa-cloud-arrow-up text-primary me-2"></i>{% trans 'Unggah Bukti Pembayaran' %}</h5>
+          {% if booking.payment_proof %}
+          <div class="alert alert-info small d-flex align-items-center gap-3">
+            <img src="{{ booking.payment_proof.url }}" alt="bukti" style="width:70px;height:70px;object-fit:cover;border-radius:8px">
+            <div>
+              <strong>{% trans 'Bukti sudah diterima' %}</strong><br>
+              <span class="text-muted">{% trans 'Metode:' %} {{ booking.payment_method|upper }} — {% trans 'menunggu verifikasi admin (maks. 15 menit).' %}</span>
+            </div>
+          </div>
+          {% endif %}
+          <form method="post" action="{% url 'rental:upload_proof' booking.code %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label fw-semibold small">{% trans 'Metode yang digunakan' %}</label>
+              <div class="row g-2">
+                {% for key, label in proof_form.payment_method.field.choices %}
+                <div class="col-sm-4">
+                  <div class="form-check pay-radio">
+                    <input class="form-check-input" type="radio" name="payment_method" id="pm-{{ key }}" value="{{ key }}"
+                           {% if proof_form.payment_method.value == key %}checked{% endif %}>
+                    <label class="form-check-label small" for="pm-{{ key }}">{{ label }}</label>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold small" for="id_payment_proof">{% trans 'Bukti pembayaran' %}</label>
+              <input type="file" name="payment_proof" accept="image/*" class="form-control" id="id_payment_proof" required>
+              <div class="form-text">{% trans 'Format JPG/PNG, maks. 5 MB.' %}</div>
+            </div>
+            <button class="btn btn-accent w-100" type="submit">
+              <i class="fa-solid fa-paper-plane me-2"></i>{% trans 'Kirim Bukti Pembayaran' %}
+            </button>
+          </form>
+        </div>
+      </div>
+      {% elif booking.is_payment_overdue %}
+      <div class="alert alert-warning rounded-4">
+        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+        {% blocktrans %}Batas waktu pembayaran terlewat. Silakan buat pesanan baru.{% endblocktrans %}
+        <a href="{% url 'rental:index' %}" class="alert-link">{% trans 'Lihat mobil lain' %}</a>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="col-lg-5">
+      {% if booking.status == 'PENDING' %}
+        {% include 'includes/payment_methods.html' with amount=booking.total_price code=booking.code deadline=booking.payment_deadline %}
+      {% else %}
+        <div class="card border-0 shadow-sm rounded-4">
+          <div class="card-body p-4 text-center">
+            {% if booking.status == 'CONFIRMED' %}
+            <i class="fa-solid fa-circle-check fa-3x text-success mb-3"></i>
+            <h5 class="fw-bold">{% trans 'Pembayaran Terverifikasi' %}</h5>
+            <p class="text-muted small">{% blocktrans %}Unit siap pada jadwal ambil. Tim kami menghubungi via WhatsApp.{% endblocktrans %}</p>
+            {% else %}
+            <i class="fa-solid fa-ban fa-3x text-secondary mb-3"></i>
+            <h5 class="fw-bold">{{ booking.get_status_display }}</h5>
+            {% endif %}
+            <a href="{% url 'rental:index' %}" class="btn btn-outline-primary btn-sm">{% trans 'Sewa mobil lain' %}</a>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/countdown.js' %}"></script>
+{% endblock %}

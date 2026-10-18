@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load i18n booking_extras %}
+
+{% block title %}{% blocktranslate with origin=route.origin.name dest=route.destination.name %}Tiket Bus {{ origin }} ke {{ dest }} — Jadwal & Harga{% endblocktranslate %} | {{ SITE_NAME }}{% endblock %}
+{% block og_title %}{% blocktranslate with origin=route.origin.name dest=route.destination.name %}Tiket Bus {{ origin }} → {{ dest }}{% endblocktranslate %} — {{ SITE_NAME }}{% endblock %}
+{% block meta_description %}{% blocktranslate with origin=route.origin.name dest=route.destination.name %}Jadwal bus {{ origin }}–{{ dest }} hari ini: keberangkatan, durasi, kelas armada, dan harga tiket mulai dari harga termurah. Pesan online, pilih kursi sendiri.{% endblocktranslate %}{% endblock %}
+
+{% block content %}
+<section class="page-hero-sm">
+  <div class="container py-4">
+    <nav aria-label="breadcrumb" class="small mb-2">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a class="text-white-50" href="{% url 'home' %}">{% trans 'Beranda' %}</a></li>
+        <li class="breadcrumb-item"><a class="text-white-50" href="{% url 'booking:search' %}">{% trans 'Tiket Bus' %}</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">{{ route.origin.name }} → {{ route.destination.name }}</li>
+      </ol>
+    </nav>
+    <h1 class="h3 fw-800 text-white mb-1">
+      {% blocktranslate with origin=route.origin.name dest=route.destination.name %}Bus {{ origin }} ke {{ dest }}{% endblocktranslate %}
+    </h1>
+    <p class="text-white-75 mb-0 small">
+      <i class="fa-solid fa-route me-1"></i>{{ route.distance_km }} km
+      · <i class="fa-regular fa-clock me-1"></i>{{ route.duration_display }}
+      · <i class="fa-solid fa-bus me-1"></i>{{ schedules|length }} {% trans 'keberangkatan setiap hari' %}
+    </p>
+  </div>
+</section>
+
+<div class="container py-5">
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <h5 class="fw-bold mb-3"><i class="fa-regular fa-calendar-check text-primary me-2"></i>{% trans 'Jadwal Hari Ini & Setelahnya' %}</h5>
+      {% if schedules %}
+        {% for schedule in schedules %}
+          {% include 'includes/schedule_card.html' with date=today passengers=1 %}
+        {% endfor %}
+      {% else %}
+        <div class="alert alert-info"><i class="fa-solid fa-circle-info me-1"></i>{% trans 'Jadwal untuk rute ini belum tersedia. Hubungi kami untuk info terbaru.' %}</div>
+      {% endif %}
+    </div>
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4 position-sticky" style="top:90px">
+        <div class="card-body p-4">
+          <h6 class="fw-bold mb-3"><i class="fa-solid fa-magnifying-glass text-primary me-2"></i>{% trans 'Cek Kursi Tersedia' %}</h6>
+          <p class="small text-muted">{% blocktrans %}Jumlah kursi berubah setiap saat. Pilih tanggal untuk melihat kursi yang masih kosong:{% endblocktrans %}</p>
+          <a class="btn btn-accent w-100"
+             href="{% url 'booking:search' %}?origin={{ route.origin.id }}&destination={{ route.destination.id }}&date={{ today|date:'Y-m-d' }}&passengers=1">
+            {% trans 'Lihat Kursi Sekarang' %} <i class="fa-solid fa-arrow-right ms-1"></i>
+          </a>
+          <hr>
+          <ul class="small text-muted mb-0 ps-3">
+            <li>{% trans 'Pembatalan gratis sebelum pembayaran.' %}</li>
+            <li>{% trans 'E-tiket digital, tanpa cetak.' %}</li>
+            <li>{% trans 'Bisa bayar lewat QRIS.' %}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
