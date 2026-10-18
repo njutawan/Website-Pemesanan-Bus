@@ -308,6 +308,9 @@ msgid "Format JPG/PNG, maks. 5 MB. Screenshot m-banking atau foto struk/QRIS."
 msgstr ""
 "Format JPG/PNG, maks. 5 MB. Screenshot m-banking atau foto struk/QRIS."
 
+msgid "Formulir tidak bisa dikirim karena masalah keamanan sesi"
+msgstr "Formulir tidak bisa dikirim karena masalah keamanan sesi"
+
 msgid "Hampir selesai! Periksa ringkasan & lengkapi kontakmu."
 msgstr "Hampir selesai! Periksa ringkasan & lengkapi kontakmu."
 
@@ -344,6 +347,11 @@ msgstr ""
 msgid "Jadwal untuk rute ini belum tersedia. Hubungi kami untuk info terbaru."
 msgstr ""
 "Jadwal untuk rute ini belum tersedia. Hubungi kami untuk info terbaru."
+
+msgid ""
+"Jika situs dibuka dalam mode pratinjau/jendela tersemat, buka di tab baru."
+msgstr ""
+"Jika situs dibuka dalam mode pratinjau/jendela tersemat, buka di tab baru."
 
 msgid "Jumlah kursi"
 msgstr "Jumlah kursi"
@@ -390,6 +398,9 @@ msgstr "Kedaluwarsa"
 
 msgid "Kembali"
 msgstr "Kembali"
+
+msgid "Kembali & Ulangi"
+msgstr "Kembali & Ulangi"
 
 msgid "Kirim Bukti Pembayaran"
 msgstr "Kirim Bukti Pembayaran"
@@ -549,11 +560,17 @@ msgstr "Mobil Lainnya"
 msgid "Mobil Rental"
 msgstr "Mobil Rental"
 
+msgid "Muat ulang halaman ini lalu ulangi langkah terakhir."
+msgstr "Muat ulang halaman ini lalu ulangi langkah terakhir."
+
 msgid "Mudah & Cepat"
 msgstr "Mudah & Cepat"
 
 msgid "Mulai"
 msgstr "Mulai"
+
+msgid "Mulai Pemesanan Ulang"
+msgstr "Mulai Pemesanan Ulang"
 
 msgid "Mulai dari"
 msgstr "Mulai dari"
@@ -595,6 +612,9 @@ msgstr ""
 
 msgid "Org"
 msgstr "Org"
+
+msgid "Pastikan cookie diizinkan di browser Anda."
+msgstr "Pastikan cookie diizinkan di browser Anda."
 
 msgid "Pembatalan gratis sebelum pembayaran."
 msgstr "Pembatalan gratis sebelum pembayaran."
@@ -787,6 +807,9 @@ msgstr "Sertakan sopir (+biaya/hari)"
 msgid "Servis berkala & pemeriksaan sebelum setiap keberangkatan."
 msgstr "Servis berkala & pemeriksaan sebelum setiap keberangkatan."
 
+msgid "Sesi Berakhir"
+msgstr "Sesi Berakhir"
+
 msgid ""
 "Setelah membayar, unggah bukti pembayaran pada form di bawah. Tim kami "
 "memverifikasi maksimal 15 menit (07.00–21.00 WIB)."
@@ -827,6 +850,9 @@ msgstr "Simpan kode pesanan & screenshot halaman ini."
 
 msgid "Sleeper"
 msgstr "Sleeper"
+
+msgid "Solusi:"
+msgstr "Solusi:"
 
 msgid "Sopir"
 msgstr "Sopir"
@@ -920,6 +946,15 @@ msgstr "Tiket Bus Online & Rental Mobil"
 
 msgid "Tim siap membantu via WhatsApp setiap hari."
 msgstr "Tim siap membantu via WhatsApp setiap hari."
+
+msgid ""
+"Token keamanan (CSRF) dari halaman ini tidak terkirim — biasanya karena "
+"cookie browser diblokir, sesi kedaluwarsa, atau halaman terbuka terlalu lama"
+" sebelum dikirim."
+msgstr ""
+"Token keamanan (CSRF) dari halaman ini tidak terkirim — biasanya karena "
+"cookie browser diblokir, sesi kedaluwarsa, atau halaman terbuka terlalu lama"
+" sebelum dikirim."
 
 msgid "Total"
 msgstr "Total"

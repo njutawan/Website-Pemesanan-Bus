@@ -501,6 +501,21 @@ TRANSLATIONS_ID = {
     'Seat': 'Kursi',
     'Total price': 'Total harga',
     'Travel date': 'Tanggal perjalanan',
+
+    # ---- Halaman kegagalan CSRF ----
+    'Sesi Berakhir': 'Sesi Berakhir',
+    'Formulir tidak bisa dikirim karena masalah keamanan sesi':
+        'Formulir tidak bisa dikirim karena masalah keamanan sesi',
+    'Token keamanan (CSRF) dari halaman ini tidak terkirim — biasanya karena cookie browser diblokir, sesi kedaluwarsa, atau halaman terbuka terlalu lama sebelum dikirim.':
+        'Token keamanan (CSRF) dari halaman ini tidak terkirim — biasanya karena cookie browser diblokir, sesi kedaluwarsa, atau halaman terbuka terlalu lama sebelum dikirim.',
+    'Solusi:': 'Solusi:',
+    'Muat ulang halaman ini lalu ulangi langkah terakhir.':
+        'Muat ulang halaman ini lalu ulangi langkah terakhir.',
+    'Pastikan cookie diizinkan di browser Anda.': 'Pastikan cookie diizinkan di browser Anda.',
+    'Jika situs dibuka dalam mode pratinjau/jendela tersemat, buka di tab baru.':
+        'Jika situs dibuka dalam mode pratinjau/jendela tersemat, buka di tab baru.',
+    'Kembali & Ulangi': 'Kembali & Ulangi',
+    'Mulai Pemesanan Ulang': 'Mulai Pemesanan Ulang',
 }
 
 # =============================================================================
@@ -861,4 +876,19 @@ TRANSLATIONS_EN = {
     'Matic': 'Automatic',
     'Manual': 'Manual',
     'Bagasi luas': 'Spacious luggage',
+
+    # ---- Halaman kegagalan CSRF ----
+    'Sesi Berakhir': 'Session Expired',
+    'Formulir tidak bisa dikirim karena masalah keamanan sesi':
+        'The form could not be submitted due to a session security issue',
+    'Token keamanan (CSRF) dari halaman ini tidak terkirim — biasanya karena cookie browser diblokir, sesi kedaluwarsa, atau halaman terbuka terlalu lama sebelum dikirim.':
+        'The security token (CSRF) from this page was not sent — usually because browser cookies are blocked, the session expired, or the page stayed open too long before submitting.',
+    'Solusi:': 'How to fix it:',
+    'Muat ulang halaman ini lalu ulangi langkah terakhir.':
+        'Reload this page and repeat your last step.',
+    'Pastikan cookie diizinkan di browser Anda.': 'Make sure cookies are allowed in your browser.',
+    'Jika situs dibuka dalam mode pratinjau/jendela tersemat, buka di tab baru.':
+        'If the site is open in an embedded preview frame, open it in a new tab instead.',
+    'Kembali & Ulangi': 'Go Back & Retry',
+    'Mulai Pemesanan Ulang': 'Start a New Booking',
 }

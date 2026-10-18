@@ -25,6 +25,23 @@ CSRF_TRUSTED_ORIGINS = os.environ.get(
     'DJANGO_CSRF_TRUSTED_ORIGINS', 'https://*.e2b.app'
 ).split(',')
 
+# ---------------------------------------------------------------------------
+# Cookie & CSRF — pratinjau sandbox tampil dalam iframe HTTPS sehingga cookie
+# Default SameSite=Lax diblokir browser sebagai cookie pihak ketiga (muncul
+# 403 "CSRF cookie not set" saat submit form). SameSite=None + Secure membuat
+# cookie tetap diterima di konteks iframe; http://localhost tetap aman karena
+# browser memperlakukannya sebagai secure context. Untuk produksi HTTPS ini
+# juga konfigurasi yang benar.
+# ---------------------------------------------------------------------------
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
+
+# Di belakang proxy Nginx/preview: hormati proto asli agar request.scheme = https
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # =============================================================================
 # Aplikasi
 # =============================================================================

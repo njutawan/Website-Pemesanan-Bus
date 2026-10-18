@@ -51,3 +51,8 @@ class RobotsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         return {'sitemap_url': self.request.build_absolute_uri('/sitemap.xml')}
+
+
+def csrf_failure(request, reason='', template_name='csrf_failure.html'):
+    """Halaman ramah saat verifikasi CSRF gagal (mis. cookie diblokir iframe)."""
+    return render(request, 'csrf_failure.html', status=403)

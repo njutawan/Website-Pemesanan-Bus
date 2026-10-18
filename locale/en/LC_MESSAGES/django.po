@@ -308,6 +308,9 @@ msgstr ""
 "JPG/PNG, max. 5 MB. A screenshot of your banking app or a photo of the "
 "receipt/QRIS."
 
+msgid "Formulir tidak bisa dikirim karena masalah keamanan sesi"
+msgstr "The form could not be submitted due to a session security issue"
+
 msgid "Hampir selesai! Periksa ringkasan & lengkapi kontakmu."
 msgstr "Almost done! Review the summary & complete your contact info."
 
@@ -342,6 +345,12 @@ msgstr ""
 
 msgid "Jadwal untuk rute ini belum tersedia. Hubungi kami untuk info terbaru."
 msgstr "No schedules for this route yet. Contact us for the latest info."
+
+msgid ""
+"Jika situs dibuka dalam mode pratinjau/jendela tersemat, buka di tab baru."
+msgstr ""
+"If the site is open in an embedded preview frame, open it in a new tab "
+"instead."
 
 msgid "Jumlah kursi"
 msgstr "Number of seats"
@@ -387,6 +396,9 @@ msgstr "Expired"
 
 msgid "Kembali"
 msgstr "Return"
+
+msgid "Kembali & Ulangi"
+msgstr "Go Back & Retry"
 
 msgid "Kirim Bukti Pembayaran"
 msgstr "Submit Payment Proof"
@@ -545,11 +557,17 @@ msgstr "More Vehicles"
 msgid "Mobil Rental"
 msgstr "Rental Cars"
 
+msgid "Muat ulang halaman ini lalu ulangi langkah terakhir."
+msgstr "Reload this page and repeat your last step."
+
 msgid "Mudah & Cepat"
 msgstr "Easy & Fast"
 
 msgid "Mulai"
 msgstr "From"
+
+msgid "Mulai Pemesanan Ulang"
+msgstr "Start a New Booking"
 
 msgid "Mulai dari"
 msgstr "From"
@@ -590,6 +608,9 @@ msgstr ""
 
 msgid "Org"
 msgstr "Pax"
+
+msgid "Pastikan cookie diizinkan di browser Anda."
+msgstr "Make sure cookies are allowed in your browser."
 
 msgid "Pembatalan gratis sebelum pembayaran."
 msgstr "Free cancellation before payment."
@@ -782,6 +803,9 @@ msgstr "Include a driver (+fee/day)"
 msgid "Servis berkala & pemeriksaan sebelum setiap keberangkatan."
 msgstr "Regular servicing & checks before every departure."
 
+msgid "Sesi Berakhir"
+msgstr "Session Expired"
+
 msgid ""
 "Setelah membayar, unggah bukti pembayaran pada form di bawah. Tim kami "
 "memverifikasi maksimal 15 menit (07.00–21.00 WIB)."
@@ -822,6 +846,9 @@ msgstr "Save your order code & screenshot this page."
 
 msgid "Sleeper"
 msgstr ""
+
+msgid "Solusi:"
+msgstr "How to fix it:"
 
 msgid "Sopir"
 msgstr "Driver"
@@ -915,6 +942,15 @@ msgstr "Online Bus Tickets & Car Rental"
 
 msgid "Tim siap membantu via WhatsApp setiap hari."
 msgstr "Our team is ready to help on WhatsApp every day."
+
+msgid ""
+"Token keamanan (CSRF) dari halaman ini tidak terkirim — biasanya karena "
+"cookie browser diblokir, sesi kedaluwarsa, atau halaman terbuka terlalu lama"
+" sebelum dikirim."
+msgstr ""
+"The security token (CSRF) from this page was not sent — usually because "
+"browser cookies are blocked, the session expired, or the page stayed open "
+"too long before submitting."
 
 msgid "Total"
 msgstr "Total"
