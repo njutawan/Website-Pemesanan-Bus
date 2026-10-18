@@ -672,3 +672,62 @@ class SiloArchitectureTest(TestCase):
     def test_hub_link_ke_pillar_per_kota(self):
         html = self.client.get('/bus/rute/').content.decode()
         self.assertIn('href="/bus/rute/dari/kota-a/"', html)  # downward ke pillar
+
+
+class InTextLinkingTest(TestCase):
+    """Filter autolink: anchor deskriptif, pemunculan pertama, anti-injeksi."""
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+
+    def test_filter_pemunculan_pertama_saja(self):
+        from booking.templatetags.booking_extras import autolink
+        hasil = str(autolink('Tiket bus murah. Tiket bus cepat.'))
+        self.assertEqual(hasil.count('<a '), 1)
+        self.assertIn('href="/bus/"', hasil)
+        self.assertIn('>Tiket bus<', hasil)  # anchor = teks asli (deskriptif)
+
+    def test_filter_tak_menautkan_di_dalam_anchor_ada(self):
+        from booking.templatetags.booking_extras import autolink
+        hasil = str(autolink('lihat <a href="/x/">Tiket bus</a> murah'))
+        self.assertEqual(hasil.count('<a '), 1)  # yang lama tidak digandakan
+
+    def test_filter_aman_terhadap_html(self):
+        from booking.templatetags.booking_extras import autolink
+        hasil = str(autolink('<script>alert("tiket bus")</script>'))
+        self.assertNotIn('<script>', hasil)  # ter-escape
+
+    def test_faq_jawaban_tertautinkonten(self):
+        from booking.models import Bus, City, Route, Schedule
+        a = City.objects.create(name='Kota A', slug='kota-a')
+        b = City.objects.create(name='Kota B', slug='kota-b')
+        bus = Bus.objects.create(code='NT-INT2', name='Bus I2', plate_number='E 3000 XX')
+        r = Route.objects.create(origin=a, destination=b, distance_km=90, duration_minutes=110)
+        Schedule.objects.create(route=r, bus=bus, departure_time='08:00',
+                                arrival_time='10:00', price=95000)
+        from django.core.cache import cache
+        cache.clear()
+        html = self.client.get('/bus/rute/dari/kota-a/kota-b/').content.decode()
+        # "Kota A" di jawaban FAQ otomatis jadi link ke pillar kota
+        self.assertIn('<a href="/bus/rute/dari/kota-a/">Kota A</a>', html)
+
+    def test_homepage_grid_kategori_semua_pillar(self):
+        from booking.models import Bus, City, Route, Schedule
+        a = City.objects.create(name='Kota A', slug='kota-a')
+        b = City.objects.create(name='Kota B', slug='kota-b')
+        bus = Bus.objects.create(code='NT-GRD', name='Bus Grid', plate_number='E 2000 XX')
+        r = Route.objects.create(origin=a, destination=b, distance_km=50, duration_minutes=60)
+        Schedule.objects.create(route=r, bus=bus, departure_time='06:00',
+                                arrival_time='07:00', price=50000)
+        from django.core.cache import cache
+        cache.clear()
+        html = self.client.get('/').content.decode()
+        self.assertIn('Pilih kota keberangkatan', html)
+        self.assertIn('href="/bus/rute/dari/kota-a/"', html)   # pillar 1 klik
+        self.assertIn('Bus dari Kota A', html)                 # anchor deskriptif
+
+    def test_homepage_tanpa_link_non_seo(self):
+        html = self.client.get('/').content.decode()
+        for jelek in ('/admin/', 'privacy', 'terms', 'login'):
+            self.assertNotIn(f'href="{jelek}', html)

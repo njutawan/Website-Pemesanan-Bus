@@ -10,6 +10,7 @@ from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView
 
 from booking.forms import SearchForm
+from booking.views import cached_origin_cities
 from core.seo import HOME_CRUMB, breadcrumb_items, breadcrumb_schema, local_business_schema
 from booking.models import Booking, Bus, City, Route, Schedule
 from rental.models import RentalBooking, Vehicle
@@ -58,6 +59,7 @@ class HomeView(TemplateView):
             bus_classes=Bus.BusClass.choices,
             stats=stats,
             schema_local_business=local_business_schema(self.request),
+            origin_cities=cached_origin_cities(),
         )
         return ctx
 

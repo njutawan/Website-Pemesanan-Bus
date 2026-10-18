@@ -1065,5 +1065,13 @@ TRANSLATIONS_EN = {
     "Rute sebelumnya": "Previous route",
     "Rute selanjutnya": "Next route",
     "Navigasi rute": "Route navigation",
+
+    # ---- Grid kategori homepage ----
+    "Pilih kota keberangkatan": "Choose your departure city",
+    "%(n)s rute aktif": "%(n)s active routes",
+
+    # ---- FAQ kontekstual (in-text link) ----
+    "Perjalanan bus dari %(origin)s ke %(destination)s memakan waktu sekitar %(durasi)s, tergantung kondisi lalu lintas dan cuaca.": "The bus trip from %(origin)s to %(destination)s takes around %(durasi)s, depending on traffic and weather conditions.",
+    "Keberangkatan pertama dari %(origin)s pukul %(jam)s WIB. Tersedia %(jumlah)s jadwal setiap hari.": "The first departure from %(origin)s is at %(jam)s WIB. There are %(jumlah)s departures daily.",
 }
 

@@ -6,6 +6,8 @@ from datetime import date as date_cls
 from django.conf import settings
 
 from django.contrib import messages
+from collections import Counter
+
 from django.core.cache import cache
 from django.db.models import Count, Min
 from django.core.exceptions import ValidationError
@@ -43,6 +45,18 @@ def cached_route_catalog():
             .filter(n_schedules__gt=0)
             .select_related('origin', 'destination')
             .order_by('origin__name', 'destination__name')),
+        getattr(settings, 'CACHE_TTL_DEFAULT', 600))
+
+
+def cached_origin_cities():
+    """Kategori (kota asal) utk grid homepage: city + jumlah rute aktif.
+    0 query saat cache hangat; masukannya katalog rute yang sama."""
+    return cache.get_or_set(
+        'hub:origin_cities',
+        lambda: [
+            {'city': c, 'n': n}
+            for c, n in Counter(r.origin for r in cached_route_catalog()).items()
+        ],
         getattr(settings, 'CACHE_TTL_DEFAULT', 600))
 
 
@@ -387,7 +401,9 @@ class RouteDetailView(TemplateView):
         # FAQ nyata (tampil di halaman + FAQPage JSON-LD) dari data rute.
         faq = [{'q': _('Berapa lama perjalanan bus dari %(origin)s ke %(destination)s?') % {
                     'origin': origin, 'destination': dest},
-                'a': _('Perjalanan memakan waktu sekitar %(durasi)s, tergantung kondisi lalu lintas dan cuaca.') % {'durasi': route.duration_display}}]
+                'a': _('Perjalanan bus dari %(origin)s ke %(destination)s memakan waktu sekitar %(durasi)s, tergantung kondisi lalu lintas dan cuaca.') % {
+                    'origin': origin, 'destination': dest,
+                    'durasi': route.duration_display}}]
         prices = [s.price for s in schedules]
         if prices:
             faq.append({'q': _('Berapa harga tiket bus %(origin)s ke %(destination)s?') % {
@@ -397,7 +413,8 @@ class RouteDetailView(TemplateView):
         if schedules:
             faq.append({'q': _('Kapan keberangkatan pertama dari %(origin)s?') % {
                             'origin': origin},
-                        'a': _('Keberangkatan pertama pukul %(jam)s WIB. Tersedia %(jumlah)s jadwal setiap hari.') % {
+                        'a': _('Keberangkatan pertama dari %(origin)s pukul %(jam)s WIB. Tersedia %(jumlah)s jadwal setiap hari.') % {
+                            'origin': origin,
                             'jam': schedules[0].departure_time.strftime('%H.%M'),
                             'jumlah': len(schedules)}})
 

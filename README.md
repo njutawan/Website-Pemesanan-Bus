@@ -70,6 +70,17 @@ dwibahasa **Indonesia / English**.
   * **Downward**: hub & pillar menautkan ke seluruh rute di bawahnya
   * **Lateral**: antar-rute hanya se-silo (kota asal sama, maks 4);
     pillar antar-kota saling menyandingkan (link antar-kategori)
+  * **Anchor & in-text linking**: tanpa anchor generik (audit "klik di
+    sini" = nihil; semua anchor deskriptif: nama rute, "Bus dari {kota}");
+    filter templat **`autolink`** menautkan istilah kunci (frasa layanan +
+    nama kota dgn rute aktif) pada **pemunculan pertama** dalam konten
+    (jawaban FAQ, deskripsi mobil) — escape-safe, tidak menyusup ke
+    `<a>` existing, tiap istilah sekali; peta istilah di-cache 10 menit
+  * **Homepage PageRank**: pillar kategori kini **1 klik** via grid
+    "Pilih kota keberangkatan" (9 pillar, anchor "Bus dari {kota}") di
+    samping kartu rute populer & armada unggulan; **tanpa link non-SEO**
+    (audit: tak ada login/privacy/terms di homepage; Cek Booking =
+    utility tetap ada karena kebutuhan pelanggan)
   * **Komponen otomatis**: breadcrumb terlihat + JSON-LD di semua halaman
     dalam (upward link + data terstruktur SERP, markup = konten terlihat);
     lateral terkunci per silo (sibling rute se-kota, "Mobil lainnya" rental —

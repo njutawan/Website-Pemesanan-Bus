@@ -12,6 +12,9 @@ msgstr ""
 msgid "#1 Travel & Rental di Jawa Timur"
 msgstr "#1 Travel & Rental di Jawa Timur"
 
+msgid "%(n)s rute aktif"
+msgstr ""
+
 msgid ""
 "%(n)s rute aktif dari %(kota)s — pilih destinasi untuk melihat jadwal & "
 "harga."
@@ -523,8 +526,8 @@ msgid "Keberangkatan Hari Ini"
 msgstr "Keberangkatan Hari Ini"
 
 msgid ""
-"Keberangkatan pertama pukul %(jam)s WIB. Tersedia %(jumlah)s jadwal setiap "
-"hari."
+"Keberangkatan pertama dari %(origin)s pukul %(jam)s WIB. Tersedia %(jumlah)s"
+" jadwal setiap hari."
 msgstr ""
 
 msgid "Kedaluwarsa"
@@ -846,8 +849,8 @@ msgid "Perjalanan Nyaman,"
 msgstr "Perjalanan Nyaman,"
 
 msgid ""
-"Perjalanan memakan waktu sekitar %(durasi)s, tergantung kondisi lalu lintas "
-"dan cuaca."
+"Perjalanan bus dari %(origin)s ke %(destination)s memakan waktu sekitar "
+"%(durasi)s, tergantung kondisi lalu lintas dan cuaca."
 msgstr ""
 
 msgid "Pertanyaan umum rute ini"
@@ -942,6 +945,9 @@ msgstr "Pilih bahasa"
 
 msgid "Pilih kota asal"
 msgstr "Pilih kota asal"
+
+msgid "Pilih kota keberangkatan"
+msgstr ""
 
 msgid "Pilih kota tujuan"
 msgstr "Pilih kota tujuan"

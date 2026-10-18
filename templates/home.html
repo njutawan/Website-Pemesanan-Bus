@@ -186,6 +186,35 @@
   </div>
 </section>
 
+<!-- ============ GRID KATEGORI: PILLAR PER KOTA (internal linking) ============ -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="h4 fw-800 mb-0"><i class="fa-solid fa-map-location-dot text-warning me-2"></i>{% trans 'Pilih kota keberangkatan' %}</h2>
+      <a href="{% url 'booking:route_hub' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+        {% trans 'Lihat semua' %} <i class="fa-solid fa-arrow-right ms-1"></i>
+      </a>
+    </div>
+    <div class="row g-3">
+      {% for item in origin_cities %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <a href="{% url 'booking:city_routes' item.city.slug %}" class="text-decoration-none">
+          <div class="card route-card h-100 border-0 shadow-sm">
+            <div class="card-body py-3 d-flex align-items-center justify-content-between gap-2">
+              <div>
+                <div class="fw-bold text-dark small">{% blocktranslate with kota=item.city.name %}Bus dari {{ kota }}{% endblocktranslate %}</div>
+                <small class="text-muted">{% blocktranslate with n=item.n %}{{ n }} rute aktif{% endblocktranslate %}</small>
+              </div>
+              <i class="fa-solid fa-arrow-right text-warning"></i>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
 <!-- ============ KELAS ARMADA BUS ============ -->
 <section class="py-5">
   <div class="container">

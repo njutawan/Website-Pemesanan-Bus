@@ -85,7 +85,7 @@
       <div id="faq-{{ forloop.counter }}"
            class="accordion-collapse collapse{% if forloop.first %} show{% endif %}"
            data-bs-parent="#faqRoute">
-        <div class="accordion-body text-muted">{{ f.a }}</div>
+        <div class="accordion-body text-muted">{{ f.a|autolink }}</div>
       </div>
     </div>
     {% endfor %}
