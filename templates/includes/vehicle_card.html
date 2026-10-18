@@ -1,0 +1,32 @@
+{% load i18n booking_extras %}
+{# Kartu mobil rental — variabel: vehicle #}
+<div class="card vehicle-card h-100 shadow-sm">
+  <div class="vehicle-img-wrap">
+    <picture>
+      <source type="image/webp" srcset="{{ vehicle.image.url|webp_url }}">
+      <img src="{{ vehicle.image.url }}" class="card-img-top" width="900" height="491"
+           alt="{{ vehicle.name }}" loading="lazy" decoding="async">
+    </picture>
+    <span class="badge class-badge position-absolute top-0 start-0 m-3">
+      {{ vehicle.get_category_display }}
+    </span>
+  </div>
+  <div class="card-body d-flex flex-column">
+    <h5 class="card-title fw-bold mb-1">{{ vehicle.name }}</h5>
+    <div class="text-muted small mb-3">
+      <i class="fa-solid fa-users me-1"></i>{{ vehicle.seats }} {% trans 'kursi' %}
+      <i class="fa-solid fa-gear ms-3 me-1"></i>{{ vehicle.get_transmission_display }}
+      <i class="fa-solid fa-calendar ms-3 me-1"></i>{{ vehicle.year }}
+    </div>
+    <div class="mt-auto d-flex justify-content-between align-items-end">
+      <div>
+        <small class="text-muted d-block">{% trans 'Mulai' %}</small>
+        <span class="fw-bold text-primary fs-5">{{ vehicle.price_per_day|to_idr }}</span>
+        <small class="text-muted">/{% trans 'hari' %}</small>
+      </div>
+      <a href="{% url 'rental:detail' vehicle.slug %}" class="btn btn-outline-primary btn-sm px-3">
+        {% trans 'Detail' %} <i class="fa-solid fa-chevron-right ms-1 small"></i>
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,9 @@
+Django>=5.2,<5.3
+Pillow>=10.3
+gunicorn>=22.0
+whitenoise>=6.7  # kompresi + cache header static files
+psycopg[binary]>=3.1  # driver PostgreSQL (WAJIB — database murni PostgreSQL)
+django-compressor>=4.5  # minifikasi & gabung CSS/JS
+redis>=5.0  # client Redis utk cache (aktif bila REDIS_URL terisi)
+polib>=1.2  # untuk kompilasi berkas .po -> .mo (python manage.py compile_i18n)
+bcrypt>=4.1  # hasher PASSWORD_HASHERS (password admin & user)

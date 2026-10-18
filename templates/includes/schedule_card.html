@@ -1,0 +1,50 @@
+{% load i18n booking_extras %}
+{# Kartu jadwal bus — dipakai di hasil pencarian & halaman rute. Variabel: schedule, date(opsional), passengers(opsional) #}
+<div class="card schedule-card shadow-sm mb-3">
+  <div class="card-body">
+    <div class="row align-items-center g-3">
+      <div class="col-lg-8">
+        <div class="d-flex flex-wrap align-items-center gap-3">
+          <div class="text-center time-block">
+            <div class="h5 mb-0 fw-bold">{{ schedule.departure_time|date:'H:i' }}</div>
+            <small class="text-muted">{{ schedule.route.origin.name }}</small>
+          </div>
+          <div class="route-line flex-grow-1 text-center">
+            <small class="text-muted d-block"><i class="fa-regular fa-clock me-1"></i>{{ schedule.duration_display }}</small>
+            <span class="route-dots"></span>
+            {% if schedule.arrives_next_day %}<small class="text-warning d-block"><i class="fa-solid fa-arrow-turn-up fa-rotate-90 me-1"></i>+1 {% trans 'hari' %}</small>{% endif %}
+          </div>
+          <div class="text-center time-block">
+            <div class="h5 mb-0 fw-bold">{{ schedule.arrival_time|date:'H:i' }}</div>
+            <small class="text-muted">{{ schedule.route.destination.name }}</small>
+          </div>
+        </div>
+        <div class="mt-3 d-flex flex-wrap gap-2 align-items-center">
+          <span class="badge text-bg-light border"><i class="fa-solid fa-bus me-1 text-primary"></i>{{ schedule.bus.name }}</span>
+          <span class="badge class-badge">{{ schedule.get_bus_class_display }}</span>
+          <span class="badge text-bg-light border"><i class="fa-solid fa-chair me-1 text-primary"></i>{{ schedule.bus_total_seats }} {% trans 'kursi' %}</span>
+          {% for amenity in schedule.bus.amenity_list %}
+          <span class="badge text-bg-light border">{{ amenity }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="col-lg-4 text-lg-end">
+        <div class="text-muted small">{% trans 'Mulai dari' %}</div>
+        <div class="h4 fw-bold text-primary mb-1">{{ schedule.price|to_idr }}</div>
+        {% if schedule.available is not None %}
+          {% if schedule.enough %}
+          <span class="badge text-bg-success mb-2"><i class="fa-solid fa-circle-check me-1"></i>{{ schedule.available }} {% trans 'kursi tersedia' %}</span>
+          {% else %}
+          <span class="badge text-bg-danger mb-2"><i class="fa-solid fa-circle-xmark me-1"></i>{% trans 'sisa' %} {{ schedule.available }} {% trans 'kursi' %}</span>
+          {% endif %}
+        {% endif %}
+        <div>
+          <a class="btn btn-accent px-4"
+             href="{% url 'booking:seats' schedule.id %}?date={{ date|date:'Y-m-d' }}&passengers={{ passengers|default:1 }}">
+            {% trans 'Pilih Kursi' %} <i class="fa-solid fa-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

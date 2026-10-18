@@ -1,0 +1,69 @@
+{% load static i18n booking_extras %}
+{# Panel instruksi pembayaran — variabel: amount, code, deadline(opsional) #}
+<div class="payment-panel">
+  <h6 class="fw-bold mb-3"><i class="fa-solid fa-wallet text-primary me-2"></i>{% trans 'Cara Pembayaran' %}</h6>
+
+  <div class="total-box mb-3">
+    <div class="d-flex justify-content-between align-items-center">
+      <span class="text-muted">{% trans 'Total yang harus dibayar' %}</span>
+      <span class="fw-bold fs-5 text-primary">{{ amount|to_idr }}</span>
+    </div>
+    {% if deadline %}
+    <hr class="my-2">
+    <div class="d-flex justify-content-between align-items-center small">
+      <span class="text-muted"><i class="fa-regular fa-clock me-1"></i>{% trans 'Bayar sebelum' %}</span>
+      <span class="fw-semibold text-danger countdown" data-deadline="{{ deadline|date:'Y-m-d\TH:i:s' }}">{{ deadline|date:'d M Y — H:i' }} WIB</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="accordion" id="paymentAccordion">
+    {% for key, label in PAYMENT_METHODS %}
+    {% with detail=PAYMENT_DETAILS|get_item:key %}
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button {% if not forloop.first %}collapsed{% endif %} py-3" type="button"
+                data-bs-toggle="collapse" data-bs-target="#pay-{{ key }}">
+          <i class="fa-solid {{ detail.icon }} me-2 text-primary"></i>{{ detail.label }}
+        </button>
+      </h2>
+      <div id="pay-{{ key }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+           data-bs-parent="#paymentAccordion">
+        <div class="accordion-body">
+          {% if key == 'qris' %}
+            <div class="text-center">
+              <picture>
+                <source type="image/webp" srcset="{% static 'img/qris-placeholder.webp' %}">
+                <img src="{% static 'img/qris-placeholder.png' %}" alt="QRIS" width="560" height="560"
+                     class="img-fluid qris-img mb-2" loading="lazy" decoding="async">
+              </picture>
+              <p class="small text-muted mb-1">{% blocktrans %}Scan QRIS dengan aplikasi e-wallet atau m-banking apa pun, lalu masukkan nilai tepat sesuai total.{% endblocktrans %}</p>
+            </div>
+          {% else %}
+            <dl class="row mb-0 small">
+              <dt class="col-5 text-muted fw-normal">{% trans 'Nomor rekening' %}</dt>
+              <dd class="col-7 fw-bold bank-number">{{ detail.account }}</dd>
+              <dt class="col-5 text-muted fw-normal">{% trans 'Atas nama' %}</dt>
+              <dd class="col-7">{{ detail.holder }}</dd>
+            </dl>
+            <button type="button" class="btn btn-sm btn-outline-primary copy-btn" data-copy="{{ detail.account }}">
+              <i class="fa-regular fa-copy me-1"></i>{% trans 'Salin No. Rekening' %}
+            </button>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endwith %}
+    {% endfor %}
+  </div>
+
+  <div class="alert alert-light border small mt-3 mb-0">
+    <i class="fa-solid fa-circle-info text-primary me-1"></i>
+    {% blocktrans %}Setelah membayar, unggah bukti pembayaran pada form di bawah. Tim kami memverifikasi maksimal 15 menit (07.00–21.00 WIB).{% endblocktrans %}
+  </div>
+
+  <a class="btn btn-success w-100 mt-3" target="_blank" rel="noopener"
+     href="https://wa.me/{{ WHATSAPP_NUMBER }}?text={% if code %}Halo, saya sudah bayar booking {{ code }}{% else %}Halo{% endif %}">
+    <i class="fa-brands fa-whatsapp me-2"></i>{% trans 'Konfirmasi via WhatsApp' %}
+  </a>
+</div>

@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+# Halaman transaksi pribadi — tidak untuk indeks mesin pencari
+Disallow: /bus/kursi/
+Disallow: /*/bus/kursi/
+Disallow: /bus/booking/
+Disallow: /*/bus/booking/
+Disallow: /rental/sewa/
+Disallow: /*/rental/sewa/
+
+Sitemap: {{ sitemap_url }}

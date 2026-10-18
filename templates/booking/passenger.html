@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load i18n booking_extras %}
+
+{% block title %}{% trans 'Data Pemesan' %} — {{ SITE_NAME }}{% endblock %}
+{% block og_title %}{% trans 'Data Pemesan' %} — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="page-hero-sm">
+  <div class="container py-4">
+    <h1 class="h3 fw-800 text-white mb-1"><i class="fa-solid fa-file-pen me-2"></i>{% trans 'Data Pemesan' %}</h1>
+    <p class="text-white-75 mb-0 small">{% trans 'Hampir selesai! Periksa ringkasan & lengkapi kontakmu.' %}</p>
+  </div>
+</section>
+
+<div class="container py-5">
+  {% include 'includes/steps.html' %}
+
+  <div class="row g-4 justify-content-center">
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-3"><i class="fa-solid fa-user-group text-primary me-2"></i>{% trans 'Informasi Kontak' %}</h5>
+          {% if form.non_field_errors %}
+          <div class="alert alert-danger small">
+            {% for e in form.non_field_errors %}{{ e }}<br>{% endfor %}
+          </div>
+          {% endif %}
+          <form method="post" action="{% url 'booking:create' schedule.id %}" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="date" value="{{ travel_date|date:'Y-m-d' }}">
+            <input type="hidden" name="seats" value="{{ seats_csv }}">
+
+            {% for field in form %}
+            <div class="mb-3">
+              <label class="form-label fw-semibold small" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+              {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+              {% for e in field.errors %}<div class="text-danger small mt-1">{{ e }}</div>{% endfor %}
+            </div>
+            {% endfor %}
+
+            <button class="btn btn-accent btn-lg w-100 mt-2" type="submit">
+              <i class="fa-solid fa-circle-check me-2"></i>{% trans 'Buat Booking' %} — {{ total|to_idr }}
+            </button>
+            <p class="small text-muted text-center mt-3 mb-0">
+              <i class="fa-solid fa-lock me-1"></i>
+              {% blocktranslate with h=PAYMENT_TIMEOUT_HOURS %}Kursi langsung dikunci untuk Anda. Selesaikan pembayaran dalam {{ h }} jam.{% endblocktranslate %}
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm rounded-4 position-sticky" style="top:90px">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-3"><i class="fa-solid fa-receipt text-primary me-2"></i>{% trans 'Detail Perjalanan' %}</h5>
+          <ul class="list-unstyled small text-muted trip-summary">
+            <li><i class="fa-solid fa-bus me-2 text-primary"></i>{{ schedule.bus.name }} · {{ schedule.get_bus_class_display }}</li>
+            <li><i class="fa-solid fa-route me-2 text-primary"></i>{{ schedule.route.origin.name }} → {{ schedule.route.destination.name }}</li>
+            <li><i class="fa-regular fa-calendar me-2 text-primary"></i>{{ travel_date|date:'l, d F Y' }}</li>
+            <li><i class="fa-regular fa-clock me-2 text-primary"></i>{{ schedule.departure_time|date:'H:i' }} → {{ schedule.arrival_time|date:'H:i' }}{% if schedule.arrives_next_day %} (+1{% trans ' hari' %}){% endif %}</li>
+          </ul>
+          <hr>
+          <div class="d-flex justify-content-between small mb-1">
+            <span class="text-muted">{% trans 'Kursi' %}</span>
+            <span class="fw-semibold">{% for s in seats %}<span class="seat-chip">{{ s.label }}</span> {% endfor %}</span>
+          </div>
+          <div class="d-flex justify-content-between small mb-1">
+            <span class="text-muted">{% trans 'Harga/kursi' %}</span>
+            <span>{{ schedule.price|to_idr }}</span>
+          </div>
+          <div class="d-flex justify-content-between small mb-1">
+            <span class="text-muted">{% trans 'Jumlah kursi' %}</span>
+            <span>{{ seats|length }}</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="fw-semibold">{% trans 'Total Bayar' %}</span>
+            <span class="fw-bold fs-4 text-primary">{{ total|to_idr }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load i18n booking_extras seo_internal_links static %}
+
+{% block title %}{% blocktranslate with name=vehicle.name %}Sewa {{ name }}{% endblocktranslate %} — {{ SITE_NAME }}{% endblock %}
+{% block og_title %}{% blocktranslate with name=vehicle.name %}Sewa {{ name }}{% endblocktranslate %} — {{ SITE_NAME }}{% endblock %}
+{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{{ vehicle.image.url }}{% endblock %}
+{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{{ vehicle.image.url }}{% endblock %}
+{% block meta_description %}{% blocktranslate with name=vehicle.name price=vehicle.price_per_day|to_idr %}Sewa {{ name }} mulai {{ price }}/hari. Armada terawat dengan opsi sopir. Pesan online sekarang.{% endblocktranslate %}{% endblock %}
+
+{% block schema_json %}
+{{ block.super }}
+{% include 'includes/schema_ld.html' with data=schema_product %}
+{% endblock %}
+
+{% block content %}
+<section class="page-hero-sm">
+  <div class="container py-4">
+    <nav aria-label="breadcrumb" class="small mb-2">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a class="text-white-50" href="{% url 'home' %}">{% trans 'Beranda' %}</a></li>
+        <li class="breadcrumb-item"><a class="text-white-50" href="{% url 'rental:index' %}">{% trans 'Rental Mobil' %}</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">{{ vehicle.name }}</li>
+      </ol>
+    </nav>
+    <h1 class="h3 fw-800 text-white mb-1">{{ vehicle.name }}</h1>
+    <p class="text-white-75 mb-0 small">{{ vehicle.get_category_display }} · {{ vehicle.year }}</p>
+  </div>
+</section>
+
+<div class="container py-5">
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <picture>
+        <source type="image/webp" srcset="{{ vehicle.image.url|webp_url }}">
+        <img src="{{ vehicle.image.url }}" class="img-fluid rounded-4 shadow-sm w-100 vehicle-hero"
+             width="900" height="491" fetchpriority="high" decoding="async" alt="{{ vehicle.name }}">
+      </picture>
+      <div class="row g-3 mt-1 spec-grid">
+        {% for icon, label in vehicle.spec_list %}
+        <div class="col-6 col-md-3">
+          <div class="spec-box text-center"><i class="fa-solid {{ icon }} text-primary"></i><div class="small mt-1">{{ label }}</div></div>
+        </div>
+        {% endfor %}
+      </div>
+      {% if vehicle.description %}
+      <div class="card border-0 shadow-sm rounded-4 mt-4">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-3"><i class="fa-solid fa-circle-info text-primary me-2"></i>{% trans 'Tentang Unit Ini' %}</h5>
+          <p class="text-muted mb-0">{{ vehicle.description|linebreaksbr|auto_internal_link:request.path }}</p>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Harga + CTA ke halaman form sewa -->
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm rounded-4 position-sticky" style="top:90px">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-end mb-3">
+            <div>
+              <small class="text-muted d-block">{% trans 'Harga sewa' %}</small>
+              <span class="fw-bold fs-3 text-primary">{{ vehicle.price_per_day|to_idr }}</span>
+              <small class="text-muted">/{% trans 'hari' %}</small>
+            </div>
+            {% if vehicle.driver_fee_per_day > 0 %}
+            <small class="text-muted text-end">+ {{ vehicle.driver_fee_per_day|to_idr }}/{% trans 'hari' %}<br>{% trans 'jika pakai sopir' %}</small>
+            {% else %}
+            <small class="text-success text-end"><i class="fa-solid fa-circle-check me-1"></i>{% trans 'Sopir gratis' %}</small>
+            {% endif %}
+          </div>
+
+          <ul class="list-unstyled small text-muted trip-summary mb-3">
+            <li><i class="fa-solid fa-users me-2 text-primary"></i>{{ vehicle.seats }} {% trans 'kursi' %}</li>
+            <li><i class="fa-solid fa-gear me-2 text-primary"></i>{{ vehicle.get_transmission_display }}</li>
+            <li><i class="fa-solid fa-circle-check me-2 text-primary"></i>{% blocktrans with h=PAYMENT_TIMEOUT_HOURS %}Unit dipegang {{ h }} jam menunggu pembayaran.{% endblocktrans %}</li>
+          </ul>
+
+          <a href="{% url 'rental:book' vehicle.slug %}" class="btn btn-accent btn-lg w-100">
+            <i class="fa-solid fa-key me-2"></i>{% trans 'Pesan Sekarang' %}
+          </a>
+
+          <hr>
+          <p class="small text-muted mb-0">
+            <i class="fa-solid fa-circle-question text-primary me-1"></i>
+            <strong>{% trans 'Syarat sewa:' %}</strong>
+            {% blocktrans %}KTP/SIM asli, minimal 1 hari sewa, DP 50% untuk reservasi. Unit diantar dalam kota Jember gratis — luar kota hubungi CS.{% endblocktrans %}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if other_vehicles %}
+  <hr class="my-5">
+  <h5 class="fw-bold mb-4"><i class="fa-solid fa-car-rear text-primary me-2"></i>{% trans 'Mobil Lainnya' %}</h5>
+  <div class="row g-4">
+    {% for v in other_vehicles %}
+    <div class="col-md-6 col-lg-4">{% include 'includes/vehicle_card.html' with vehicle=v %}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

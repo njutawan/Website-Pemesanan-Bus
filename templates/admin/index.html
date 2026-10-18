@@ -1,0 +1,276 @@
+{% extends "admin/base_site.html" %}
+{% load i18n booking_extras %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="nt-dash">
+
+  <!-- ============ Kartu statistik ============ -->
+  <div class="nt-stats">
+    <div class="nt-stat">
+      <span class="num">{{ dash.bookings_today }}</span>
+      <span class="lbl"><i class="fa-solid fa-ticket"></i> {% trans 'Booking Hari Ini' %}</span>
+    </div>
+    <div class="nt-stat accent">
+      <span class="num">{{ dash.n_pending_proof }}</span>
+      <span class="lbl"><i class="fa-solid fa-hourglass-half"></i> {% trans 'Menunggu Verifikasi' %}</span>
+    </div>
+    <div class="nt-stat danger">
+      <span class="num">{{ dash.n_pending_noproof }}</span>
+      <span class="lbl"><i class="fa-solid fa-envelope-open-text"></i> {% trans 'Belum Bayar' %}</span>
+    </div>
+    <div class="nt-stat ok">
+      <span class="num">{{ dash.revenue_month|to_idr }}</span>
+      <span class="lbl"><i class="fa-solid fa-sack-dollar"></i> {% trans 'Pendapatan Bulan Ini' %}</span>
+    </div>
+    <div class="nt-stat">
+      <span class="num">{{ dash.n_rental_pending }}</span>
+      <span class="lbl"><i class="fa-solid fa-car"></i> {% trans 'Pesanan Sewa Menunggu' %}</span>
+    </div>
+    <div class="nt-stat">
+      <span class="num">{{ dash.departures|length }}</span>
+      <span class="lbl"><i class="fa-solid fa-bus"></i> {% trans 'Keberangkatan Hari Ini' %}</span>
+    </div>
+  </div>
+
+  <!-- ============ Grafik ============ -->
+  <div class="nt-panels">
+    <div class="nt-panel">
+      <h3><i class="fa-solid fa-chart-line"></i> {% trans 'Booking & Pendapatan — 14 Hari Terakhir' %}</h3>
+      <div class="nt-chart-wrap">
+        {{ dash.chart|json_script:"chartData" }}
+        <canvas id="chartMain"></canvas>
+      </div>
+    </div>
+    <div class="nt-panel">
+      <h3><i class="fa-solid fa-chart-pie"></i> {% trans 'Status Booking' %}</h3>
+      <div class="nt-chart-wrap sm">
+        {{ dash.status_donut|json_script:"donutData" }}
+        <canvas id="chartDonut"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Verifikasi + keberangkatan ============ -->
+  <div class="nt-panels">
+    <div class="nt-panel">
+      <h3>
+        <span><i class="fa-solid fa-file-shield"></i> {% trans 'Menunggu Verifikasi Pembayaran' %}</span>
+        <a class="nt-more" href="{% url 'admin:booking_booking_changelist' %}?status__exact=PENDING">{% trans 'Lihat semua' %} →</a>
+      </h3>
+      {% if dash.pending_list %}
+      <table>
+        <thead>
+          <tr>
+            <th>{% trans 'Kode' %}</th><th>{% trans 'Pemesan' %}</th><th>{% trans 'Rute' %}</th>
+            <th>{% trans 'Total' %}</th><th>{% trans 'Bukti' %}</th><th>{% trans 'Batas' %}</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in dash.pending_list %}
+          <tr>
+            <td><a href="{% url 'admin:booking_booking_change' p.pk %}"><strong>{{ p.code }}</strong></a></td>
+            <td>{{ p.contact_name }}</td>
+            <td class="nt-dim">{{ p.schedule.route.origin.name }} → {{ p.schedule.route.destination.name }}</td>
+            <td>{{ p.total_price|to_idr }}</td>
+            <td>
+              {% if p.has_proof_flag %}<span class="nt-badge ok">{% trans 'Ada bukti' %}</span>
+              {% else %}<span class="nt-badge muted">{% trans 'Tanpa bukti' %}</span>{% endif %}
+            </td>
+            <td class="nt-dim">{{ p.deadline_str }}</td>
+            <td><a class="nt-btn" href="{% url 'admin:booking_booking_change' p.pk %}">{% trans 'Verifikasi' %}</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="nt-empty">{% trans 'Tidak ada booking yang menunggu verifikasi. 🎉' %}</p>
+      {% endif %}
+    </div>
+
+    <div class="nt-panel">
+      <h3><i class="fa-solid fa-bus"></i> {% trans 'Keberangkatan Hari Ini' %}</h3>
+      {% if dash.departures %}
+      <table>
+        <thead>
+          <tr><th>{% trans 'Jadwal' %}</th><th>{% trans 'Bus' %}</th><th>{% trans 'Okupansi' %}</th></tr>
+        </thead>
+        <tbody>
+          {% for e in dash.departures %}
+          <tr>
+            <td><strong>{{ e.schedule.departure_time|date:'H:i' }}</strong><br>
+                <small class="nt-dim">{{ e.schedule.route.origin.name }} → {{ e.schedule.route.destination.name }}</small></td>
+            <td>{{ e.schedule.bus.code }}</td>
+            <td>
+              <div class="nt-occ-bar"><span class="nt-occ-fill {% if e.full %}full{% elif e.pct > 70 %}hot{% endif %}" style="width:{{ e.pct }}%"></span></div>
+              <small>{{ e.sold }}/{{ e.total }} {% trans 'kursi' %}{% if e.full %} · <strong class="nt-full">{% trans 'Penuh' %}</strong>{% endif %}</small>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="nt-empty">{% trans 'Belum ada penumpang untuk keberangkatan hari ini.' %}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ============ Aktivitas terbaru ============ -->
+  <div class="nt-panels">
+    <div class="nt-panel">
+      <h3>
+        <span><i class="fa-solid fa-clock-rotate-left"></i> {% trans 'Booking Terbaru' %}</span>
+        <a class="nt-more" href="{% url 'admin:booking_booking_changelist' %}">{% trans 'Lihat semua' %} →</a>
+      </h3>
+      {% if dash.recent_bookings %}
+      <table>
+        <thead>
+          <tr><th>{% trans 'Kode' %}</th><th>{% trans 'Pemesan' %}</th><th>{% trans 'Total' %}</th><th>{% trans 'Status' %}</th><th>{% trans 'Dibuat' %}</th></tr>
+        </thead>
+        <tbody>
+          {% for b in dash.recent_bookings %}
+          <tr>
+            <td><a href="{% url 'admin:booking_booking_change' b.pk %}">{{ b.code }}</a></td>
+            <td>{{ b.contact_name }}</td>
+            <td>{{ b.total_price|to_idr }}</td>
+            <td><span class="nt-badge {{ b.status|status_class }}">{{ b.get_status_display }}</span></td>
+            <td class="nt-dim">{{ b.created_at|date:'d M H:i' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="nt-empty">{% trans 'Belum ada booking.' %}</p>
+      {% endif %}
+    </div>
+
+    <div class="nt-panel">
+      <h3>
+        <span><i class="fa-solid fa-key"></i> {% trans 'Pesanan Sewa Terbaru' %}</span>
+        <a class="nt-more" href="{% url 'admin:rental_rentalbooking_changelist' %}">{% trans 'Lihat semua' %} →</a>
+      </h3>
+      {% if dash.recent_rentals %}
+      <table>
+        <thead>
+          <tr><th>{% trans 'Kode' %}</th><th>{% trans 'Mobil' %}</th><th>{% trans 'Total' %}</th><th>{% trans 'Status' %}</th></tr>
+        </thead>
+        <tbody>
+          {% for r in dash.recent_rentals %}
+          <tr>
+            <td><a href="{% url 'admin:rental_rentalbooking_change' r.pk %}">{{ r.code }}</a></td>
+            <td>{{ r.vehicle.name }}</td>
+            <td>{{ r.total_price|to_idr }}</td>
+            <td><span class="nt-badge {{ r.status|status_class }}">{{ r.get_status_display }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="nt-empty">{% trans 'Belum ada pesanan sewa.' %}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ============ Rute populer + aksi cepat ============ -->
+  <div class="nt-panels">
+    <div class="nt-panel">
+      <h3><i class="fa-solid fa-fire"></i> {% trans 'Rute Terpopuler — 30 Hari' %}</h3>
+      {% if dash.top_routes %}
+      <table>
+        <thead><tr><th>{% trans 'Rute' %}</th><th>{% trans 'pemesanan' %}</th></tr></thead>
+        <tbody>
+          {% for r in dash.top_routes %}
+          <tr>
+            <td>{{ r.schedule__route__origin__name }} → {{ r.schedule__route__destination__name }}</td>
+            <td><strong>{{ r.n }}</strong></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="nt-empty">{% trans 'Belum ada data pemesanan.' %}</p>
+      {% endif %}
+    </div>
+
+    <div class="nt-panel">
+      <h3><i class="fa-solid fa-bolt"></i> {% trans 'Aksi Cepat' %}</h3>
+      <div class="nt-quick">
+        <a href="{% url 'admin:booking_schedule_add' %}"><i class="fa-solid fa-calendar-plus"></i> {% trans 'Jadwal' %}</a>
+        <a href="{% url 'admin:booking_bus_add' %}"><i class="fa-solid fa-bus"></i> {% trans 'Bus' %}</a>
+        <a href="{% url 'admin:rental_vehicle_add' %}"><i class="fa-solid fa-car-side"></i> {% trans 'Mobil Rental' %}</a>
+        <a href="{% url 'admin:booking_city_add' %}"><i class="fa-solid fa-city"></i> {% trans 'Kota' %}</a>
+      </div>
+      <details class="nt-modules">
+        <summary>{% trans 'Semua Modul' %}</summary>
+        {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
+      </details>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block footer %}
+{{ block.super }}
+<script>
+(function () {
+  var safeParse = function (id) {
+    var el = document.getElementById(id);
+    return el ? JSON.parse(el.textContent) : null;
+  };
+  try {
+    var data = safeParse('chartData');
+    var el = document.getElementById('chartMain');
+    if (window.Chart && data && el) {
+      new Chart(el, {
+        type: 'bar',
+        data: {
+          labels: data.labels,
+          datasets: [
+            {label: 'Booking', data: data.counts, backgroundColor: '#0d3b66',
+             borderRadius: 6, yAxisID: 'y', order: 2},
+            {type: 'line', label: 'Pendapatan', data: data.revenue,
+             borderColor: '#f77f00', backgroundColor: 'rgba(247,127,0,.14)',
+             fill: true, tension: .35, pointRadius: 2.5, borderWidth: 2,
+             yAxisID: 'y1', order: 1}
+          ]
+        },
+        options: {
+          maintainAspectRatio: false,
+          plugins: {legend: {labels: {boxWidth: 12, font: {size: 11}}}},
+          scales: {
+            y: {beginAtZero: true, ticks: {precision: 0, font: {size: 10}}, grid: {color: '#eef2f7'}},
+            y1: {position: 'right', beginAtZero: true, grid: {drawOnChartArea: false},
+                 ticks: {font: {size: 10}, callback: function (v) {
+                   return v >= 1e6 ? (v / 1e6) + 'jt' : v >= 1e3 ? (v / 1e3) + 'rb' : v;
+                 }}},
+            x: {grid: {display: false}, ticks: {font: {size: 10}}}
+          }
+        }
+      });
+    }
+    var donut = safeParse('donutData');
+    var el2 = document.getElementById('chartDonut');
+    if (window.Chart && donut && el2) {
+      new Chart(el2, {
+        type: 'doughnut',
+        data: {
+          labels: donut.map(function (x) { return x.label; }),
+          datasets: [{data: donut.map(function (x) { return x.n; }),
+                      backgroundColor: donut.map(function (x) { return x.color; }),
+                      borderWidth: 0, hoverOffset: 6}]
+        },
+        options: {
+          maintainAspectRatio: false, cutout: '62%',
+          plugins: {legend: {position: 'bottom', labels: {boxWidth: 10, font: {size: 11}}}}
+        }
+      });
+    }
+  } catch (e) { /* CDN gagal — dasbor tetap terbaca tanpa grafik */ }
+})();
+</script>
+{% endblock %}

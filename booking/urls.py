@@ -1,0 +1,21 @@
+from django.urls import path
+
+from booking import views
+
+app_name = 'booking'
+
+urlpatterns = [
+    path('', views.SearchView.as_view(), name='search'),
+    path('kursi/<int:schedule_id>/', views.SeatSelectionView.as_view(), name='seats'),
+    path('pesan/<int:schedule_id>/', views.CreateBookingView.as_view(), name='create'),
+    path('booking/<str:code>/', views.BookingDetailView.as_view(), name='detail'),
+    path('booking/<str:code>/upload/', views.UploadProofView.as_view(), name='upload_proof'),
+    path('cek-booking/', views.CheckBookingView.as_view(), name='check'),
+    path('rute/', views.RouteHubView.as_view(), name='route_hub'),
+    # Pillar per kota — WAJIB sebelum pola <slug> detail agar tak tertangkap
+    path('rute/dari/<slug:city_slug>/', views.CityRoutePillarView.as_view(), name='city_routes'),
+    # Artikel bersarang di kategorinya: /bus/rute/dari/jember/surabaya/
+    path('rute/dari/<slug:city_slug>/<slug:dest_slug>/', views.RouteDetailView.as_view(), name='route_detail'),
+    # URL rute lama (flat) -> 301 permanen ke struktur hierarkis baru
+    path('rute/<slug:slug>/', views.RouteDetailRedirectView.as_view(), name='route_detail_legacy'),
+]

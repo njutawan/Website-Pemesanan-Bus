@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+{% load static i18n booking_extras %}
+
+{% block title %}{{ SITE_NAME }} — {% trans 'Tiket Bus Online & Rental Mobil' %}{% endblock %}
+{% block og_title %}{{ SITE_NAME }} — {% trans 'Tiket Bus Online & Rental Mobil' %}{% endblock %}
+{% block meta_description %}{% trans 'Pesan tiket bus antar kota pilih kursi sendiri, atau sewa mobil harian dengan sopir. Pembayaran transfer & QRIS, konfirmasi cepat via WhatsApp.' %}{% endblock %}
+
+{% block schema_json %}{% include 'includes/schema_ld.html' with data=schema_local_business %}{% endblock %}
+
+{% block preload %}
+<link rel="preload" as="image" fetchpriority="high"
+      href="{% static 'img/hero-bus.webp' %}"
+      imagesrcset="{% static 'img/hero-bus-900.webp' %} 900w, {% static 'img/hero-bus.webp' %} 1600w"
+      imagesizes="100vw">
+{% endblock %}
+
+{% block content %}
+<!-- ============ HERO + PENCARIAN ============ -->
+<section class="hero position-relative">
+  <picture>
+    <source type="image/webp"
+            srcset="{% static 'img/hero-bus-900.webp' %} 900w, {% static 'img/hero-bus.webp' %} 1600w"
+            sizes="100vw">
+    <source type="image/jpeg"
+            srcset="{% static 'img/hero-bus-900.jpg' %} 900w, {% static 'img/hero-bus.jpg' %} 1600w"
+            sizes="100vw">
+    <img src="{% static 'img/hero-bus.jpg' %}" class="hero-bg" width="1600" height="873"
+         fetchpriority="high" decoding="async" alt="{% trans 'Bus antar kota' %}">
+  </picture>
+  <div class="hero-overlay"></div>
+
+  <div class="container hero-content">
+    <div class="row justify-content-center text-center pt-lg-4">
+      <div class="col-lg-8">
+        <span class="badge text-bg-warning rounded-pill px-3 py-2 mb-3 fw-semibold">
+          <i class="fa-solid fa-bolt me-1"></i>{% trans '#1 Travel & Rental di Jawa Timur' %}
+        </span>
+        <h1 class="display-5 fw-800 text-white mb-3">
+          {% trans 'Perjalanan Nyaman,' %} <span class="text-warning">{% trans 'Harga Bersahabat' %}</span>
+        </h1>
+        <p class="lead text-white-75 mb-4 mx-auto hero-lead">
+          {% blocktrans %}Pesan tiket bus antar kota & rental mobil dalam satu tempat. Pilih kursi favoritmu, bayar via transfer atau QRIS, e-tiket langsung di tangan.{% endblocktrans %}
+        </p>
+      </div>
+    </div>
+
+    <!-- Kartu pencarian -->
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <form method="get" action="{% url 'booking:search' %}" class="search-card shadow-lg rounded-4 p-3 p-md-4" id="searchForm">
+          <div class="row g-3 align-items-end">
+            <!-- Pasangan kota + tombol tukar melayang di tengah -->
+            <div class="col-md-6 position-relative city-pair">
+              <div class="row g-3">
+                <div class="col-6">
+                  <label class="form-label small fw-semibold text-muted" for="id_origin">
+                    <i class="fa-solid fa-location-dot text-primary me-1"></i>{% trans 'Dari' %}</label>
+                  {{ form.origin }}
+                </div>
+                <div class="col-6">
+                  <label class="form-label small fw-semibold text-muted" for="id_destination">
+                    <i class="fa-solid fa-flag-checkered text-primary me-1"></i>{% trans 'Ke' %}</label>
+                  {{ form.destination }}
+                </div>
+              </div>
+              <button type="button" class="swap-btn-float" data-swap
+                      title="{% trans 'Tukar asal & tujuan' %}"
+                      aria-label="{% trans 'Tukar asal & tujuan' %}">
+                <i class="fa-solid fa-right-left"></i>
+              </button>
+            </div>
+            <div class="col-md-2 col-6">
+              <label class="form-label small fw-semibold text-muted" for="id_date">
+                <i class="fa-regular fa-calendar text-primary me-1"></i>{% trans 'Tanggal' %}</label>
+              {{ form.date }}
+            </div>
+            <div class="col-md-2 col-6">
+              <label class="form-label small fw-semibold text-muted" for="id_passengers">
+                <i class="fa-solid fa-user-group text-primary me-1"></i>{{ form.passengers.label }}</label>
+              {{ form.passengers }}
+            </div>
+            <div class="col-md-2 col-12 d-grid">
+              <button class="btn btn-accent text-nowrap" type="submit">
+                <i class="fa-solid fa-magnifying-glass me-1"></i>{% trans 'Cari Bus' %}
+              </button>
+            </div>
+          </div>
+        </form>
+        <div class="text-center mt-3">
+          <a href="{% url 'rental:index' %}" class="btn btn-outline-light btn-sm rounded-pill px-3 hero-pill">
+            <i class="fa-solid fa-car-side me-1"></i>{% trans 'Butuh mobil? Lihat katalog rental →' %}
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bar statistik (data nyata) -->
+    <div class="row justify-content-center mt-4 mt-lg-5">
+      <div class="col-lg-10">
+        <div class="hero-stats">
+          <div class="hs-item"><span class="n">{{ stats.cities }}+</span><span class="t">{% trans 'Kota Terlayani' %}</span></div>
+          <div class="hs-item"><span class="n">{{ stats.routes }}</span><span class="t">{% trans 'Rute Harian' %}</span></div>
+          <div class="hs-item"><span class="n">{{ stats.buses }}</span><span class="t">{% trans 'Armada Bus' %}</span></div>
+          <div class="hs-item"><span class="n">{{ stats.vehicles }}</span><span class="t">{% trans 'Mobil Rental' %}</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ KEUNGGULAN ============ -->
+<section class="py-5">
+  <div class="container">
+    <div class="row g-3 g-md-4">
+      <div class="col-md-3 col-6">
+        <div class="feature-card text-center h-100">
+          <div class="feature-icon mx-auto"><i class="fa-solid fa-couch"></i></div>
+          <h6 class="fw-bold mt-3 mb-1">{% trans 'Pilih Kursi Sendiri' %}</h6>
+          <p class="text-muted small mb-0">{% blocktrans %}Denah kursi interaktif — dapatkan tempat paling nyaman.{% endblocktrans %}</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="feature-card text-center h-100">
+          <div class="feature-icon mx-auto"><i class="fa-solid fa-shield-halved"></i></div>
+          <h6 class="fw-bold mt-3 mb-1">{% trans 'Pembayaran Aman' %}</h6>
+          <p class="text-muted small mb-0">{% blocktrans %}Transfer bank atau scan QRIS dari e-wallet apa pun.{% endblocktrans %}</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="feature-card text-center h-100">
+          <div class="feature-icon mx-auto"><i class="fa-solid fa-mobile-screen-button"></i></div>
+          <h6 class="fw-bold mt-3 mb-1">{% trans 'E-Tiket Instan' %}</h6>
+          <p class="text-muted small mb-0">{% blocktrans %}Kode booking dikirim setelah pembayaran terverifikasi.{% endblocktrans %}</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="feature-card text-center h-100">
+          <div class="feature-icon mx-auto"><i class="fa-solid fa-headset"></i></div>
+          <h6 class="fw-bold mt-3 mb-1">{% trans 'CS Ramah 24/7' %}</h6>
+          <p class="text-muted small mb-0">{% blocktrans %}Tim siap membantu via WhatsApp setiap hari.{% endblocktrans %}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RUTE POPULER ============ -->
+<section class="py-5 bg-light nt-cv">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+      <div>
+        <span class="text-uppercase small fw-bold text-primary">{% trans 'Destinasi Favorit' %}</span>
+        <h2 class="fw-800 mb-0">{% trans 'Rute Bus Populer' %}</h2>
+      </div>
+      <a href="{% url 'booking:route_hub' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+        {% trans 'Lihat semua' %} <i class="fa-solid fa-arrow-right ms-1"></i>
+      </a>
+    </div>
+    <div class="row g-4">
+      {% for route in popular_routes %}
+      <div class="col-md-6 col-lg-4">
+        <a href="{{ route.get_absolute_url }}" class="text-decoration-none">
+          <div class="card route-card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+              <div class="route-avatar"><i class="fa-solid fa-bus-simple"></i></div>
+              <div class="flex-grow-1">
+                <h6 class="fw-bold mb-1 text-dark">
+                  {{ route.origin.name }} <i class="fa-solid fa-arrow-right-long text-warning mx-1"></i> {{ route.destination.name }}
+                </h6>
+                <small class="text-muted">
+                  <i class="fa-solid fa-route me-1"></i>{{ route.distance_km }} km
+                  <i class="fa-regular fa-clock ms-2 me-1"></i>{{ route.duration_minutes|dur }}
+                  <i class="fa-solid fa-bus ms-2 me-1"></i>{{ route.n_schedules }} {% trans 'jadwal/hari' %}
+                </small>
+              </div>
+              <div class="text-end">
+                <small class="text-muted d-block">{% trans 'mulai' %}</small>
+                <span class="fw-bold text-primary">{{ route.min_price|to_idr }}</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============ GRID KATEGORI: PILLAR PER KOTA (internal linking) ============ -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="h4 fw-800 mb-0"><i class="fa-solid fa-map-location-dot text-warning me-2"></i>{% trans 'Pilih kota keberangkatan' %}</h2>
+      <a href="{% url 'booking:route_hub' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+        {% trans 'Lihat semua' %} <i class="fa-solid fa-arrow-right ms-1"></i>
+      </a>
+    </div>
+    <div class="row g-3">
+      {% for item in origin_cities %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <a href="{% url 'booking:city_routes' item.city.slug %}" class="text-decoration-none">
+          <div class="card route-card h-100 border-0 shadow-sm">
+            <div class="card-body py-3 d-flex align-items-center justify-content-between gap-2">
+              <div>
+                <div class="fw-bold text-dark small">{% blocktranslate with kota=item.city.name %}Bus dari {{ kota }}{% endblocktranslate %}</div>
+                <small class="text-muted">{% blocktranslate with n=item.n %}{{ n }} rute aktif{% endblocktranslate %}</small>
+              </div>
+              <i class="fa-solid fa-arrow-right text-warning"></i>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============ KELAS ARMADA BUS ============ -->
+<section class="py-5">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <span class="text-uppercase small fw-bold text-primary">{% trans 'Armada Kami' %}</span>
+        <h2 class="fw-800">{% trans 'Pilih Kelas Sesuai Budget' %}</h2>
+        <p class="text-muted">{% blocktrans %}Semua armada dirawat rutin dan diperiksa sebelum berangkat. Pilih kelas yang paling pas untuk perjalananmu.{% endblocktrans %}</p>
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <div class="class-item"><i class="fa-solid fa-chair"></i>
+              <div><strong>{% trans 'Ekonomi' %}</strong><small class="d-block text-muted">{% trans '2-2, AC, harga hemat' %}</small></div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="class-item"><i class="fa-solid fa-snowflake"></i>
+              <div><strong>AC</strong><small class="d-block text-muted">{% trans '2-2, pendingin sejuk' %}</small></div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="class-item"><i class="fa-solid fa-crown"></i>
+              <div><strong>{% trans 'Eksekutif' %}</strong><small class="d-block text-muted">{% trans '2-1, reclining seat' %}</small></div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="class-item"><i class="fa-solid fa-bed"></i>
+              <div><strong>Sleeper</strong><small class="d-block text-muted">{% trans '1-1, bisa tidur penuh' %}</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <picture>
+          <source type="image/webp" srcset="{% static 'img/fleet-bus.webp' %}">
+          <img src="{% static 'img/fleet-bus.jpg' %}" class="img-fluid rounded-4 shadow-lg"
+               width="1200" height="655" loading="lazy" decoding="async"
+               alt="{% trans 'Armada bus Nusantara Trans' %}">
+        </picture>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RENTAL PREVIEW ============ -->
+<section class="py-5 bg-light nt-cv">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+      <div>
+        <span class="text-uppercase small fw-bold text-primary">{% trans 'Rental Mobil' %}</span>
+        <h2 class="fw-800 mb-0">{% trans 'Sewa Mobil untuk Perjalanan Fleksibel' %}</h2>
+      </div>
+      <a href="{% url 'rental:index' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+        {% trans 'Semua mobil' %} <i class="fa-solid fa-arrow-right ms-1"></i>
+      </a>
+    </div>
+    <div class="row g-4">
+      {% for vehicle in featured_vehicles %}
+      <div class="col-md-6 col-lg-4">{% include 'includes/vehicle_card.html' %}</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============ CARA PESAN ============ -->
+<section class="py-5 nt-cv">
+  <div class="container">
+    <div class="text-center mb-4">
+      <span class="text-uppercase small fw-bold text-primary">{% trans 'Mudah & Cepat' %}</span>
+      <h2 class="fw-800">{% trans '4 Langkah Menuju Perjalanan' %}</h2>
+    </div>
+    <div class="row g-4 pt-3">
+      <div class="col-md-6 col-lg-3">
+        <div class="how-card text-center h-100">
+          <span class="how-num">1</span>
+          <div class="feature-icon mx-auto"><i class="fa-solid fa-magnifying-glass"></i></div>
+          <h6 class="fw-bold mt-3 mb-1">{% trans 'Cari jadwal' %}</h6>
+          <p class="small text-muted mb-0">{% blocktrans %}Tentukan kota asal, tujuan, dan tanggal.{% endblocktrans %}</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="how-card text-center h-100">
+          <span class="how-num">2</span>
+          <div class="feature-icon mx-auto"><i class="fa-solid fa-couch"></i></div>
+          <h6 class="fw-bold mt-3 mb-1">{% trans 'Pilih kursi' %}</h6>
+          <p class="small text-muted mb-0">{% blocktrans %}Ambil kursi favorit lewat denah interaktif.{% endblocktrans %}</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="how-card text-center h-100">
+          <span class="how-num">3</span>
+          <div class="feature-icon mx-auto"><i class="fa-solid fa-file-pen"></i></div>
+          <h6 class="fw-bold mt-3 mb-1">{% trans 'Isi data' %}</h6>
+          <p class="small text-muted mb-0">{% blocktrans %}Masukkan kontak, dapatkan kode booking.{% endblocktrans %}</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="how-card text-center h-100">
+          <span class="how-num">4</span>
+          <div class="feature-icon mx-auto"><i class="fa-solid fa-qrcode"></i></div>
+          <h6 class="fw-bold mt-3 mb-1">{% trans 'Bayar & berangkat' %}</h6>
+          <p class="small text-muted mb-0">{% blocktrans %}Transfer/QRIS, unggah bukti, tunjukkan e-tiket.{% endblocktrans %}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta-band py-5">
+  <div class="container text-center">
+    <h2 class="fw-800 text-white mb-2">{% trans 'Siap Berangkat Hari Ini?' %}</h2>
+    <p class="text-white-75 mb-4">{% blocktrans %}Kursi terbatas untuk jadwal populer — amankan tempatmu sekarang.{% endblocktrans %}</p>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <a href="{% url 'booking:search' %}" class="btn btn-warning btn-lg px-5 fw-bold text-dark">
+        <i class="fa-solid fa-ticket me-2"></i>{% trans 'Pesan Tiket Sekarang' %}
+      </a>
+      <a href="https://wa.me/{{ WHATSAPP_NUMBER }}" target="_blank" rel="noopener"
+         class="btn btn-outline-light btn-lg px-4">
+        <i class="fa-brands fa-whatsapp me-2"></i>{% trans 'Chat WhatsApp' %}
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Tanggal minimal = hari ini
+  (function () {
+    var d = document.getElementById('id_date');
+    if (d) { d.min = new Date().toISOString().split('T')[0]; d.value = d.min; }
+  })();
+</script>
+{% endblock %}

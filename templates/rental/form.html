@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load i18n booking_extras static %}
+
+{% block title %}{% trans 'Isi data' %} — {{ vehicle.name }} | {{ SITE_NAME }}{% endblock %}
+{% block og_title %}{% trans 'Isi data' %} — {{ vehicle.name }}{% endblock %}
+{% block meta_description %}{% blocktranslate with name=vehicle.name price=vehicle.price_per_day|to_idr %}Lengkapi data sewa {{ name }} mulai {{ price }}/hari — pilih tanggal, lokasi ambil, dan opsi sopir.{% endblocktranslate %}{% endblock %}
+
+{% block content %}
+<section class="page-hero-sm">
+  <div class="container py-4">
+    <nav aria-label="breadcrumb" class="small mb-2">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a class="text-white-50" href="{% url 'home' %}">{% trans 'Beranda' %}</a></li>
+        <li class="breadcrumb-item"><a class="text-white-50" href="{% url 'rental:index' %}">{% trans 'Rental Mobil' %}</a></li>
+        <li class="breadcrumb-item"><a class="text-white-50" href="{% url 'rental:detail' vehicle.slug %}">{{ vehicle.name }}</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">{% trans 'Isi data' %}</li>
+      </ol>
+    </nav>
+    <h1 class="h3 fw-800 text-white mb-1">{% trans 'Pesan Sekarang' %} — {{ vehicle.name }}</h1>
+    <p class="text-white-75 mb-0 small">{% trans 'Hampir selesai! Periksa ringkasan & lengkapi kontakmu.' %}</p>
+  </div>
+</section>
+
+<div class="container py-5">
+  <div class="row g-4 justify-content-center">
+    <!-- Form -->
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-3"><i class="fa-solid fa-file-pen text-primary me-2"></i>{% trans 'Informasi Kontak' %}</h5>
+          {% if form.non_field_errors %}
+          <div class="alert alert-danger small">
+            {% for e in form.non_field_errors %}{{ e }}<br>{% endfor %}
+          </div>
+          {% endif %}
+          <form method="post" action="{% url 'rental:book' vehicle.slug %}" id="rentalForm" novalidate
+      data-price="{{ vehicle.price_per_day }}" data-driver="{{ vehicle.driver_fee_per_day }}">
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-6">
+                <label class="form-label small fw-semibold" for="id_pickup_date">{{ form.pickup_date.label }}</label>
+                {{ form.pickup_date }}
+                {% for e in form.pickup_date.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-semibold" for="id_return_date">{{ form.return_date.label }}</label>
+                {{ form.return_date }}
+                {% for e in form.return_date.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-semibold" for="id_pickup_location">{{ form.pickup_location.label }}</label>
+                {{ form.pickup_location }}
+                {% if form.pickup_location.help_text %}<div class="form-text">{{ form.pickup_location.help_text }}</div>{% endif %}
+                {% for e in form.pickup_location.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+              </div>
+              <div class="col-12">
+                <div class="form-check driver-check">
+                  {{ form.with_driver }}
+                  <label class="form-check-label small fw-semibold" for="id_with_driver">{{ form.with_driver.label }}</label>
+                </div>
+              </div>
+              <div class="col-12"><hr class="my-1"></div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold" for="id_contact_name">{{ form.contact_name.label }}</label>
+                {{ form.contact_name }}
+                {% for e in form.contact_name.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold" for="id_contact_phone">{{ form.contact_phone.label }}</label>
+                {{ form.contact_phone }}
+                {% for e in form.contact_phone.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-semibold" for="id_contact_email">{{ form.contact_email.label }}</label>
+                {{ form.contact_email }}
+                {% for e in form.contact_email.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+              </div>
+            </div>
+
+            <div class="estimate-box mt-3">
+              <div class="d-flex justify-content-between small mb-1">
+                <span class="text-muted">{% trans 'Lama sewa' %}</span><strong id="estDays">—</strong>
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-semibold">{% trans 'Estimasi total' %}</span>
+                <strong class="fs-4 text-primary" id="estTotal">{{ vehicle.price_per_day|to_idr }}</strong>
+              </div>
+            </div>
+
+            <button class="btn btn-accent btn-lg w-100 mt-3" type="submit">
+              <i class="fa-solid fa-key me-2"></i>{% trans 'Buat Booking' %}
+            </button>
+            <p class="small text-muted text-center mt-3 mb-0">
+              <i class="fa-solid fa-lock me-1"></i>{% blocktrans with h=PAYMENT_TIMEOUT_HOURS %}Unit dipegang {{ h }} jam menunggu pembayaran.{% endblocktrans %}
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ringkasan unit -->
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm rounded-4 position-sticky" style="top:90px">
+        <div class="vehicle-img-wrap rounded-top-4">
+          <picture>
+            <source type="image/webp" srcset="{{ vehicle.image.url|webp_url }}">
+            <img src="{{ vehicle.image.url }}" class="card-img-top" width="900" height="491"
+                 alt="{{ vehicle.name }}" loading="lazy" decoding="async">
+          </picture>
+        </div>
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-1">{{ vehicle.name }}</h5>
+          <div class="text-muted small mb-3">
+            {{ vehicle.get_category_display }} · {{ vehicle.year }} · {{ vehicle.get_transmission_display }}
+          </div>
+          <ul class="list-unstyled small text-muted trip-summary">
+            <li><i class="fa-solid fa-users me-2 text-primary"></i>{{ vehicle.seats }} {% trans 'kursi' %}</li>
+            <li><i class="fa-solid fa-money-bill-wave me-2 text-primary"></i>{{ vehicle.price_per_day|to_idr }}/{% trans 'hari' %}
+              {% if vehicle.driver_fee_per_day > 0 %}+ {{ vehicle.driver_fee_per_day|to_idr }}/{% trans 'hari' %} {% trans 'jika pakai sopir' %}{% else %}· {% trans 'Sopir gratis' %}{% endif %}
+            </li>
+            <li><i class="fa-regular fa-clock me-2 text-primary"></i>{% blocktrans with h=PAYMENT_TIMEOUT_HOURS %}Unit dipegang {{ h }} jam menunggu pembayaran.{% endblocktrans %}</li>
+          </ul>
+          <hr>
+          <a href="{% url 'rental:detail' vehicle.slug %}" class="small text-decoration-none">
+            <i class="fa-solid fa-arrow-left me-1"></i>{% trans 'Kembali ke detail mobil' %}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% load compress %}
+{% compress js %}
+<script src="{% static 'js/rental-form.js' %}" defer></script>
+{% endcompress %}
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load i18n cache %}
+
+{% block title %}{% trans 'Rental Mobil' %} — {{ SITE_NAME }}{% endblock %}
+{% block og_title %}{% trans 'Sewa Mobil Harian dengan Sopir' %} — {{ SITE_NAME }}{% endblock %}
+{% block meta_description %}{% trans 'Katalog rental mobil: MPV, SUV, HiAce, hingga bus kecil. Harga transparan per hari, opsi dengan sopir, bisa antar-jemput.' %}{% endblock %}
+
+{% block content %}
+<section class="page-hero-sm">
+  <div class="container py-4">
+    <h1 class="h3 fw-800 text-white mb-1"><i class="fa-solid fa-car-side me-2"></i>{% trans 'Rental Mobil' %}</h1>
+    <p class="text-white-75 mb-0 small">{% trans 'Armada terawat, sopir berpengalaman, harga transparan.' %}</p>
+  </div>
+</section>
+
+<div class="container py-5">
+  <!-- Filter kategori -->
+  <div class="d-flex flex-wrap gap-2 mb-4">
+    <a href="{% url 'rental:index' %}" class="btn {% if not active_category %}btn-accent{% else %}btn-outline-primary{% endif %} btn-sm rounded-pill px-3">
+      <i class="fa-solid fa-layer-group me-1"></i>{% trans 'Semua' %}
+    </a>
+    {% for key, label in categories %}
+    <a href="{% url 'rental:index' %}?kategori={{ key }}"
+       class="btn {% if active_category == key %}btn-accent{% else %}btn-outline-primary{% endif %} btn-sm rounded-pill px-3">
+      {{ label }}
+    </a>
+    {% endfor %}
+  </div>
+
+  {% cache 600 vehicle_grid active_category %}
+  <div class="row g-4">
+    {% for vehicle in vehicles %}
+    <div class="col-md-6 col-lg-4">
+      {% include 'includes/vehicle_card.html' %}
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+      <i class="fa-solid fa-car-tunnel fa-3x text-muted mb-3"></i>
+      <h5 class="fw-bold">{% trans 'Belum ada mobil pada kategori ini' %}</h5>
+      <p class="text-muted">{% trans 'Coba kategori lain atau hubungi kami.' %}</p>
+    </div>
+    {% endfor %}
+  </div>
+  {% endcache %}
+
+  <div class="alert alert-light border rounded-4 mt-5 d-flex align-items-start gap-3">
+    <i class="fa-solid fa-circle-info text-primary fs-4"></i>
+    <div class="small">
+      <strong>{% trans 'Syarat sewa:' %}</strong>
+      {% blocktrans %}KTP/SIM asli, minimal 1 hari sewa, DP 50% untuk reservasi. Unit diantar dalam kota Jember gratis — luar kota hubungi CS.{% endblocktrans %}
+    </div>
+  </div>
+</div>
+{% endblock %}

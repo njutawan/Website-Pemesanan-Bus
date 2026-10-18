@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load i18n booking_extras %}
+
+{% block title %}{% blocktranslate with kota=city.name %}Bus dari {{ kota }} — Semua Rute & Harga{% endblocktranslate %} | {{ SITE_NAME }}{% endblock %}
+{% block meta_description %}{% blocktranslate with kota=city.name n=routes|length %}Semua rute bus dari {{ kota }}: {{ n }} destinasi dengan jadwal keberangkatan, durasi perjalanan, dan harga tiket termurah per kelas armada.{% endblocktranslate %}{% endblock %}
+
+{% block content %}
+<section class="page-hero-sm">
+  <div class="container py-4">
+    <nav aria-label="breadcrumb" class="small mb-2">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a class="text-white-50" href="{% url 'home' %}">{% trans 'Beranda' %}</a></li>
+        <li class="breadcrumb-item"><a class="text-white-50" href="{% url 'booking:search' %}">{% trans 'Tiket Bus' %}</a></li>
+        <li class="breadcrumb-item"><a class="text-white-50" href="{% url 'booking:route_hub' %}">{% trans 'Semua Rute' %}</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">{{ city.name }}</li>
+      </ol>
+    </nav>
+    <h1 class="h3 fw-800 text-white mb-1"><i class="fa-solid fa-city me-2"></i>{% blocktranslate with kota=city.name %}Bus dari {{ kota }}{% endblocktranslate %}</h1>
+    <p class="text-white-75 mb-0 small">{% blocktranslate with n=routes|length kota=city.name %}{{ n }} rute aktif dari {{ kota }} — pilih destinasi untuk melihat jadwal & harga.{% endblocktranslate %}</p>
+  </div>
+</section>
+
+<div class="container py-5">
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="row g-3">
+        {% for r in routes %}
+        <div class="col-md-6">
+          <a class="text-decoration-none" href="{{ r.get_absolute_url }}">
+            <div class="card route-card border shadow-sm h-100">
+              <div class="card-body py-3 d-flex justify-content-between align-items-center gap-2">
+                <div>
+                  <div class="fw-bold text-dark">{{ r.origin.name }} → {{ r.destination.name }}</div>
+                  <small class="text-muted">
+                    <i class="fa-regular fa-clock me-1"></i>{{ r.duration_minutes|dur }}
+                    <i class="fa-solid fa-bus ms-2 me-1"></i>{{ r.n_schedules }} {% trans 'jadwal/hari' %}
+                  </small>
+                </div>
+                <div class="text-end">
+                  <small class="text-muted d-block">{% trans 'mulai' %}</small>
+                  <span class="fw-bold text-primary">{{ r.min_price|to_idr }}</span>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4 position-sticky" style="top:90px">
+        <div class="card-body p-4">
+          <h2 class="h6 fw-bold mb-3"><i class="fa-solid fa-diagram-project text-warning me-1"></i>{% trans 'Kota asal lainnya' %}</h2>
+          <ul class="list-unstyled d-grid gap-1 mb-0 small">
+            {% for c in other_cities %}
+            <li><a href="{% url 'booking:city_routes' c.slug %}" class="text-decoration-none text-primary">{{ c.name }}</a></li>
+            {% endfor %}
+          </ul>
+          <hr>
+          <a href="{% url 'booking:route_hub' %}" class="small">{% trans 'Semua rute…' %}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

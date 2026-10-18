@@ -1,0 +1,1587 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: compile_i18n (polib)\n"
+
+msgid "#1 Travel & Rental di Jawa Timur"
+msgstr "#1 Travel & Car Rental in East Java"
+
+msgid "%(n)s rute aktif"
+msgstr "%(n)s active routes"
+
+msgid ""
+"%(n)s rute aktif dari %(kota)s — pilih destinasi untuk melihat jadwal & "
+"harga."
+msgstr ""
+"%(n)s active routes from %(kota)s — pick a destination to see schedules & "
+"prices."
+
+msgid "%(n)s rute aktif — pilih kota asal untuk melihat jadwal & harga."
+msgstr ""
+"%(n)s active routes — pick a departure city to see schedules & prices."
+
+msgid "(belum ada)"
+msgstr ""
+
+msgid "1 kursi sudah terisi pada tanggal ini."
+msgid_plural "%(taken_count)s kursi sudah terisi pada tanggal ini."
+msgstr[0] "1 seat is already taken on this date."
+
+msgid "1-1, bisa tidur penuh"
+msgstr "1-1, fully reclined sleeping"
+
+msgid "2-1, reclining seat"
+msgstr "2-1, reclining seats"
+
+msgid "2-2, AC, harga hemat"
+msgstr "2-2, A/C, budget friendly"
+
+msgid "2-2, pendingin sejuk"
+msgstr "2-2, cool air conditioning"
+
+msgid "4 Langkah Menuju Perjalanan"
+msgstr "4 Steps to Your Journey"
+
+msgid "AC"
+msgstr ""
+
+msgid "Ada bukti"
+msgstr "With proof"
+
+msgid "Ada gangguan di sisi kami"
+msgstr "We're experiencing a hiccup"
+
+msgid "Ada kursi yang tidak ditemukan pada bus ini."
+msgstr "Some seats were not found on this bus."
+
+msgid "Ada pertanyaan sebelum / sesudah memesan? Tim kami siap membantu."
+msgstr "Questions before or after booking? Our team is ready to help."
+
+msgid "Agen & Pool"
+msgstr "Agents & Pools"
+
+msgid "Agen Denpasar — Terminal Ubung"
+msgstr "Denpasar Agent — Ubung Terminal"
+
+msgid "Agen Surabaya — Terminal Purabaya"
+msgstr "Surabaya Agent — Purabaya Terminal"
+
+msgid "Aksi Cepat"
+msgstr "Quick Actions"
+
+msgid "Ambil"
+msgstr "Pick-up"
+
+msgid "Ambil kursi favorit lewat denah interaktif."
+msgstr "Grab your favorite seat on the interactive map."
+
+msgid "Armada Bus"
+msgstr "Buses"
+
+msgid "Armada Kami"
+msgstr "Our Fleet"
+
+msgid "Armada Nusantara Trans"
+msgstr "Nusantara Trans fleet"
+
+msgid "Armada Terawat"
+msgstr "Well-Maintained Fleet"
+
+msgid "Armada bus Nusantara Trans"
+msgstr "Nusantara Trans bus fleet"
+
+msgid "Armada terawat, sopir berpengalaman, harga transparan."
+msgstr "Well-maintained vehicles, experienced drivers, transparent prices."
+
+msgid "Atas nama"
+msgstr "Account holder"
+
+msgid "Atau langsung cari jadwal di sini:"
+msgstr "Or search a schedule right here:"
+
+msgid "Bagasi luas"
+msgstr "Spacious luggage"
+
+msgid "Bahasa Indonesia"
+msgstr ""
+
+msgid "Batalkan booking yang dipilih"
+msgstr ""
+
+msgid "Batalkan pesanan yang dipilih"
+msgstr ""
+
+msgid "Batas"
+msgstr "Deadline"
+
+msgid "Batas waktu pembayaran sudah lewat."
+msgstr "The payment deadline has passed."
+
+msgid ""
+"Batas waktu pembayaran terlewat, booking ini kedaluwarsa. Silakan buat "
+"booking baru."
+msgstr ""
+"The payment deadline has passed and this booking has expired. Please create "
+"a new booking."
+
+msgid "Batas waktu pembayaran terlewat. Silakan buat pesanan baru."
+msgstr "The payment deadline has passed. Please create a new order."
+
+msgid "Bayar & berangkat"
+msgstr "Pay & go"
+
+msgid "Bayar sebelum"
+msgstr "Pay before"
+
+msgid "Belum Bayar"
+msgstr "Unpaid"
+
+msgid "Belum ada booking."
+msgstr "No bookings yet."
+
+msgid "Belum ada data pemesanan."
+msgstr "No booking data yet."
+
+msgid "Belum ada jadwal untuk rute & tanggal ini"
+msgstr "No schedules for this route & date yet"
+
+msgid "Belum ada mobil pada kategori ini"
+msgstr "No vehicles in this category yet"
+
+msgid "Belum ada penumpang untuk keberangkatan hari ini."
+msgstr "No passengers for today's departures yet."
+
+msgid "Belum ada pesanan sewa."
+msgstr "No rental orders yet."
+
+msgid "Belum unggah"
+msgstr "Not uploaded"
+
+msgid "Beranda"
+msgstr "Home"
+
+msgid "Berangkat & tiba sesuai jadwal adalah janji utama kami."
+msgstr "Departing & arriving on schedule is our main promise."
+
+msgid "Berapa harga tiket bus %(origin)s ke %(destination)s?"
+msgstr "How much is the bus ticket from %(origin)s to %(destination)s?"
+
+msgid "Berapa lama perjalanan bus dari %(origin)s ke %(destination)s?"
+msgstr "How long is the bus trip from %(origin)s to %(destination)s?"
+
+msgid "Berawal dari Satu Bus, Kini Layani 7+ Kota"
+msgstr "From One Bus to Serving 7+ Cities"
+
+msgid "Bisa bayar lewat QRIS."
+msgstr "Pay via QRIS."
+
+msgid "Booking"
+msgstr "Booking"
+
+msgid "Booking %s dikonfirmasi."
+msgstr "Booking %s confirmed."
+
+msgid "Booking & Pendapatan — 14 Hari Terakhir"
+msgstr "Bookings & Revenue — Last 14 Days"
+
+msgid "Booking Berhasil Dibuat!"
+msgstr "Booking Created Successfully!"
+
+msgid "Booking Hari Ini"
+msgstr "Bookings Today"
+
+msgid "Booking Terbaru"
+msgstr "Latest Bookings"
+
+msgid "Booking berhasil dibuat! Selesaikan pembayaran sebelum batas waktu."
+msgstr "Booking created! Complete the payment before the deadline."
+
+msgid ""
+"Booking dengan kode <strong>%(code)s</strong> tidak ditemukan. Periksa "
+"kembali penulisannya."
+msgstr ""
+"No booking found with code <strong>%(code)s</strong>. Please check it again."
+
+msgid "Booking ini sudah tidak aktif."
+msgstr "This booking is no longer active."
+
+msgid "Booking ini sudah tidak bisa menerima unggahan bukti."
+msgstr "This booking can no longer accept proof uploads."
+
+msgid "Booking tidak berstatus menunggu pembayaran."
+msgstr "Booking is not awaiting payment."
+
+msgid "Buat Booking"
+msgstr "Create Booking"
+
+msgid "Buka Navigasi"
+msgstr "Open Navigation"
+
+msgid "Buka navigasi"
+msgstr "Toggle navigation"
+
+msgid "Bukti"
+msgstr "Proof"
+
+msgid "Bukti pembayaran"
+msgstr "Payment proof"
+
+msgid "Bukti pembayaran terkirim. Tim kami verifikasi maksimal 15 menit."
+msgstr "Payment proof submitted. We will verify it within 15 minutes."
+
+msgid "Bukti sudah diterima"
+msgstr "Proof received"
+
+msgid "Bus"
+msgstr "Bus"
+
+msgid "Bus %(origin)s ke %(dest)s"
+msgstr "Bus from %(origin)s to %(dest)s"
+
+msgid "Bus Kecil (20+ penumpang)"
+msgstr "Mini Bus (20+ passengers)"
+
+msgid "Bus antar kota"
+msgstr "Intercity bus"
+
+msgid "Bus dari %(kota)s"
+msgstr "Buses from %(kota)s"
+
+msgid "Bus dari %(kota)s — Semua Rute & Harga"
+msgstr "Buses from %(kota)s — All Routes & Prices"
+
+msgid "Butuh Bantuan?"
+msgstr "Need Help?"
+
+msgid "Butuh mobil? Lihat katalog rental →"
+msgstr "Need a car? Browse the rental catalog →"
+
+msgid "CS Ramah 24/7"
+msgstr "Friendly 24/7 Support"
+
+msgid "Cara Pembayaran"
+msgstr "How to Pay"
+
+msgid "Cari"
+msgstr "Search"
+
+msgid "Cari & Pesan Tiket Bus Online"
+msgstr "Search & Book Bus Tickets Online"
+
+msgid "Cari Bus"
+msgstr "Search Buses"
+
+msgid "Cari Jadwal"
+msgstr "Find Schedule"
+
+msgid "Cari Jadwal Bus"
+msgstr "Find Bus Schedules"
+
+msgid "Cari jadwal"
+msgstr "Find a schedule"
+
+msgid ""
+"Cari jadwal bus antar kota, bandingkan harga & kelas, pilih kursi favoritmu."
+msgstr ""
+"Search intercity bus schedules, compare prices & classes, and pick your "
+"favorite seat."
+
+msgid "Cari jadwal lagi"
+msgstr "Search schedules again"
+
+msgid "Catatan admin"
+msgstr ""
+
+msgid "Cek Booking"
+msgstr "Check Booking"
+
+msgid "Cek Kursi Tersedia"
+msgstr "Check Seat Availability"
+
+msgid "Cek Status Booking"
+msgstr "Check Booking Status"
+
+msgid "Cerita Kami"
+msgstr "Our Story"
+
+msgid "Chat WhatsApp"
+msgstr "Chat on WhatsApp"
+
+msgid "Coba kategori lain atau hubungi kami."
+msgstr "Try another category or contact us."
+
+msgid ""
+"Coba tanggal lain, atau hubungi kami via WhatsApp untuk charter khusus."
+msgstr "Try another date, or contact us on WhatsApp for a custom charter."
+
+msgid ""
+"Cocokkan persis dengan URL. '/bus/' berlaku untuk ID & EN; '/en/bus/' khusus"
+" EN. Halaman detail (rute/mobil) memakai judul objek."
+msgstr ""
+"Match the URL exactly. '/bus/' applies to both ID & EN; '/en/bus/' is EN-"
+"only. Detail pages (route/vehicle) use the object title."
+
+msgid ""
+"Daftar lengkap semua rute bus antar kota Nusantara Trans: jadwal "
+"keberangkatan, durasi perjalanan, dan harga tiket per kelas armada."
+msgstr ""
+"Complete list of Nusantara Trans intercity bus routes: departure schedules, "
+"trip durations, and ticket prices per bus class."
+
+msgid "Dari"
+msgstr "From"
+
+msgid "Dari %(kota)s"
+msgstr "From %(kota)s"
+
+msgid "Dasbor"
+msgstr "Dashboard"
+
+msgid "Data Pemesan"
+msgstr "Booking Details"
+
+msgid "Denah Kursi"
+msgstr "Seat Map"
+
+msgid "Denah kursi interaktif — dapatkan tempat paling nyaman."
+msgstr "Interactive seat map — grab the most comfortable spot."
+
+msgid "Destinasi Favorit"
+msgstr "Favorite Destinations"
+
+msgid "Detail"
+msgstr "Details"
+
+msgid "Detail Booking"
+msgstr "Booking Details"
+
+msgid "Detail Perjalanan"
+msgstr "Trip Details"
+
+msgid "Detail Pesanan Sewa"
+msgstr "Rental Order Details"
+
+msgid "Dibangun dengan Django & Bootstrap"
+msgstr "Built with Django & Bootstrap"
+
+msgid "Dibatalkan"
+msgstr "Cancelled"
+
+msgid "Dibuat"
+msgstr "Created"
+
+msgid "Digunakan untuk konfirmasi & e-tiket."
+msgstr "Used for confirmation & your e-ticket."
+
+msgid "Disarankan 120–160 karakter."
+msgstr "Aim for 120–160 characters."
+
+msgid "E-Tiket Instan"
+msgstr "Instant E-Ticket"
+
+msgid "E-tiket aktif. Sampai jumpa di pool!"
+msgstr "Your e-ticket is active. See you at the pool!"
+
+msgid "E-tiket digital, tanpa cetak."
+msgstr "Digital e-ticket, no printing needed."
+
+msgid "Ekonomi"
+msgstr "Economy"
+
+msgid "Eksekutif"
+msgstr "Executive"
+
+msgid "Ekspor CSV yang dipilih"
+msgstr "Export selected as CSV"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "English"
+msgstr ""
+
+msgid "Estimasi total"
+msgstr "Estimated total"
+
+msgid "Format JPG/PNG, maks. 5 MB."
+msgstr "JPG/PNG, max. 5 MB."
+
+msgid "Format JPG/PNG, maks. 5 MB. Screenshot m-banking atau foto struk/QRIS."
+msgstr ""
+"JPG/PNG, max. 5 MB. A screenshot of your banking app or a photo of the "
+"receipt/QRIS."
+
+msgid "Formulir tidak bisa dikirim karena masalah keamanan sesi"
+msgstr "The form could not be submitted due to a session security issue"
+
+msgid "Halaman tidak ditemukan"
+msgstr "Page not found"
+
+msgid ""
+"Halaman yang Anda cari tidak ada atau sudah dipindah. Jangan khawatir — "
+"perjalanan Anda tetap bisa dimulai dari sini:"
+msgstr ""
+"The page you're looking for doesn't exist or has moved. Don't worry — you "
+"can start your journey right here:"
+
+msgid "Hampir selesai! Periksa ringkasan & lengkapi kontakmu."
+msgstr "Almost done! Review the summary & complete your contact info."
+
+msgid "Harga Bersahabat"
+msgstr "Friendly Prices"
+
+msgid "Harga sewa"
+msgstr "Rental price"
+
+msgid ""
+"Harga tiket mulai dari %(harga)s per kursi, tergantung kelas bus dan "
+"fasilitasnya."
+msgstr ""
+"Tickets start from %(harga)s per seat, depending on bus class and amenities."
+
+msgid "Harga/kursi"
+msgstr "Price/seat"
+
+msgid "Hubungi Kami"
+msgstr "Contact Us"
+
+msgid "Idealnya rasio 1.91:1, minimal 1200×630 px."
+msgstr "Ideally 1.91:1 ratio, at least 1200×630 px."
+
+msgid "Indeks"
+msgstr "Indexing"
+
+msgid "Informasi Kontak"
+msgstr "Contact Information"
+
+msgid "Isi data"
+msgstr "Fill in details"
+
+msgid "Jadwal"
+msgstr "Schedule"
+
+msgid "Jadwal Hari Ini & Setelahnya"
+msgstr "Today's & Upcoming Schedules"
+
+msgid ""
+"Jadwal bus %(origin)s–%(dest)s hari ini: keberangkatan, durasi, kelas "
+"armada, dan harga tiket mulai dari harga termurah. Pesan online, pilih kursi"
+" sendiri."
+msgstr ""
+"Today's %(origin)s–%(dest)s bus schedule: departures, duration, bus classes,"
+" and ticket prices from the lowest. Book online and choose your own seat."
+
+msgid "Jadwal untuk rute ini belum tersedia. Hubungi kami untuk info terbaru."
+msgstr "No schedules for this route yet. Contact us for the latest info."
+
+msgid ""
+"Jika situs dibuka dalam mode pratinjau/jendela tersemat, buka di tab baru."
+msgstr ""
+"If the site is open in an embedded preview frame, open it in a new tab "
+"instead."
+
+msgid "Jumlah kursi"
+msgstr "Number of seats"
+
+msgid ""
+"Jumlah kursi berubah setiap saat. Pilih tanggal untuk melihat kursi yang "
+"masih kosong:"
+msgstr ""
+"Seat availability changes all the time. Pick a date to see the free seats:"
+
+msgid ""
+"KTP/SIM asli, minimal 1 hari sewa, DP 50% untuk reservasi. Unit diantar "
+"dalam kota Jember gratis — luar kota hubungi CS."
+msgstr ""
+"Original ID/driver's license, minimum 1-day rental, 50% down payment to "
+"reserve. Free delivery within Jember city — contact support for other areas."
+
+msgid ""
+"Kami percaya perjalanan darat seharusnya mudah dipesan: pilih kursi sendiri,"
+" bayar dari mana saja, dan dapatkan e-tiket tanpa antre di loket."
+msgstr ""
+"We believe land travel should be easy to book: choose your own seat, pay "
+"from anywhere, and get an e-ticket without queueing at a counter."
+
+msgid "Kantor Pusat"
+msgstr "Head Office"
+
+msgid "Kapan keberangkatan pertama dari %(origin)s?"
+msgstr "When is the first departure from %(origin)s?"
+
+msgid ""
+"Katalog rental mobil: MPV, SUV, HiAce, hingga bus kecil. Harga transparan "
+"per hari, opsi dengan sopir, bisa antar-jemput."
+msgstr ""
+"Rental catalog: MPVs, SUVs, HiAce vans, and mini buses. Transparent daily "
+"prices, optional driver, and delivery available."
+
+msgid "Ke"
+msgstr "To"
+
+msgid "Keberangkatan"
+msgstr "Departure"
+
+msgid "Keberangkatan Hari Ini"
+msgstr "Departures Today"
+
+msgid ""
+"Keberangkatan pertama dari %(origin)s pukul %(jam)s WIB. Tersedia %(jumlah)s"
+" jadwal setiap hari."
+msgstr ""
+"The first departure from %(origin)s is at %(jam)s WIB. There are %(jumlah)s "
+"departures daily."
+
+msgid "Kedaluwarsa"
+msgstr "Expired"
+
+msgid "Kembali"
+msgstr "Return"
+
+msgid "Kembali & Ulangi"
+msgstr "Go Back & Retry"
+
+msgid "Kembali ke detail mobil"
+msgstr "Back to vehicle details"
+
+msgid "Kirim Bukti Pembayaran"
+msgstr "Submit Payment Proof"
+
+msgid "Kode"
+msgstr "Code"
+
+msgid "Kode Booking"
+msgstr "Booking Code"
+
+msgid "Kode Pesanan"
+msgstr "Order Code"
+
+msgid "Kode booking dikirim setelah pembayaran terverifikasi."
+msgstr "Your booking code is issued once payment is verified."
+
+msgid "Kode booking terlihat seperti: NT-A7K2QP"
+msgstr "A booking code looks like: NT-A7K2QP"
+
+msgid "Konfirmasi pembayaran ini"
+msgstr "Confirm this payment"
+
+msgid "Konfirmasi pembayaran sewa ini"
+msgstr "Confirm this rental payment"
+
+msgid "Konfirmasi pembayaran yang dipilih"
+msgstr ""
+
+msgid "Konfirmasi via WhatsApp"
+msgstr "Confirm via WhatsApp"
+
+msgid "Kontak"
+msgstr "Contact"
+
+msgid "Konten SEO"
+msgstr "SEO content"
+
+msgid "Kota"
+msgstr "City"
+
+msgid "Kota Asal"
+msgstr "Origin City"
+
+msgid "Kota Terlayani"
+msgstr "Cities Served"
+
+msgid "Kota Tujuan"
+msgstr "Destination City"
+
+msgid "Kota asal"
+msgstr "Origin city"
+
+msgid "Kota asal dan tujuan tidak boleh sama."
+msgstr "Origin and destination cannot be the same."
+
+msgid "Kota asal lainnya"
+msgstr "Other departure cities"
+
+msgid "Kota tujuan"
+msgstr "Destination city"
+
+msgid "Kursi"
+msgstr "Seat"
+
+msgid "Kursi %(label)s"
+msgstr "Seat %(label)s"
+
+msgid ""
+"Kursi Anda dikunci selama %(h)s jam. Selesaikan pembayaran di bawah ini agar"
+" booking tidak kedaluwarsa."
+msgstr ""
+"Your seats are locked for %(h)s hours. Complete the payment below before the"
+" booking expires."
+
+msgid "Kursi dikunci %(h)s jam setelah booking dibuat."
+msgstr "Seats are locked for %(h)s hours after booking."
+
+msgid "Kursi dipilih"
+msgstr "Seats selected"
+
+msgid ""
+"Kursi langsung dikunci untuk Anda. Selesaikan pembayaran dalam %(h)s jam."
+msgstr "Your seats are locked instantly. Complete payment within %(h)s hours."
+
+msgid "Kursi terbatas untuk jadwal populer — amankan tempatmu sekarang."
+msgstr "Seats on popular departures are limited — secure yours now."
+
+msgid "Lama sewa"
+msgstr "Rental length"
+
+msgid "Langkah pemesanan"
+msgstr "Booking steps"
+
+msgid "Lanjut Isi Data"
+msgstr "Continue to Details"
+
+msgid ""
+"Lengkapi data sewa %(name)s mulai %(price)s/hari — pilih tanggal, lokasi "
+"ambil, dan opsi sopir."
+msgstr ""
+"Complete your %(name)s rental from %(price)s/day — pick dates, pick-up "
+"location, and driver options."
+
+msgid "Lepas kunci"
+msgstr "Self-drive"
+
+msgid "Lihat Kursi Sekarang"
+msgstr "See Seats Now"
+
+msgid "Lihat Status"
+msgstr "View Status"
+
+msgid "Lihat mobil lain"
+msgstr "See other vehicles"
+
+msgid "Lihat semua"
+msgstr "See all"
+
+msgid "Lihat semua rute"
+msgstr "View all routes"
+
+msgid "Lokasi ambil"
+msgstr "Pick-up location"
+
+msgid "MPV (5–7 penumpang)"
+msgstr "MPV (5–7 passengers)"
+
+msgid ""
+"Maaf, beberapa kursi baru saja diambil orang lain. Silakan pilih ulang."
+msgstr ""
+"Sorry, some seats were just taken by someone else. Please choose again."
+
+msgid ""
+"Maaf, beberapa kursi yang Anda pilih baru saja diambil. Silakan pilih ulang."
+msgstr ""
+"Sorry, some of your chosen seats were just taken. Please choose again."
+
+msgid ""
+"Maaf, terjadi kesalahan tak terduga. Tim teknis kami sudah diberi tahu. "
+"Silakan coba beberapa saat lagi atau hubungi kami via WhatsApp."
+msgstr ""
+"Sorry, an unexpected error occurred. Our technical team has been notified. "
+"Please try again shortly or reach us on WhatsApp."
+
+msgid "Maksimal sewa 30 hari. Untuk lebih, hubungi kami."
+msgstr "Maximum rental is 30 days. For longer periods, contact us."
+
+msgid "Manual"
+msgstr "Manual"
+
+msgid "Masukkan kode booking untuk melihat status & e-tiket."
+msgstr "Enter your booking code to view its status & e-ticket."
+
+msgid "Masukkan kontak, dapatkan kode booking."
+msgstr "Enter your contact info and get a booking code."
+
+msgid "Matic"
+msgstr "Automatic"
+
+msgid ""
+"Melayani perjalanan bus antar kota & penyewaan mobil di Jawa Timur dan "
+"sekitarnya sejak 2015. Aman, nyaman, tepat waktu."
+msgstr ""
+"Serving intercity bus trips & car rentals across East Java and beyond since "
+"2015. Safe, comfortable, on time."
+
+msgid "Menghubungkan kota-kota di Jawa Timur & Bali sejak 2015"
+msgstr "Connecting cities across East Java & Bali since 2015"
+
+msgid "Menunggu Verifikasi"
+msgstr "Awaiting Verification"
+
+msgid "Menunggu Verifikasi Pembayaran"
+msgstr "Payments Awaiting Verification"
+
+msgid "Menunggu pembayaran"
+msgstr "Awaiting payment"
+
+msgid "Metadata halaman (SEO)"
+msgstr "Page metadata (SEO)"
+
+msgid "Metode pembayaran"
+msgstr "Payment method"
+
+msgid "Metode yang digunakan"
+msgstr "Payment method used"
+
+msgid "Metode:"
+msgstr "Method:"
+
+msgid "Mis. \"Bandara Juanda Surabaya\" atau alamat hotel."
+msgstr "E.g. \"Juanda Airport Surabaya\" or your hotel address."
+
+msgid "Mobil"
+msgstr "Vehicle"
+
+msgid "Mobil Lainnya"
+msgstr "More Vehicles"
+
+msgid "Mobil Rental"
+msgstr "Rental Cars"
+
+msgid "Muat ulang halaman ini lalu ulangi langkah terakhir."
+msgstr "Reload this page and repeat your last step."
+
+msgid "Mudah & Cepat"
+msgstr "Easy & Fast"
+
+msgid "Mulai"
+msgstr "From"
+
+msgid "Mulai Pemesanan Ulang"
+msgstr "Start a New Booking"
+
+msgid "Mulai dari"
+msgstr "From"
+
+msgid "Nama Pemesan"
+msgstr "Passenger Name"
+
+msgid "Nama lengkap"
+msgstr "Full name"
+
+msgid "Nama sesuai KTP/KTM"
+msgstr "Name as on your ID card"
+
+msgid "Navigasi rute"
+msgstr "Route navigation"
+
+msgid "Nilai Kami"
+msgstr "Our Values"
+
+msgid "No. WhatsApp"
+msgstr "WhatsApp Number"
+
+msgid "Nomor kursi"
+msgstr "Seat numbers"
+
+msgid "Nomor rekening"
+msgstr "Account number"
+
+msgid "Nomor telepon tidak valid. Contoh: 081234567890"
+msgstr "Invalid phone number. Example: 081234567890"
+
+msgid "Nusantara Trans Admin"
+msgstr "Nusantara Trans Admin"
+
+msgid ""
+"Nusantara Trans dimulai tahun 2015 dari satu bus ekonomi rute "
+"Jember–Surabaya. Dukungan pelanggan membuat kami bertumbuh: kini kami "
+"mengoperasikan armada bus berbagai kelas dan layanan rental mobil dengan "
+"sopir berpengalaman."
+msgstr ""
+"Nusantara Trans started in 2015 with a single economy bus on the "
+"Jember–Surabaya route. Our customers made us grow: we now run buses of "
+"various classes and a car rental service with experienced drivers."
+
+msgid "Nusantara Trans — Panel Operasional"
+msgstr "Nusantara Trans — Operations Panel"
+
+msgid "Okupansi"
+msgstr "Occupancy"
+
+msgid "Otomatis dikonversi ke WebP (maks. lebar 1200px)."
+msgstr ""
+
+msgid "Panel Operasional"
+msgstr "Operations Panel"
+
+msgid "Pastikan cookie diizinkan di browser Anda."
+msgstr "Make sure cookies are allowed in your browser."
+
+msgid "Pembatalan gratis sebelum pembayaran."
+msgstr "Free cancellation before payment."
+
+msgid "Pembayaran"
+msgstr "Payment"
+
+msgid "Pembayaran Aman"
+msgstr "Secure Payment"
+
+msgid "Pembayaran Terverifikasi"
+msgstr "Payment Verified"
+
+msgid "Pembayaran: Transfer Bank & QRIS"
+msgstr "Payment: Bank Transfer & QRIS"
+
+msgid "Pemesan"
+msgstr "Customer"
+
+msgid "Pendapatan Bulan Ini"
+msgstr "Revenue This Month"
+
+msgid "Penuh"
+msgstr "Full"
+
+msgid "Penumpang"
+msgstr "Passengers"
+
+msgid "Penyewa"
+msgstr "Renter"
+
+msgid "Perjalanan Nyaman,"
+msgstr "Comfortable Journeys,"
+
+msgid ""
+"Perjalanan bus dari %(origin)s ke %(destination)s memakan waktu sekitar "
+"%(durasi)s, tergantung kondisi lalu lintas dan cuaca."
+msgstr ""
+"The bus trip from %(origin)s to %(destination)s takes around %(durasi)s, "
+"depending on traffic and weather conditions."
+
+msgid "Pertanyaan umum rute ini"
+msgstr "FAQ about this route"
+
+msgid "Perusahaan"
+msgstr "Company"
+
+msgid "Pesan Sekarang"
+msgstr "Book Now"
+
+msgid "Pesan Tiket"
+msgstr "Book Tickets"
+
+msgid "Pesan Tiket Bus"
+msgstr "Bus Tickets"
+
+msgid "Pesan Tiket Sekarang"
+msgstr "Book Tickets Now"
+
+msgid ""
+"Pesan tiket bus antar kota & rental mobil dalam satu tempat. Pilih kursi "
+"favoritmu, bayar via transfer atau QRIS, e-tiket langsung di tangan."
+msgstr ""
+"Book intercity bus tickets & car rentals in one place. Pick your favorite "
+"seat, pay via transfer or QRIS, and get your e-ticket instantly."
+
+msgid ""
+"Pesan tiket bus antar kota dan sewa mobil dengan mudah, aman, dan harga "
+"terbaik."
+msgstr ""
+"Book intercity bus tickets and rent cars easily, safely, and at the best "
+"prices."
+
+msgid ""
+"Pesan tiket bus antar kota dan sewa mobil dengan mudah, aman, dan harga "
+"terbaik. Pilih kursi, bayar via transfer/QRIS, e-tiket instan."
+msgstr ""
+"Book intercity bus tickets and rent cars easily, safely, and at the best "
+"prices. Choose your seat, pay via bank transfer/QRIS, get an instant "
+"e-ticket."
+
+msgid ""
+"Pesan tiket bus antar kota pilih kursi sendiri, atau sewa mobil harian "
+"dengan sopir. Pembayaran transfer & QRIS, konfirmasi cepat via WhatsApp."
+msgstr ""
+"Book intercity bus tickets with your own seat choice, or rent a car with a "
+"driver. Bank transfer & QRIS payment, fast WhatsApp confirmation."
+
+msgid "Pesan tiket lain"
+msgstr "Book another ticket"
+
+msgid "Pesanan"
+msgstr ""
+
+msgid "Pesanan Sewa Berhasil Dibuat!"
+msgstr "Rental Order Created Successfully!"
+
+msgid "Pesanan Sewa Menunggu"
+msgstr "Rental Orders Awaiting"
+
+msgid "Pesanan Sewa Terbaru"
+msgstr "Latest Rental Orders"
+
+msgid "Pesanan ini sudah tidak bisa menerima unggahan bukti."
+msgstr "This order can no longer accept proof uploads."
+
+msgid "Pesanan sewa %s dikonfirmasi."
+msgstr "Rental order %s confirmed."
+
+msgid ""
+"Pesanan sewa berhasil dibuat! Selesaikan pembayaran sebelum batas waktu."
+msgstr "Rental order created! Complete the payment before the deadline."
+
+msgid "Pesanan sewa tidak berstatus menunggu pembayaran."
+msgstr "Rental order is not awaiting payment."
+
+msgid "Pilih Kelas Sesuai Budget"
+msgstr "Pick a Class That Fits Your Budget"
+
+msgid "Pilih Kursi"
+msgstr "Select Seat"
+
+msgid "Pilih Kursi Bus"
+msgstr "Select Your Bus Seat"
+
+msgid "Pilih Kursi Sendiri"
+msgstr "Choose Your Own Seat"
+
+msgid "Pilih bahasa"
+msgstr "Choose language"
+
+msgid "Pilih kota asal"
+msgstr "Choose origin city"
+
+msgid "Pilih kota keberangkatan"
+msgstr "Choose your departure city"
+
+msgid "Pilih kota tujuan"
+msgstr "Choose destination city"
+
+msgid "Pilih kursi"
+msgstr "Choose a seat"
+
+msgid "Pilih minimal 1 kursi (maksimal 6)."
+msgstr "Select at least 1 seat (maximum 6)."
+
+msgid "Pilihanmu"
+msgstr "Your pick"
+
+msgid "Pisahkan dengan koma, mis. \"AC, WiFi, Toilet, Snack\""
+msgstr ""
+
+msgid "Pool Jember — Jl. Kalimantan No. 27"
+msgstr "Jember Pool — Jl. Kalimantan No. 27"
+
+msgid "Ramah Pelanggan"
+msgstr "Customer Friendly"
+
+msgid "Rental Mobil"
+msgstr "Car Rental"
+
+msgid "Ringkasan"
+msgstr "Summary"
+
+msgid "Rute"
+msgstr "Route"
+
+msgid "Rute Bus Populer"
+msgstr "Popular Bus Routes"
+
+msgid "Rute Harian"
+msgstr "Daily Routes"
+
+msgid "Rute Populer"
+msgstr "Popular Routes"
+
+msgid "Rute Terpopuler — 30 Hari"
+msgstr "Top Routes — 30 Days"
+
+msgid "Rute ini belum tersedia"
+msgstr "This route isn't available"
+
+msgid "Rute lain dari %(kota)s"
+msgstr "Other routes from %(kota)s"
+
+msgid "Rute paling dicari"
+msgstr "Most searched routes"
+
+msgid "Rute sebelumnya"
+msgstr "Previous route"
+
+msgid "Rute selanjutnya"
+msgstr "Next route"
+
+msgid "SUV (5–7 penumpang)"
+msgstr "SUV (5–7 passengers)"
+
+msgid ""
+"Saat ini %(kota)s – %(dest)s adalah satu-satunya rute aktif dari %(kota)s."
+msgstr "Currently %(kota)s – %(dest)s is the only active route from %(kota)s."
+
+msgid "Salin No. Rekening"
+msgstr "Copy account number"
+
+msgid "Saya menyetujui syarat & ketentuan pemesanan."
+msgstr "I agree to the terms & conditions."
+
+msgid ""
+"Scan QRIS dengan aplikasi e-wallet atau m-banking apa pun, lalu masukkan "
+"nilai tepat sesuai total."
+msgstr ""
+"Scan the QRIS code with any e-wallet or mobile banking app, then enter the "
+"exact total."
+
+msgid "Sebutkan kode booking Anda saat menghubungi CS:"
+msgstr "Mention your booking code when contacting support:"
+
+msgid "Selesai"
+msgstr "Completed"
+
+msgid "Semua"
+msgstr "All"
+
+msgid "Semua Modul"
+msgstr "All Modules"
+
+msgid "Semua Rute"
+msgstr "All Routes"
+
+msgid "Semua Rute Bus"
+msgstr "All Bus Routes"
+
+msgid ""
+"Semua armada dirawat rutin dan diperiksa sebelum berangkat. Pilih kelas yang"
+" paling pas untuk perjalananmu."
+msgstr ""
+"Every bus is regularly maintained and inspected before departure. Choose the"
+" class that best suits your trip."
+
+msgid "Semua hak dilindungi."
+msgstr "All rights reserved."
+
+msgid "Semua mobil"
+msgstr "All vehicles"
+
+msgid ""
+"Semua rute bus dari %(kota)s: %(n)s destinasi dengan jadwal keberangkatan, "
+"durasi perjalanan, dan harga tiket termurah per kelas armada."
+msgstr ""
+"All bus routes from %(kota)s: %(n)s destinations with departure schedules, "
+"trip durations, and lowest ticket prices per bus class."
+
+msgid "Semua rute dari %(kota)s"
+msgstr "All routes from %(kota)s"
+
+msgid "Semua rute…"
+msgstr "All routes…"
+
+msgid "Sertakan sopir (+biaya/hari)"
+msgstr "Include a driver (+fee/day)"
+
+msgid "Servis berkala & pemeriksaan sebelum setiap keberangkatan."
+msgstr "Regular servicing & checks before every departure."
+
+msgid "Sesi Berakhir"
+msgstr "Session Expired"
+
+msgid ""
+"Setelah membayar, unggah bukti pembayaran pada form di bawah. Tim kami "
+"memverifikasi maksimal 15 menit (07.00–21.00 WIB)."
+msgstr ""
+"After paying, upload your payment proof in the form below. We verify within "
+"15 minutes (07:00–21:00 WIB)."
+
+msgid "Sewa"
+msgstr "Rent"
+
+msgid "Sewa %(name)s"
+msgstr "Rent %(name)s"
+
+msgid "Sewa %(name)s harian dengan harga terbaik."
+msgstr "Rent the %(name)s daily at the best price."
+
+msgid ""
+"Sewa %(name)s mulai %(price)s/hari. Armada terawat dengan opsi sopir. Pesan "
+"online sekarang."
+msgstr ""
+"Rent the %(name)s from %(price)s/day. Well-maintained vehicle with optional "
+"driver. Book online now."
+
+msgid "Sewa Mobil Harian dengan Sopir"
+msgstr "Daily Car Rental with Driver"
+
+msgid "Sewa Mobil untuk Perjalanan Fleksibel"
+msgstr "Rent a Car for Flexible Travel"
+
+msgid "Sewa mobil lain"
+msgstr "Rent another car"
+
+msgid "Siap Berangkat Hari Ini?"
+msgstr "Ready to Depart Today?"
+
+msgid "Simpan kode booking & screenshot halaman ini."
+msgstr "Save your booking code & screenshot this page."
+
+msgid "Simpan kode pesanan & screenshot halaman ini."
+msgstr "Save your order code & screenshot this page."
+
+msgid "Sleeper"
+msgstr ""
+
+msgid "Solusi:"
+msgstr "How to fix it:"
+
+msgid "Sopir"
+msgstr "Driver"
+
+msgid "Sopir dan CS terlatih membantu dengan sepenuh hati."
+msgstr "Trained drivers and support staff who help wholeheartedly."
+
+msgid "Sopir gratis"
+msgstr "Driver included"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Status Booking"
+msgstr "Booking Status"
+
+msgid "Sudah unggah"
+msgstr "Uploaded"
+
+msgid "Syarat sewa:"
+msgstr "Rental requirements:"
+
+msgid "Tambahan bila pelanggan minta disertai sopir. 0 = gratis."
+msgstr ""
+
+msgid ""
+"Tandai halaman <meta name=\"robots\" content=\"noindex\"> agar tidak "
+"diindeks mesin pencari."
+msgstr ""
+"Emit <meta name=\"robots\" content=\"noindex\"> so search engines skip this "
+"page."
+
+msgid "Tanggal"
+msgstr "Date"
+
+msgid "Tanggal ambil"
+msgstr "Pick-up date"
+
+msgid "Tanggal ambil tidak boleh di masa lalu."
+msgstr "Pick-up date cannot be in the past."
+
+msgid "Tanggal kembali"
+msgstr "Return date"
+
+msgid "Tanggal kembali harus sama dengan atau setelah tanggal ambil."
+msgstr "Return date must be on or after the pick-up date."
+
+msgid "Tanggal perjalanan"
+msgstr "Travel date"
+
+msgid "Tanggal perjalanan tidak boleh di masa lalu."
+msgstr "Travel date cannot be in the past."
+
+msgid "Tanggal perjalanan tidak valid."
+msgstr "Invalid travel date."
+
+msgid "Tanpa antre — pilih kursi sendiri, bayar transfer/QRIS."
+msgstr "No queues — pick your own seat, pay by transfer/QRIS."
+
+msgid "Tanpa bukti"
+msgstr "No proof"
+
+msgid "Tanya CS"
+msgstr "Ask Support"
+
+msgid "Temukan kami di Google Maps: \"Nusantara Trans Jember\""
+msgstr "Find us on Google Maps: \"Nusantara Trans Jember\""
+
+msgid "Tentang"
+msgstr "About"
+
+msgid "Tentang Kami"
+msgstr "About Us"
+
+msgid "Tentang Nusantara Trans"
+msgstr "About Nusantara Trans"
+
+msgid "Tentang Unit Ini"
+msgstr "About This Vehicle"
+
+msgid "Tentukan kota asal, tujuan, dan tanggal."
+msgstr "Pick your origin, destination, and date."
+
+msgid "Tepat Waktu"
+msgstr "On Time"
+
+msgid "Tercepat untuk konfirmasi & bantuan booking."
+msgstr "The fastest way to confirm & get booking assistance."
+
+msgid "Terisi"
+msgstr "Taken"
+
+msgid "Terjadi kesalahan"
+msgstr "Something went wrong"
+
+msgid "Terkonfirmasi"
+msgstr "Confirmed"
+
+msgid "Tersedia"
+msgstr "Available"
+
+msgid "Tidak ada booking yang menunggu verifikasi. 🎉"
+msgstr "No bookings awaiting verification. 🎉"
+
+msgid "Tiket Bus"
+msgstr "Bus Tickets"
+
+msgid "Tiket Bus %(origin)s ke %(dest)s — Jadwal & Harga"
+msgstr "Bus Tickets %(origin)s to %(dest)s — Schedule & Prices"
+
+msgid "Tiket Bus %(origin)s → %(dest)s"
+msgstr "Bus Tickets %(origin)s → %(dest)s"
+
+msgid "Tiket Bus Online & Rental Mobil"
+msgstr "Online Bus Tickets & Car Rental"
+
+msgid "Tim siap membantu via WhatsApp setiap hari."
+msgstr "Our team is ready to help on WhatsApp every day."
+
+msgid ""
+"Token keamanan (CSRF) dari halaman ini tidak terkirim — biasanya karena "
+"cookie browser diblokir, sesi kedaluwarsa, atau halaman terbuka terlalu lama"
+" sebelum dikirim."
+msgstr ""
+"The security token (CSRF) from this page was not sent — usually because "
+"browser cookies are blocked, the session expired, or the page stayed open "
+"too long before submitting."
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Total Bayar"
+msgstr "Total to Pay"
+
+msgid "Total yang harus dibayar"
+msgstr "Total amount due"
+
+msgid "Transfer bank atau scan QRIS dari e-wallet apa pun."
+msgstr "Bank transfer or scan a QRIS code from any e-wallet."
+
+msgid "Transfer/QRIS, unggah bukti, tunjukkan e-tiket."
+msgstr "Transfer/QRIS, upload the proof, show your e-ticket."
+
+msgid "Tukar asal & tujuan"
+msgstr "Swap origin & destination"
+
+msgid ""
+"Tunjukkan kode booking & kartu identitas ke petugas saat Check-in (datang 30"
+" menit sebelum berangkat)."
+msgstr ""
+"Show your booking code & ID card to our staff at check-in (arrive 30 minutes"
+" before departure)."
+
+msgid "Tutup"
+msgstr "Close"
+
+msgid ""
+"URL halaman, contoh '/bus/'. Baris '/en/bus/' khusus EN; tanpa prefiks "
+"berlaku untuk kedua bahasa."
+msgstr ""
+"Page URL, e.g. '/bus/'. A '/en/bus/' entry is EN-only; entries without a "
+"prefix apply to both languages."
+
+msgid "Ukuran berkas maksimal 5 MB."
+msgstr "File size must be at most 5 MB."
+
+msgid "Unggah Bukti Pembayaran"
+msgstr "Upload Payment Proof"
+
+msgid ""
+"Unit %(name)s kami pegang selama %(h)s jam. Selesaikan pembayaran di bawah "
+"ini."
+msgstr ""
+"We are holding the %(name)s for %(h)s hours. Complete the payment below."
+
+msgid "Unit dipegang %(h)s jam menunggu pembayaran."
+msgstr "The vehicle is held for %(h)s hours while awaiting payment."
+
+msgid "Unit siap pada jadwal ambil. Tim kami menghubungi via WhatsApp."
+msgstr ""
+"The vehicle will be ready at pick-up. Our team will contact you via "
+"WhatsApp."
+
+msgid "Untuk kerja sama, charter, & feedback."
+msgstr "For partnerships, charters, & feedback."
+
+msgid "Van / Minibus (10–16 penumpang)"
+msgstr "Van / Minibus (10–16 passengers)"
+
+msgid "Verifikasi"
+msgstr "Verify"
+
+msgid "Waktu"
+msgstr ""
+
+msgid "Ya, dengan sopir"
+msgstr "Yes, with driver"
+
+msgid "aktif"
+msgstr ""
+
+msgid "baris"
+msgstr ""
+
+msgid "batas bayar"
+msgstr ""
+
+msgid "biaya sopir per hari"
+msgstr ""
+
+msgid "booking rental"
+msgstr ""
+
+msgid "booking tiket"
+msgstr ""
+
+msgid "bukti"
+msgstr ""
+
+msgid "bukti pembayaran"
+msgstr ""
+
+msgid "bus"
+msgstr ""
+
+msgid "catatan admin"
+msgstr ""
+
+msgid "dengan sopir"
+msgstr ""
+
+msgid "deskripsi"
+msgstr ""
+
+msgid "dibayar pada"
+msgstr ""
+
+msgid "dibuat"
+msgstr ""
+
+msgid "diperbarui"
+msgstr ""
+
+msgid "durasi (menit)"
+msgstr ""
+
+msgid "email"
+msgstr ""
+
+msgid "fasilitas"
+msgstr ""
+
+msgid "foto"
+msgstr ""
+
+msgid "foto mobil"
+msgstr ""
+
+msgid "gambar Open Graph"
+msgstr "Open Graph image"
+
+msgid "harga"
+msgstr ""
+
+msgid "harga per hari"
+msgstr ""
+
+msgid "hari"
+msgstr "day"
+
+msgid "jadwal"
+msgstr ""
+
+msgid "jadwal aktif"
+msgstr ""
+
+msgid "jadwal ditemukan"
+msgstr "schedules found"
+
+msgid "jadwal/hari"
+msgstr "departures/day"
+
+msgid "jam berangkat"
+msgstr ""
+
+msgid "jam tiba"
+msgstr ""
+
+msgid "jarak (km)"
+msgstr ""
+
+msgid "jika pakai sopir"
+msgstr "if with driver"
+
+msgid "judul (title & og:title)"
+msgstr "title (& og:title)"
+
+msgid "jumlah baris"
+msgstr ""
+
+msgid "jumlah kursi"
+msgstr ""
+
+msgid "kapasitas kursi"
+msgstr ""
+
+msgid "kategori"
+msgstr ""
+
+msgid "keberangkatan setiap hari"
+msgstr "departures every day"
+
+msgid "kelas"
+msgstr ""
+
+msgid "kode armada"
+msgstr ""
+
+msgid "kode booking"
+msgstr ""
+
+msgid "kode sewa"
+msgstr ""
+
+msgid "kolom"
+msgstr ""
+
+msgid "kota"
+msgstr ""
+
+msgid "kota asal"
+msgstr ""
+
+msgid "kota populer"
+msgstr ""
+
+msgid "kota tujuan"
+msgstr ""
+
+msgid "kota-kota"
+msgstr ""
+
+msgid "kursi"
+msgstr "seats"
+
+msgid "kursi booking"
+msgstr ""
+
+msgid "kursi tersedia"
+msgstr "seats available"
+
+msgid "label kursi"
+msgstr ""
+
+msgid "lama sewa (hari)"
+msgstr ""
+
+msgid "lokasi ambil"
+msgstr ""
+
+msgid "menunggu verifikasi admin (maks. 15 menit)."
+msgstr "awaiting admin verification (max. 15 minutes)."
+
+msgid "meta description"
+msgstr "meta description"
+
+msgid "metode pembayaran"
+msgstr ""
+
+msgid "mobil"
+msgstr ""
+
+msgid "mobil rental"
+msgstr ""
+
+msgid "mulai"
+msgstr "from"
+
+msgid "nama armada"
+msgstr ""
+
+msgid "nama kota"
+msgstr ""
+
+msgid "nama mobil"
+msgstr ""
+
+msgid "nama pemesan"
+msgstr ""
+
+msgid "nama penyewa"
+msgstr ""
+
+msgid "no. WhatsApp"
+msgstr ""
+
+msgid "noindex"
+msgstr ""
+
+msgid "nomor polisi"
+msgstr ""
+
+msgid "path"
+msgstr "path"
+
+msgid "pemesanan"
+msgstr "bookings"
+
+msgid "provinsi"
+msgstr ""
+
+msgid "rute"
+msgstr ""
+
+msgid "sisa"
+msgstr "left"
+
+msgid "status"
+msgstr ""
+
+msgid "tahun"
+msgstr ""
+
+msgid "tanggal ambil"
+msgstr ""
+
+msgid "tanggal kembali"
+msgstr ""
+
+msgid "tanggal perjalanan"
+msgstr ""
+
+msgid "tersedia"
+msgstr ""
+
+msgid "total harga"
+msgstr ""
+
+msgid "transmisi"
+msgstr ""
+
+msgid "{}d {}h"
+msgstr "{}d {}h"
+
+msgid "{}d {}h {}m"
+msgstr "{}d {}h {}m"
+
+msgid "{}h"
+msgstr "{}h"
+
+msgid "{}h {}m"
+msgstr "{}h {}m"

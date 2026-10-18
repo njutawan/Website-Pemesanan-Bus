@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load i18n cache booking_extras seo_internal_links %}
+
+{% block title %}{% blocktranslate with origin=route.origin.name dest=route.destination.name %}Tiket Bus {{ origin }} ke {{ dest }} — Jadwal & Harga{% endblocktranslate %} | {{ SITE_NAME }}{% endblock %}
+{% block og_title %}{% blocktranslate with origin=route.origin.name dest=route.destination.name %}Tiket Bus {{ origin }} → {{ dest }}{% endblocktranslate %} — {{ SITE_NAME }}{% endblock %}
+{% block meta_description %}{% blocktranslate with origin=route.origin.name dest=route.destination.name %}Jadwal bus {{ origin }}–{{ dest }} hari ini: keberangkatan, durasi, kelas armada, dan harga tiket mulai dari harga termurah. Pesan online, pilih kursi sendiri.{% endblocktranslate %}{% endblock %}
+
+{% block schema_json %}
+{{ block.super }}
+{% include 'includes/schema_ld.html' with data=schema_bustrip %}
+{% include 'includes/schema_ld.html' with data=schema_faq %}
+{% endblock %}
+
+{% block content %}
+<section class="page-hero-sm">
+  <div class="container py-4">
+    <nav aria-label="breadcrumb" class="small mb-2">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a class="text-white-50" href="{% url 'home' %}">{% trans 'Beranda' %}</a></li>
+        <li class="breadcrumb-item"><a class="text-white-50" href="{% url 'booking:search' %}">{% trans 'Tiket Bus' %}</a></li>
+        <li class="breadcrumb-item"><a class="text-white-50" href="{% url 'booking:route_hub' %}">{% trans 'Semua Rute' %}</a></li>
+        <li class="breadcrumb-item"><a class="text-white-50" href="{% url 'booking:city_routes' route.origin.slug %}">{% blocktranslate with kota=route.origin.name %}Dari {{ kota }}{% endblocktranslate %}</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">{{ route.origin.name }} → {{ route.destination.name }}</li>
+      </ol>
+    </nav>
+    <h1 class="h3 fw-800 text-white mb-1">
+      {% blocktranslate with origin=route.origin.name dest=route.destination.name %}Bus {{ origin }} ke {{ dest }}{% endblocktranslate %}
+    </h1>
+    <p class="text-white-75 mb-0 small">
+      <i class="fa-solid fa-route me-1"></i>{{ route.distance_km }} km
+      · <i class="fa-regular fa-clock me-1"></i>{{ route.duration_display }}
+      · <i class="fa-solid fa-bus me-1"></i>{{ schedules|length }} {% trans 'keberangkatan setiap hari' %}
+    </p>
+  </div>
+</section>
+
+<div class="container py-5">
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <h5 class="fw-bold mb-3"><i class="fa-regular fa-calendar-check text-primary me-2"></i>{% trans 'Jadwal Hari Ini & Setelahnya' %}</h5>
+      {% cache 300 schedule_list route.slug %}{% if schedules %}
+        {% for schedule in schedules %}
+          {% include 'includes/schedule_card.html' with date=today passengers=1 %}
+        {% endfor %}
+      {% else %}
+        <div class="alert alert-info"><i class="fa-solid fa-circle-info me-1"></i>{% trans 'Jadwal untuk rute ini belum tersedia. Hubungi kami untuk info terbaru.' %}</div>
+      {% endif %}{% endcache %}
+    </div>
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4 position-sticky" style="top:90px">
+        <div class="card-body p-4">
+          <h6 class="fw-bold mb-3"><i class="fa-solid fa-magnifying-glass text-primary me-2"></i>{% trans 'Cek Kursi Tersedia' %}</h6>
+          <p class="small text-muted">{% blocktrans %}Jumlah kursi berubah setiap saat. Pilih tanggal untuk melihat kursi yang masih kosong:{% endblocktrans %}</p>
+          <a class="btn btn-accent w-100"
+             href="{% url 'booking:search' %}?origin={{ route.origin.id }}&destination={{ route.destination.id }}&date={{ today|date:'Y-m-d' }}&passengers=1">
+            {% trans 'Lihat Kursi Sekarang' %} <i class="fa-solid fa-arrow-right ms-1"></i>
+          </a>
+          <hr>
+          <ul class="small text-muted mb-0 ps-3">
+            <li>{% trans 'Pembatalan gratis sebelum pembayaran.' %}</li>
+            <li>{% trans 'E-tiket digital, tanpa cetak.' %}</li>
+            <li>{% trans 'Bisa bayar lewat QRIS.' %}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if faq %}
+<section class="container pb-5" aria-labelledby="faq-heading">
+  <h2 id="faq-heading" class="h5 fw-bold mb-3">
+    <i class="fa-solid fa-circle-question text-warning me-2"></i>{% trans 'Pertanyaan umum rute ini' %}
+  </h2>
+  <div class="accordion" id="faqRoute">
+    {% for f in faq %}
+    <div class="accordion-item">
+      <h3 class="accordion-header">
+        <button class="accordion-button{% if not forloop.first %} collapsed{% endif %}" type="button"
+                data-bs-toggle="collapse" data-bs-target="#faq-{{ forloop.counter }}"
+                aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}">
+          {{ f.q }}
+        </button>
+      </h3>
+      <div id="faq-{{ forloop.counter }}"
+           class="accordion-collapse collapse{% if forloop.first %} show{% endif %}"
+           data-bs-parent="#faqRoute">
+        <div class="accordion-body text-muted">{{ f.a|auto_internal_link:request.path }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="container pb-5">
+  <h2 class="h5 fw-bold mb-3"><i class="fa-solid fa-diagram-project text-warning me-2"></i>{% blocktranslate with kota=route.origin.name %}Rute lain dari {{ kota }}{% endblocktranslate %}</h2>
+  {% if sibling_routes %}
+  <div class="row g-3">
+    {% for r in sibling_routes %}
+    <div class="col-md-6 col-lg-3">
+      <a class="text-decoration-none" href="{{ r.get_absolute_url }}">
+        <div class="card route-card border shadow-sm h-100">
+          <div class="card-body py-3">
+            <div class="fw-bold text-dark small">{{ r.origin.name }} → {{ r.destination.name }}</div>
+            <small class="text-muted">{% if r.min_price %}{% trans 'mulai' %} {{ r.min_price|to_idr }}{% endif %}</small>
+          </div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-muted small mb-3">{% blocktranslate with kota=route.origin.name dest=route.destination.name %}Saat ini {{ kota }} – {{ dest }} adalah satu-satunya rute aktif dari {{ kota }}.{% endblocktranslate %}</p>
+  {% endif %}
+  {# Aturan silo: upward link ke pillar kategori & hub — WAJIB di semua halaman rute #}
+  <div class="d-flex gap-2 flex-wrap mt-3">
+    <a href="{% url 'booking:city_routes' route.origin.slug %}" class="btn btn-outline-primary btn-sm">{% blocktranslate with kota=route.origin.name %}Semua rute dari {{ kota }}{% endblocktranslate %} <i class="fa-solid fa-arrow-right ms-1"></i></a>
+    <a href="{% url 'booking:route_hub' %}" class="btn btn-outline-secondary btn-sm">{% trans 'Lihat semua rute' %}</a>
+  </div>
+</section>
+
+{% if prev_route or next_route %}
+<nav class="container pb-5 d-flex justify-content-between gap-3" aria-label="{% trans 'Navigasi rute' %}">
+  {% if prev_route %}
+  <a class="card route-card border shadow-sm text-decoration-none flex-fill" href="{{ prev_route.get_absolute_url }}">
+    <div class="card-body py-2 px-3">
+      <small class="text-muted d-block"><i class="fa-solid fa-arrow-left me-1"></i>{% trans 'Rute sebelumnya' %}</small>
+      <span class="fw-bold text-dark small">{{ prev_route.origin.name }} → {{ prev_route.destination.name }}</span>
+    </div>
+  </a>
+  {% else %}<div class="flex-fill"></div>{% endif %}
+  {% if next_route %}
+  <a class="card route-card border shadow-sm text-decoration-none flex-fill text-end" href="{{ next_route.get_absolute_url }}">
+    <div class="card-body py-2 px-3">
+      <small class="text-muted d-block">{% trans 'Rute selanjutnya' %}<i class="fa-solid fa-arrow-right ms-1"></i></small>
+      <span class="fw-bold text-dark small">{{ next_route.origin.name }} → {{ next_route.destination.name }}</span>
+    </div>
+  </a>
+  {% else %}<div class="flex-fill"></div>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

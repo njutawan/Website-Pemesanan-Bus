@@ -1,0 +1,19 @@
+{% load i18n %}
+{# Indikator langkah pemesanan: terima variabel `step` (1..4) #}
+<div class="nt-steps d-flex justify-content-between align-items-center mb-4" aria-label="{% trans 'Langkah pemesanan' %}">
+  <div class="step {% if step >= 1 %}active{% endif %} {% if step > 1 %}done{% endif %}">
+    <span class="step-dot">1</span><span class="step-label">{% trans 'Cari Jadwal' %}</span>
+  </div>
+  <span class="step-line {% if step > 1 %}done{% endif %}"></span>
+  <div class="step {% if step >= 2 %}active{% endif %} {% if step > 2 %}done{% endif %}">
+    <span class="step-dot">2</span><span class="step-label">{% trans 'Pilih Kursi' %}</span>
+  </div>
+  <span class="step-line {% if step > 2 %}done{% endif %}"></span>
+  <div class="step {% if step >= 3 %}active{% endif %} {% if step > 3 %}done{% endif %}">
+    <span class="step-dot">3</span><span class="step-label">{% trans 'Data Pemesan' %}</span>
+  </div>
+  <span class="step-line {% if step > 3 %}done{% endif %}"></span>
+  <div class="step {% if step >= 4 %}active{% endif %}">
+    <span class="step-dot">4</span><span class="step-label">{% trans 'Pembayaran' %}</span>
+  </div>
+</div>

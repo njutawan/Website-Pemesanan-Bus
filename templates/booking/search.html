@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load i18n booking_extras %}
+
+{% block title %}{% trans 'Tiket Bus' %} — {{ SITE_NAME }}{% endblock %}
+{% block og_title %}{% trans 'Cari & Pesan Tiket Bus Online' %} — {{ SITE_NAME }}{% endblock %}
+{% block meta_description %}{% trans 'Cari jadwal bus antar kota, bandingkan harga & kelas, pilih kursi favoritmu.' %}{% endblock %}
+
+{% block content %}
+<section class="page-hero-sm">
+  <div class="container py-4">
+    <h1 class="h3 fw-800 text-white mb-1"><i class="fa-solid fa-ticket me-2"></i>{% trans 'Pesan Tiket Bus' %}</h1>
+    <p class="text-white-75 mb-0 small">{% trans 'Tanpa antre — pilih kursi sendiri, bayar transfer/QRIS.' %}</p>
+  </div>
+</section>
+
+<div class="container" style="margin-top:-28px">
+  <div class="card shadow border-0 rounded-4">
+    <div class="card-body p-3 p-md-4">
+      <form method="get" action="{% url 'booking:search' %}">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold" for="id_origin">{% trans 'Kota Asal' %}</label>
+            {{ form.origin }}
+            {% for e in form.origin.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold" for="id_destination">{% trans 'Kota Tujuan' %}</label>
+            {{ form.destination }}
+            {% for e in form.destination.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold" for="id_date">{% trans 'Tanggal' %}</label>
+            {{ form.date }}
+            {% for e in form.date.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold" for="id_passengers">{% trans 'Penumpang' %}</label>
+            {{ form.passengers }}
+            {% for e in form.passengers.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+          </div>
+          <div class="col-md-2 d-grid">
+            <button class="btn btn-accent" type="submit"><i class="fa-solid fa-magnifying-glass me-1"></i>{% trans 'Cari' %}</button>
+          </div>
+        </div>
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger mt-3 mb-0 small">
+          {% for e in form.non_field_errors %}{{ e }}{% endfor %}
+        </div>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+</div>
+
+<section class="container py-5">
+  {% if searched %}
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+      <h2 class="h5 fw-bold mb-0">
+        <i class="fa-solid fa-bus text-primary me-2"></i>
+        {{ form.cleaned_data.origin.name }} <i class="fa-solid fa-arrow-right-long text-warning mx-1"></i> {{ form.cleaned_data.destination.name }}
+        <span class="badge text-bg-light border ms-2">{{ search_date|date:'d F Y' }}</span>
+      </h2>
+      <span class="text-muted small">{{ schedules|length }} {% trans 'jadwal ditemukan' %}</span>
+    </div>
+
+    {% if schedules %}
+      {% for schedule in schedules %}
+        {% include 'includes/schedule_card.html' with date=search_date passengers=passengers %}
+      {% endfor %}
+    {% else %}
+      <div class="text-center py-5">
+        <i class="fa-regular fa-face-frown fa-3x text-muted mb-3"></i>
+        <h5 class="fw-bold">{% trans 'Belum ada jadwal untuk rute & tanggal ini' %}</h5>
+        <p class="text-muted">{% trans 'Coba tanggal lain, atau hubungi kami via WhatsApp untuk charter khusus.' %}</p>
+        <a href="https://wa.me/{{ WHATSAPP_NUMBER }}" class="btn btn-success" target="_blank" rel="noopener">
+          <i class="fa-brands fa-whatsapp me-1"></i>{% trans 'Tanya CS' %}
+        </a>
+      </div>
+    {% endif %}
+  {% else %}
+    <!-- Saran rute saat belum mencari -->
+    <h5 class="fw-bold mb-3"><i class="fa-solid fa-fire text-warning me-2"></i>{% trans 'Rute paling dicari' %}</h5>
+    <div class="row g-3">
+      {% for r in popular_routes %}
+      <div class="col-md-6 col-lg-4">
+        <a class="text-decoration-none" href="{{ r.get_absolute_url }}">
+          <div class="card route-card border shadow-sm h-100">
+            <div class="card-body py-3 d-flex align-items-center gap-3">
+              <div class="route-avatar"><i class="fa-solid fa-bus-simple"></i></div>
+              <div>
+                <div class="fw-bold text-dark">{{ r.origin.name }} → {{ r.destination.name }}</div>
+                <small class="text-muted">{% trans 'mulai' %} <strong class="text-primary">{{ r.min_price|to_idr }}</strong></small>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function () {
+    var d = document.getElementById('id_date');
+    if (d && !d.value) { d.min = new Date().toISOString().split('T')[0]; d.value = d.min; }
+  })();
+</script>
+{% endblock %}

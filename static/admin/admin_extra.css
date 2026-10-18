@@ -1,0 +1,142 @@
+/* ============================================================
+   Tema admin Nusantara Trans — di atas CSS bawaan Django admin
+   ============================================================ */
+:root {
+  --nt-navy: #0d3b66;
+  --nt-navy-dark: #082943;
+  --nt-accent: #f77f00;
+  --nt-gold: #ffc300;
+  --nt-ok: #198754;
+  --nt-bad: #dc3545;
+  --nt-line: #e3eaf2;
+}
+
+/* ---------- Header & branding ---------- */
+#header {
+  background: linear-gradient(90deg, var(--nt-navy-dark), var(--nt-navy));
+  border-bottom: 3px solid var(--nt-accent);
+}
+#branding { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.nt-brand {
+  color: #fff; font-weight: 800; font-size: 15px; letter-spacing: .3px;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.nt-brand i {
+  background: var(--nt-accent); border-radius: 7px; width: 26px; height: 26px;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 13px;
+}
+.nt-brand em { color: var(--nt-gold); font-style: normal; }
+.nt-brand-sub { color: rgba(255,255,255,.75); font-size: 12.5px; font-weight: 500; }
+#header a:link, #header a:visited { color: rgba(255,255,255,.9); }
+#user-tools a { color: var(--nt-gold) !important; }
+
+/* ---------- Dasbor ---------- */
+.nt-dash { display: grid; gap: 18px; margin-bottom: 20px; }
+
+.nt-stats {
+  display: grid; gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+}
+.nt-stat {
+  background: #fff; border: 1px solid var(--nt-line); border-radius: 14px;
+  padding: 14px 16px; display: flex; flex-direction: column; gap: 4px;
+  box-shadow: 0 2px 6px rgba(13,59,102,.05);
+}
+.nt-stat .num { font-size: 24px; font-weight: 800; color: var(--nt-navy); line-height: 1.15; }
+.nt-stat .lbl { font-size: 11.5px; color: #6b7a8d; font-weight: 600; }
+.nt-stat .lbl i { margin-right: 6px; color: #9aa8b8; }
+.nt-stat.accent { border-left: 4px solid var(--nt-accent); }
+.nt-stat.accent .num { color: var(--nt-accent); }
+.nt-stat.ok { border-left: 4px solid var(--nt-ok); }
+.nt-stat.ok .num { color: var(--nt-ok); }
+.nt-stat.danger { border-left: 4px solid var(--nt-bad); }
+.nt-stat.danger .num { color: var(--nt-bad); }
+
+.nt-panels { display: grid; grid-template-columns: 3fr 2fr; gap: 16px; }
+.nt-panels:nth-of-type(even) { grid-template-columns: 2fr 1fr; }
+@media (max-width: 1000px) { .nt-panels { grid-template-columns: 1fr !important; } }
+
+.nt-panel {
+  background: #fff; border: 1px solid var(--nt-line); border-radius: 14px;
+  overflow: hidden; box-shadow: 0 2px 6px rgba(13,59,102,.05);
+}
+.nt-panel h3 {
+  margin: 0; padding: 11px 16px; border-bottom: 1px solid var(--nt-line);
+  background: #f4f7fb; font-size: 12px; text-transform: uppercase;
+  letter-spacing: .6px; color: var(--nt-navy);
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+}
+.nt-panel h3 i { margin-right: 6px; color: var(--nt-accent); }
+.nt-more { font-size: 11px; text-transform: none; letter-spacing: 0; font-weight: 600; }
+
+.nt-panel table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.nt-panel th {
+  text-align: left; padding: 8px 14px; color: #8b98a7; font-weight: 600;
+  border-bottom: 1px solid var(--nt-line); background: #fafcfe; font-size: 11px;
+  text-transform: uppercase; letter-spacing: .4px;
+}
+.nt-panel td { padding: 9px 14px; border-bottom: 1px solid #f1f4f8; vertical-align: middle; }
+.nt-panel tr:last-child td { border-bottom: 0; }
+.nt-panel td a { color: var(--nt-navy); }
+.nt-panel td a:hover { color: var(--nt-accent); }
+.nt-dim { color: #7b8794; }
+.nt-empty { padding: 18px 16px; color: #7b8794; font-size: 13px; margin: 0; }
+
+.nt-badge {
+  display: inline-block; border-radius: 999px; padding: 2px 10px;
+  font-size: 11px; font-weight: 700; white-space: nowrap;
+}
+.nt-badge.ok { background: #d1e7dd; color: #0f5132; }
+.nt-badge.warn { background: #fff3cd; color: #8a6d00; }
+.nt-badge.bad { background: #f8d7da; color: #842029; }
+.nt-badge.muted { background: #e9ecef; color: #5c6770; }
+
+.nt-btn {
+  display: inline-block; background: var(--nt-accent); color: #fff !important;
+  border-radius: 8px; padding: 4px 12px; font-size: 11.5px; font-weight: 700;
+}
+.nt-btn:hover { background: #e06d00; }
+
+/* Okupansi */
+.nt-occ-bar {
+  background: #e9eef5; height: 8px; border-radius: 99px; overflow: hidden;
+  margin-bottom: 4px; max-width: 160px;
+}
+.nt-occ-fill { display: block; height: 100%; background: var(--nt-ok); border-radius: 99px; }
+.nt-occ-fill.hot { background: var(--nt-accent); }
+.nt-occ-fill.full { background: var(--nt-bad); }
+.nt-full { color: var(--nt-bad); }
+
+/* Grafik */
+.nt-chart-wrap { position: relative; height: 250px; padding: 12px 14px; }
+.nt-chart-wrap.sm { height: 240px; }
+
+/* Aksi cepat + modul */
+.nt-quick { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 16px; }
+.nt-quick a {
+  background: #f4f7fb; border: 1px solid var(--nt-line); border-radius: 10px;
+  padding: 7px 13px; font-size: 12px; font-weight: 600; color: var(--nt-navy);
+}
+.nt-quick a:hover { background: var(--nt-navy); color: #fff; }
+.nt-quick a i { margin-right: 6px; color: var(--nt-accent); }
+.nt-quick a:hover i { color: var(--nt-gold); }
+
+.nt-modules { padding: 0 16px 14px; }
+.nt-modules summary {
+  cursor: pointer; font-weight: 700; font-size: 12px; color: var(--nt-navy);
+  text-transform: uppercase; letter-spacing: .5px; padding: 8px 0;
+}
+.nt-modules .module { margin: 8px 0; }
+.nt-modules .module h2, .nt-modules .module caption {
+  font-size: 12px; padding: 8px 10px; background: #f4f7fb;
+  border-radius: 8px; text-align: left;
+}
+.nt-modules .module table { font-size: 12px; }
+.nt-modules .module th { padding: 6px 10px; }
+
+/* Tombol konfirmasi 1-klik pada form booking */
+.submit-row input[name="_confirm"] {
+  background: var(--nt-ok); color: #fff; border-color: var(--nt-ok);
+  font-weight: 700;
+}
+.submit-row input[name="_confirm"]:hover { background: #146c43; }
