@@ -87,3 +87,71 @@ class CompressOfflineManifestCheckTest(TestCase):
         # DEBUG=True -> check dilewati
         with override_settings(DEBUG=True, COMPRESS_OFFLINE=False):
             self.assertEqual(compress_offline_manifest(None), [])
+
+
+class SEOTest(TestCase):
+    """robots.txt dinamis, sitemap model-query, PageMeta, canonical, get_absolute_url."""
+
+    @classmethod
+    def setUpTestData(cls):
+        from booking.models import City, Route
+        from rental.models import Vehicle
+        a = City.objects.create(name='Kota A', slug='kota-a')
+        b = City.objects.create(name='Kota B', slug='kota-b')
+        cls.route = Route.objects.create(
+            origin=a, destination=b, distance_km=100, duration_minutes=120)
+        cls.vehicle = Vehicle.objects.create(
+            name='Toyota Avanza', slug='avanza', category='MPV',
+            year=2022, seats=7, price_per_day=350000)
+
+    def test_robots_txt_dinamis_menunjuk_sitemap(self):
+        r = self.client.get('/robots.txt')
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'Sitemap: http://testserver/sitemap.xml')
+        self.assertContains(r, 'Disallow: /admin/')
+
+    def test_sitemap_berisi_url_model_dengan_lastmod(self):
+        r = self.client.get('/sitemap.xml')
+        self.assertEqual(r.status_code, 200)
+        xml = r.content.decode()
+        self.assertIn(self.route.get_absolute_url(), xml)
+        self.assertIn(self.vehicle.get_absolute_url(), xml)
+        self.assertIn('<lastmod>', xml)
+        self.assertIn('<priority>0.9</priority>', xml)  # /bus/ & /rental/ statis
+
+    def test_get_absolute_url(self):
+        self.assertEqual(self.route.get_absolute_url(), '/bus/rute/kota-a-kota-b/')
+        self.assertEqual(self.vehicle.get_absolute_url(), '/rental/mobil/avanza/')
+
+    def test_pagemeta_menimpa_default_dan_fallback_ke_en(self):
+        from core.models import PageMeta
+        PageMeta.objects.create(
+            path='/bus/', title='Judul Khusus Bus',
+            description='Deskripsi khusus halaman bus.')
+        html = self.client.get('/bus/').content.decode()
+        self.assertIn('Judul Khusus Bus', html)
+        self.assertIn('Deskripsi khusus halaman bus.', html)
+        # baris tanpa prefiks berlaku juga untuk /en/
+        html_en = self.client.get('/en/bus/').content.decode()
+        self.assertIn('Judul Khusus Bus', html_en)
+
+    def test_pagemeta_prefiks_en_menang_di_halaman_en(self):
+        from core.models import PageMeta
+        PageMeta.objects.create(path='/bus/', title='Judul ID')
+        PageMeta.objects.create(path='/en/bus/', title='Custom EN title')
+        self.assertIn('Custom EN title', self.client.get('/en/bus/').content.decode())
+        self.assertIn('Judul ID', self.client.get('/bus/').content.decode())
+
+    def test_pagemeta_noindex_dan_og_image(self):
+        from core.models import PageMeta
+        PageMeta.objects.create(
+            path='/tentang/', noindex=True, og_image='meta/og.png')
+        html = self.client.get('/tentang/').content.decode()
+        self.assertIn('noindex', html)
+        self.assertIn('og:image', html)
+
+    def test_canonical_tag_pada_semua_halaman(self):
+        html = self.client.get('/tentang/').content.decode()
+        self.assertIn('rel="canonical" href="http://testserver/tentang/"', html)
+        html = self.client.get('/').content.decode()
+        self.assertIn('rel="canonical" href="http://testserver/"', html)

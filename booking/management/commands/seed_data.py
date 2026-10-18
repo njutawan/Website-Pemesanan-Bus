@@ -150,6 +150,25 @@ VEHICLES = [
 # Catatan: middleware bawaan Django SELALU memancarkan 301 (pindah permanen —
 # terbaik untuk SEO). Hanya berlaku untuk URL yang TIDAK dikenai view apa pun
 # (aman, tidak akan menimpa halaman nyata).
+PAGE_META = [
+    # (path, title, description)
+    ('/', 'Nusantara Trans — Tiket Bus Online & Rental Mobil',
+     'Pesan tiket bus antar kota dan sewa mobil dengan mudah, aman, dan harga '
+     'terbaik. Pilih kursi, bayar via transfer/QRIS, e-tiket instan.'),
+    ('/bus/', 'Cari & Pesan Tiket Bus Antar Kota — Nusantara Trans',
+     'Jadwal bus lengkap antar kota Jawa. Pilih kursi favorit, bayar transfer '
+     'atau QRIS, e-tiket langsung terbit.'),
+    ('/rental/', 'Rental Mobil Lepas Kunci & Dengan Sopir — Nusantara Trans',
+     'Sewa mobil harian: MPV, SUV, hingga minibus. Harga transparan per hari, '
+     'bebas pilih lepas kunci atau dengan sopir.'),
+    ('/tentang/', 'Tentang Kami — Nusantara Trans',
+     'Kenali Nusantara Trans: layanan transportasi antar kota dan rental mobil '
+     'yang mengutamakan kenyamanan serta keselamatan.'),
+    ('/kontak/', 'Kontak & Bantuan — Nusantara Trans',
+     'Hubungi tim Nusantara Trans untuk bantuan pemesanan tiket bus dan rental '
+     'mobil: email, telepon, dan WhatsApp.'),
+]
+
 REDIRECTS = [
     # (path lama, path baru)
     ('/tiket/', '/bus/'),
@@ -287,5 +306,12 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(
             f'✔ Redirect: {Redirect.objects.count()} aturan '
             f'({n_red} baru)'))
+
+        from core.models import PageMeta
+        for path, title, description in PAGE_META:
+            PageMeta.objects.update_or_create(
+                path=path, defaults={'title': title, 'description': description})
+        self.stdout.write(self.style.SUCCESS(
+            f'✔ SEO: {PageMeta.objects.count()} metadata halaman'))
 
         self.stdout.write(self.style.SUCCESS('Seed selesai. 🚍'))

@@ -1,5 +1,7 @@
-"""Context processor: pengaturan situs + URL alternatif bahasa (hreflang/SEO)."""
+"""Context processor: pengaturan situs, hreflang, dan metadata SEO halaman."""
 from django.conf import settings
+
+from core.models import PageMeta
 from django.urls import translate_url
 from django.utils.translation import get_language
 
@@ -42,3 +44,21 @@ def language_alternates(request):
                 url = None
         alternates.append({'code': code, 'url': url or request.path})
     return {'LANGUAGE_ALTERNATES': alternates, 'CURRENT_LANGUAGE': current}
+
+
+def seo(request):
+    """
+    Metadata halaman (model PageMeta dari /admin/) untuk title,
+    description, Open Graph, dan noindex.
+
+    Pencocokan: path persis dulu; bila tidak ada dan path berprefiks
+    '/en/', coba path tanpa prefiks (baris tanpa prefiks berlaku untuk
+    kedua bahasa). Tidak ada -> templat memakai default.
+    """
+    pm = PageMeta.objects.filter(path=request.path).first()
+    if pm is None and request.path.startswith('/en/'):
+        pm = PageMeta.objects.filter(path=request.path[3:]).first()
+    ctx = {'page_meta': pm}
+    if pm and pm.og_image:
+        ctx['page_meta_og_image'] = request.build_absolute_uri(pm.og_image.url)
+    return ctx

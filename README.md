@@ -59,6 +59,26 @@ dwibahasa **Indonesia / English**.
   redirect selalu 301 (middleware hanya menyapa respons 404 — halaman nyata
   tidak akan tertimpa)
 
+### 🔍 SEO
+- **robots.txt dinamis** (TemplateView): baris `Sitemap:` menunjuk URL absolut
+  `/sitemap.xml` secara otomatis + `Disallow` untuk halaman transaksi
+  (`/bus/kursi/`, `/bus/booking/`, `/rental/sewa/` — termasuk varian `/en/`)
+- **sitemap.xml** (`django.contrib.sitemaps`): halaman statis + seluruh rute
+  bus & armada rental dari query model — URL baru **otomatis terdaftar**
+  lengkap `lastmod` (field `updated_at`), `changefreq`, dan `priority` per URL;
+  respons di-cache 30 menit
+- **Metadata halaman di `/admin/`** (menu *Metadata halaman (SEO)*,
+  model `core.PageMeta`): kelola `title`, meta description, gambar Open Graph,
+  dan flag noindex per path. Baris tanpa prefiks (`/bus/`) berlaku untuk ID &
+  EN; buat `/en/bus/` bila ingin judul khusus EN. Prioritas:
+  **PageMeta > judul halaman/objek > default templat**
+- **Canonical & slug**: `<link rel="canonical">` otomatis (dari `request.path`,
+  bersih dari query string) di semua halaman; `Route` & `Vehicle` memakai
+  `SlugField` unique dengan generator anti-bentrok + method `get_absolute_url()`
+  yang jadi sumber tunggal tautan internal & sitemap
+- Seed menyertakan 5 contoh metadata (beranda, /bus/, /rental/, /tentang/,
+  /kontak/) — langsung bisa diedit di admin
+
 ### ⚡ Optimasi Core Web Vitals
 - **LCP**: gambar hero WebP dua ukuran (`srcset` 900w/1600w) + `fetchpriority="high"`
   + `<link rel="preload" imagesrcset>`; gambar WebP untuk semua foto (hero 222→92KB,

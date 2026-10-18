@@ -69,6 +69,10 @@ class Route(TimeStampedModel):
             self.slug = slug
         super().save(*args, **kwargs)
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('booking:route_detail', kwargs={'slug': self.slug})
+
     @property
     def duration_display(self):
         h, m = divmod(self.duration_minutes, 60)

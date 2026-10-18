@@ -104,6 +104,7 @@ TEMPLATES = [
                 'django.template.context_processors.media',
                 'core.context_processors.site_settings',
                 'core.context_processors.language_alternates',
+                'core.context_processors.seo',
             ],
         },
     },

@@ -17,6 +17,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from booking.models import Booking, BookingSeat
+from core.models import PageMeta
 from rental.models import RentalBooking
 
 
@@ -33,6 +34,24 @@ class NusantaraAdminSite(admin.AdminSite):
 
 
 admin_site = NusantaraAdminSite(name='admin')
+
+
+@admin.register(PageMeta, site=admin_site)
+class PageMetaAdmin(admin.ModelAdmin):
+    """Metadata SEO per halaman: title, description, OG image, noindex."""
+
+    list_display = ('path', 'title', 'noindex', 'updated_at')
+    list_editable = ('noindex',)
+    search_fields = ('path', 'title', 'description')
+    list_filter = ('noindex',)
+    fieldsets = (
+        (None, {'fields': ('path',),
+                'description': _("Cocokkan persis dengan URL. '/bus/' berlaku untuk ID & EN; "
+                                 "'/en/bus/' khusus EN. Halaman detail (rute/mobil) memakai judul objek.")}),
+        (_('Konten SEO'), {'fields': ('title', 'description', 'og_image')}),
+        (_('Indeks'), {'fields': ('noindex',)}),
+    )
+
 
 # Manajemen redirect — muncul di panel admin: /admin/ → "Redirects".
 # Isi "old path" (URL lama) & "new path" (URL baru). Middleware bawaan

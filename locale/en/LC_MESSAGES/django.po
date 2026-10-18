@@ -291,6 +291,9 @@ msgid ""
 "Coba tanggal lain, atau hubungi kami via WhatsApp untuk charter khusus."
 msgstr "Try another date, or contact us on WhatsApp for a custom charter."
 
+msgid "Cocokkan persis dengan URL. '/bus/' berlaku untuk ID & EN;"
+msgstr ""
+
 msgid "Dari"
 msgstr "From"
 
@@ -332,6 +335,9 @@ msgstr "Created"
 
 msgid "Digunakan untuk konfirmasi & e-tiket."
 msgstr "Used for confirmation & your e-ticket."
+
+msgid "Disarankan 120–160 karakter."
+msgstr ""
 
 msgid "E-Tiket Instan"
 msgstr "Instant E-Ticket"
@@ -395,6 +401,12 @@ msgstr "Price/seat"
 
 msgid "Hubungi Kami"
 msgstr "Contact Us"
+
+msgid "Idealnya rasio 1.91:1, minimal 1200×630 px."
+msgstr ""
+
+msgid "Indeks"
+msgstr ""
 
 msgid "Informasi Kontak"
 msgstr "Contact Information"
@@ -511,6 +523,9 @@ msgstr "Confirm via WhatsApp"
 
 msgid "Kontak"
 msgstr "Contact"
+
+msgid "Konten SEO"
+msgstr ""
 
 msgid "Kota"
 msgstr "City"
@@ -647,6 +662,9 @@ msgstr "Payments Awaiting Verification"
 msgid "Menunggu pembayaran"
 msgstr "Awaiting payment"
 
+msgid "Metadata halaman (SEO)"
+msgstr ""
+
 msgid "Metode pembayaran"
 msgstr "Payment method"
 
@@ -725,9 +743,6 @@ msgstr "Nusantara Trans — Operations Panel"
 
 msgid "Okupansi"
 msgstr "Occupancy"
-
-msgid "Org"
-msgstr "Pax"
 
 msgid "Panel Operasional"
 msgstr "Operations Panel"
@@ -1027,6 +1042,9 @@ msgstr "Rental requirements:"
 msgid "Tambahan bila pelanggan minta disertai sopir. 0 = gratis."
 msgstr ""
 
+msgid "Tandai halaman <meta name=\"robots\" content=\"noindex\">"
+msgstr ""
+
 msgid "Tanggal"
 msgstr "Date"
 
@@ -1151,6 +1169,9 @@ msgstr ""
 msgid "Tutup"
 msgstr "Close"
 
+msgid "URL halaman, contoh '/bus/'. Baris '/en/bus/' khusus EN;"
+msgstr ""
+
 msgid "Ukuran berkas maksimal 5 MB."
 msgstr "File size must be at most 5 MB."
 
@@ -1246,6 +1267,9 @@ msgstr ""
 msgid "foto mobil"
 msgstr ""
 
+msgid "gambar Open Graph"
+msgstr ""
+
 msgid "harga"
 msgstr ""
 
@@ -1278,6 +1302,9 @@ msgstr ""
 
 msgid "jika pakai sopir"
 msgstr "if with driver"
+
+msgid "judul (title & og:title)"
+msgstr ""
 
 msgid "jumlah baris"
 msgstr ""
@@ -1345,6 +1372,9 @@ msgstr ""
 msgid "menunggu verifikasi admin (maks. 15 menit)."
 msgstr "awaiting admin verification (max. 15 minutes)."
 
+msgid "meta description"
+msgstr ""
+
 msgid "metode pembayaran"
 msgstr ""
 
@@ -1375,7 +1405,13 @@ msgstr ""
 msgid "no. WhatsApp"
 msgstr ""
 
+msgid "noindex"
+msgstr ""
+
 msgid "nomor polisi"
+msgstr ""
+
+msgid "path"
 msgstr ""
 
 msgid "pemesanan"

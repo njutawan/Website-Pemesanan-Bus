@@ -52,6 +52,10 @@ class Vehicle(TimeStampedModel):
             self.slug = slug
         super().save(*args, **kwargs)
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('rental:detail', kwargs={'slug': self.slug})
+
     @property
     def spec_list(self):
         return [

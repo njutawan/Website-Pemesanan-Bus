@@ -1,4 +1,8 @@
-"""Sitemap XML untuk SEO: halaman statis, rute bus, dan armada rental."""
+"""Sitemap XML (django.contrib.sitemaps): statis, rute bus, armada rental.
+
+Berbasis query model — rute/mobil baru otomatis terdaftar, lengkap
+lastmod (field updated_at), changefreq, dan priority per URL.
+"""
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 
@@ -7,14 +11,26 @@ from rental.models import Vehicle
 
 
 class StaticViewSitemap(Sitemap):
-    priority = 1.0
-    changefreq = 'weekly'
+    """Halaman statis; tiap URL membawa priority & changefreq sendiri."""
 
     def items(self):
-        return ['home', 'about', 'contact', 'rental:index']
+        return [
+            ('home', 1.0, 'daily'),
+            ('booking:search', 0.9, 'daily'),
+            ('booking:check', 0.4, 'monthly'),
+            ('rental:index', 0.9, 'daily'),
+            ('about', 0.5, 'monthly'),
+            ('contact', 0.5, 'monthly'),
+        ]
 
     def location(self, item):
-        return reverse(item)
+        return reverse(item[0])
+
+    def priority(self, item):
+        return item[1]
+
+    def changefreq(self, item):
+        return item[2]
 
 
 class RouteSitemap(Sitemap):
@@ -25,7 +41,7 @@ class RouteSitemap(Sitemap):
         return Route.objects.all()
 
     def location(self, obj):
-        return reverse('booking:route_detail', kwargs={'slug': obj.slug})
+        return obj.get_absolute_url()
 
     def lastmod(self, obj):
         return obj.updated_at
@@ -39,7 +55,7 @@ class VehicleSitemap(Sitemap):
         return Vehicle.objects.filter(is_available=True)
 
     def location(self, obj):
-        return reverse('rental:detail', kwargs={'slug': obj.slug})
+        return obj.get_absolute_url()
 
     def lastmod(self, obj):
         return obj.updated_at

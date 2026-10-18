@@ -292,6 +292,9 @@ msgid ""
 msgstr ""
 "Coba tanggal lain, atau hubungi kami via WhatsApp untuk charter khusus."
 
+msgid "Cocokkan persis dengan URL. '/bus/' berlaku untuk ID & EN;"
+msgstr ""
+
 msgid "Dari"
 msgstr "Dari"
 
@@ -333,6 +336,9 @@ msgstr "Dibuat"
 
 msgid "Digunakan untuk konfirmasi & e-tiket."
 msgstr "Digunakan untuk konfirmasi & e-tiket."
+
+msgid "Disarankan 120–160 karakter."
+msgstr ""
 
 msgid "E-Tiket Instan"
 msgstr "E-Tiket Instan"
@@ -395,6 +401,12 @@ msgstr "Harga/kursi"
 
 msgid "Hubungi Kami"
 msgstr "Hubungi Kami"
+
+msgid "Idealnya rasio 1.91:1, minimal 1200×630 px."
+msgstr ""
+
+msgid "Indeks"
+msgstr ""
 
 msgid "Informasi Kontak"
 msgstr "Informasi Kontak"
@@ -513,6 +525,9 @@ msgstr "Konfirmasi via WhatsApp"
 
 msgid "Kontak"
 msgstr "Kontak"
+
+msgid "Konten SEO"
+msgstr ""
 
 msgid "Kota"
 msgstr "Kota"
@@ -650,6 +665,9 @@ msgstr "Menunggu Verifikasi Pembayaran"
 msgid "Menunggu pembayaran"
 msgstr "Menunggu pembayaran"
 
+msgid "Metadata halaman (SEO)"
+msgstr ""
+
 msgid "Metode pembayaran"
 msgstr "Metode pembayaran"
 
@@ -729,9 +747,6 @@ msgstr "Nusantara Trans — Panel Operasional"
 
 msgid "Okupansi"
 msgstr "Okupansi"
-
-msgid "Org"
-msgstr "Org"
 
 msgid "Panel Operasional"
 msgstr "Panel Operasional"
@@ -1031,6 +1046,9 @@ msgstr "Syarat sewa:"
 msgid "Tambahan bila pelanggan minta disertai sopir. 0 = gratis."
 msgstr "Tambahan bila pelanggan minta disertai sopir. 0 = gratis."
 
+msgid "Tandai halaman <meta name=\"robots\" content=\"noindex\">"
+msgstr ""
+
 msgid "Tanggal"
 msgstr "Tanggal"
 
@@ -1155,6 +1173,9 @@ msgstr ""
 msgid "Tutup"
 msgstr "Tutup"
 
+msgid "URL halaman, contoh '/bus/'. Baris '/en/bus/' khusus EN;"
+msgstr ""
+
 msgid "Ukuran berkas maksimal 5 MB."
 msgstr "Ukuran berkas maksimal 5 MB."
 
@@ -1249,6 +1270,9 @@ msgstr "foto"
 msgid "foto mobil"
 msgstr "foto mobil"
 
+msgid "gambar Open Graph"
+msgstr ""
+
 msgid "harga"
 msgstr "harga"
 
@@ -1281,6 +1305,9 @@ msgstr "jarak (km)"
 
 msgid "jika pakai sopir"
 msgstr "jika pakai sopir"
+
+msgid "judul (title & og:title)"
+msgstr ""
 
 msgid "jumlah baris"
 msgstr "jumlah baris"
@@ -1348,6 +1375,9 @@ msgstr "lokasi ambil"
 msgid "menunggu verifikasi admin (maks. 15 menit)."
 msgstr "menunggu verifikasi admin (maks. 15 menit)."
 
+msgid "meta description"
+msgstr ""
+
 msgid "metode pembayaran"
 msgstr "metode pembayaran"
 
@@ -1378,8 +1408,14 @@ msgstr "nama penyewa"
 msgid "no. WhatsApp"
 msgstr "no. WhatsApp"
 
+msgid "noindex"
+msgstr ""
+
 msgid "nomor polisi"
 msgstr "nomor polisi"
+
+msgid "path"
+msgstr ""
 
 msgid "pemesanan"
 msgstr "pemesanan"
