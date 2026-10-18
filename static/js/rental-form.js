@@ -2,11 +2,11 @@
 (function () {
   'use strict';
 
-  // Ambil data dari atribut pada tag <script> ini sendiri
-  var script = document.querySelector('script[src*="rental-form.js"]');
-  if (!script) return;
-  var price = parseInt(script.getAttribute('data-price'), 10) || 0;
-  var driverFee = parseInt(script.getAttribute('data-driver'), 10) || 0;
+  // Ambil data dari atribut pada <form id="rentalForm"> (aman dikompress)
+  var form = document.getElementById('rentalForm');
+  if (!form) return;
+  var price = parseInt(form.getAttribute('data-price'), 10) || 0;
+  var driverFee = parseInt(form.getAttribute('data-driver'), 10) || 0;
 
   var pickup = document.getElementById('id_pickup_date');
   var ret = document.getElementById('id_return_date');

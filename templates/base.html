@@ -76,8 +76,8 @@
   {% include 'includes/footer.html' %}
 
   {% compress js %}
-  <script src="{% static 'vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
-  <script src="{% static 'js/main.js' %}"></script>
+  <script src="{% static 'vendor/bootstrap/bootstrap.bundle.min.js' %}" defer></script>
+  <script src="{% static 'js/main.js' %}" defer></script>
   {% endcompress %}
   {% block extra_js %}{% endblock %}
 </body>

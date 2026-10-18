@@ -33,7 +33,8 @@
             {% for e in form.non_field_errors %}{{ e }}<br>{% endfor %}
           </div>
           {% endif %}
-          <form method="post" action="{% url 'rental:book' vehicle.slug %}" id="rentalForm" novalidate>
+          <form method="post" action="{% url 'rental:book' vehicle.slug %}" id="rentalForm" novalidate
+      data-price="{{ vehicle.price_per_day }}" data-driver="{{ vehicle.driver_fee_per_day }}">
             {% csrf_token %}
             <div class="row g-3">
               <div class="col-6">
@@ -131,7 +132,8 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/rental-form.js' %}" defer
-        data-price="{{ vehicle.price_per_day }}"
-        data-driver="{{ vehicle.driver_fee_per_day }}"></script>
+{% load compress %}
+{% compress js %}
+<script src="{% static 'js/rental-form.js' %}" defer></script>
+{% endcompress %}
 {% endblock %}

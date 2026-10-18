@@ -59,3 +59,31 @@ class HalamanIntiTest(TestCase):
                      '/tentang/', '/kontak/'):
             with self.subTest(path=path):
                 self.assertEqual(self.client.get(path).status_code, 200)
+
+
+class CompressOfflineManifestCheckTest(TestCase):
+    """core.E001: system check gagal cepat bila urutan deploy terbalik."""
+
+    def test_error_bila_manifest_hilang(self):
+        from unittest.mock import patch
+        from django.test import override_settings
+        from core.checks import compress_offline_manifest
+        with override_settings(DEBUG=False, COMPRESS_OFFLINE=True), \
+                patch('compressor.storage.default_offline_manifest_storage') as st:
+            st.exists.return_value = False
+            errors = compress_offline_manifest(None)
+        self.assertEqual(len(errors), 1)
+        self.assertEqual(errors[0].id, 'core.E001')
+        self.assertIn('compress', errors[0].hint)
+
+    def test_ok_bila_manifest_ada_atau_debug(self):
+        from unittest.mock import patch
+        from django.test import override_settings
+        from core.checks import compress_offline_manifest
+        with override_settings(DEBUG=False, COMPRESS_OFFLINE=True), \
+                patch('compressor.storage.default_offline_manifest_storage') as st:
+            st.exists.return_value = True
+            self.assertEqual(compress_offline_manifest(None), [])
+        # DEBUG=True -> check dilewati
+        with override_settings(DEBUG=True, COMPRESS_OFFLINE=False):
+            self.assertEqual(compress_offline_manifest(None), [])

@@ -193,10 +193,13 @@ ada kamusnya terdaftar sebagai *fallback* di output perintah — tinggal tambahk
 
 ```bash
 python manage.py migrate && python manage.py compile_i18n
-DJANGO_DEBUG=0 python manage.py compress --force   # minifikasi offline (WAJIB sebelum collectstatic)
-python manage.py collectstatic --noinput
+python manage.py collectstatic --noinput                # 1) salin sumber ke STATIC_ROOT...
+DJANGO_DEBUG=0 python manage.py compress --force        # 2) ...baru minifikasi offline (baca dari STATIC_ROOT)
 gunicorn core.wsgi:application --bind 127.0.0.1:8001 --workers 3
 ```
+
+> `manage.py check` gagal dengan error `core.E001` bila langkah 2 terlewat —
+> gagal cepat sebelum traffic produksi menghantam halaman 500.
 
 Konfigurasi Nginx reverse proxy lengkap (static/media/cache/gzip/HTTPS) tersedia di
 [`deploy/nginx.conf`](deploy/nginx.conf). Produksi sebaiknya juga:
