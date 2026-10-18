@@ -88,6 +88,9 @@ msgstr "Well-maintained vehicles, experienced drivers, transparent prices."
 msgid "Atas nama"
 msgstr "Account holder"
 
+msgid "Atau langsung cari jadwal di sini:"
+msgstr "Or search a schedule right here:"
+
 msgid "Bagasi luas"
 msgstr "Spacious luggage"
 
@@ -769,6 +772,9 @@ msgstr "Nusantara Trans — Operations Panel"
 
 msgid "Okupansi"
 msgstr "Occupancy"
+
+msgid "Otomatis dikonversi ke WebP (maks. lebar 1200px)."
+msgstr ""
 
 msgid "Panel Operasional"
 msgstr "Operations Panel"

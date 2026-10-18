@@ -99,8 +99,16 @@ def csrf_failure(request, reason='', template_name='csrf_failure.html'):
 
 
 def error_404(request, exception=None):
-    """Halaman 404 branded (status tetap 404 untuk SEO)."""
-    return render(request, '404.html', status=404)
+    """Halaman 404 branded — status TETAP 404 (tanpa redirect, anti soft-404).
+
+    Menyertakan form pencarian (kota asal/tujuan/tanggal) agar pengunjung
+    yang tersesat langsung bisa melanjutkan perjalanan di halaman yang sama.
+    """
+    try:
+        form = SearchForm()
+    except Exception:
+        form = None  # DB bermasalah — 404 tetap tampil tanpa form
+    return render(request, '404.html', {'form': form}, status=404)
 
 
 def error_500(request):

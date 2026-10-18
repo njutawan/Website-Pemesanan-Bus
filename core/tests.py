@@ -474,3 +474,47 @@ class SecurityHeadersTest(TestCase):
         # mode default (tanpa DJANGO_SSL_REDIRECT): tidak ada header XFO
         r = self.client.get('/')
         self.assertNotIn('X-Frame-Options', r)
+
+
+class ErrorPagesTest(TestCase):
+    """404/500 kustom: status jujur (anti soft-404), nav + form pencarian."""
+
+    def test_404_status_jujur_tanpa_redirect(self):
+        r = self.client.get('/halaman-tidak-ada-x/')
+        self.assertEqual(r.status_code, 404)  # langsung 404, BUKAN 301/302
+        self.assertNotIn('Location', r)
+
+    def test_404_memuat_nav_form_dan_saran_rute(self):
+        html = self.client.get('/halaman-tidak-ada-x/').content.decode()
+        self.assertIn('nt-navbar', html)          # navigasi utama (extends base)
+        self.assertIn('id="id_origin"', html)     # form pencarian
+        self.assertIn('id="id_destination"', html)
+        self.assertIn('id="id_date"', html)
+        self.assertIn('jember-surabaya', html)    # saran rute populer
+
+    def test_404_url_model_tak_ada_juga_branded(self):
+        r = self.client.get('/bus/rute/tidak-ada-999/')
+        self.assertEqual(r.status_code, 404)
+        self.assertIn(b'nt-navbar', r.content)
+
+    def test_500_branded_dengan_status_500(self):
+        import sys
+        import types
+        from django.urls import path
+        mod = types.ModuleType('boom_urls')
+
+        def boom(request):
+            raise RuntimeError('uji halaman 500')
+
+        # urlconf uji = view pemancing exception + SELURUH url asli,
+        # agar template 500 (navbar: {% url 'home' %}) tetap bisa di-reverse.
+        from core import urls as core_urls_mod
+        mod.urlpatterns = [path('boom/', boom)] + list(core_urls_mod.urlpatterns)
+        sys.modules['boom_urls'] = mod
+        from django.test import Client
+        with override_settings(ROOT_URLCONF='boom_urls'):
+            # raise_request_exception = param KONSTRUKTOR Client (Django 5)
+            r = Client(raise_request_exception=False).get('/boom/')
+        self.assertEqual(r.status_code, 500)
+        self.assertIn('Ada gangguan', r.content.decode())
+        self.assertIn('nt-navbar', r.content.decode())

@@ -13,6 +13,30 @@
       <p class="text-muted mb-4">
         {% blocktrans %}Halaman yang Anda cari tidak ada atau sudah dipindah. Jangan khawatir — perjalanan Anda tetap bisa dimulai dari sini:{% endblocktrans %}
       </p>
+      {% if form %}
+      <div class="card border-0 shadow-sm rounded-4 text-start mb-4">
+        <div class="card-body p-4">
+          <h6 class="fw-bold mb-3"><i class="fa-solid fa-magnifying-glass text-warning me-1"></i>{% trans 'Atau langsung cari jadwal di sini:' %}</h6>
+          <form method="get" action="{% url 'booking:search' %}" class="row g-2 align-items-end">
+            <div class="col-sm-6 col-md-3">
+              <label class="form-label small fw-semibold" for="id_origin">{{ form.origin.label }}</label>
+              {{ form.origin }}
+            </div>
+            <div class="col-sm-6 col-md-3">
+              <label class="form-label small fw-semibold" for="id_destination">{{ form.destination.label }}</label>
+              {{ form.destination }}
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label small fw-semibold" for="id_date">{{ form.date.label }}</label>
+              {{ form.date }}
+            </div>
+            <div class="col-6 col-md-3 d-grid">
+              <button class="btn btn-accent" type="submit"><i class="fa-solid fa-magnifying-glass me-1"></i>{% trans 'Cari' %}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      {% endif %}
       <div class="d-flex gap-2 justify-content-center flex-wrap mb-4">
         <a href="{% url 'booking:search' %}" class="btn btn-accent px-4">
           <i class="fa-solid fa-ticket me-1"></i>{% trans 'Cari Jadwal Bus' %}

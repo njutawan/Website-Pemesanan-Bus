@@ -1039,5 +1039,8 @@ TRANSLATIONS_EN = {
     "Cocokkan persis dengan URL. '/bus/' berlaku untuk ID & EN; '/en/bus/' khusus EN. Halaman detail (rute/mobil) memakai judul objek.": "Match the URL exactly. '/bus/' applies to both ID & EN; '/en/bus/' is EN-only. Detail pages (route/vehicle) use the object title.",
     "URL halaman, contoh '/bus/'. Baris '/en/bus/' khusus EN; tanpa prefiks berlaku untuk kedua bahasa.": "Page URL, e.g. '/bus/'. A '/en/bus/' entry is EN-only; entries without a prefix apply to both languages.",
     "Disarankan 120–160 karakter.": "Aim for 120–160 characters.",
+
+    # ---- Halaman 404 ----
+    "Atau langsung cari jadwal di sini:": "Or search a schedule right here:",
 }
 

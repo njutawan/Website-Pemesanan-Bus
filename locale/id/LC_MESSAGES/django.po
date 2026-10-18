@@ -88,6 +88,9 @@ msgstr "Armada terawat, sopir berpengalaman, harga transparan."
 msgid "Atas nama"
 msgstr "Atas nama"
 
+msgid "Atau langsung cari jadwal di sini:"
+msgstr ""
+
 msgid "Bagasi luas"
 msgstr "Bagasi luas"
 
@@ -768,6 +771,9 @@ msgstr "Nusantara Trans — Panel Operasional"
 
 msgid "Okupansi"
 msgstr "Okupansi"
+
+msgid "Otomatis dikonversi ke WebP (maks. lebar 1200px)."
+msgstr ""
 
 msgid "Panel Operasional"
 msgstr "Panel Operasional"

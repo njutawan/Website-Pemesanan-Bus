@@ -60,6 +60,11 @@ dwibahasa **Indonesia / English**.
   tidak akan tertimpa)
 
 ### 🔍 SEO
+- **Halaman error terindeks bersih**: `404.html` & `500.html` branded —
+  status HTTP **tetap 404/500** (tanpa redirect — redirect dianggap
+  *soft 404* oleh Google dan merusak reputasi domain). Halaman 404
+  menyertakan navigasi utama, **form pencarian jadwal** (asal/tujuan/tanggal),
+  tombol pintasan, dan saran rute populer untuk menekan bounce rate
 - **robots.txt dinamis** (TemplateView): baris `Sitemap:` menunjuk URL absolut
   `/sitemap.xml` secara otomatis + `Disallow` untuk halaman transaksi
   (`/bus/kursi/`, `/bus/booking/`, `/rental/sewa/` — termasuk varian `/en/`)
