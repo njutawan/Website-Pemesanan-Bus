@@ -200,6 +200,7 @@ USE_TZ = True
 # Statik & media
 # =============================================================================
 STATIC_URL = 'static/'
+COMPRESS_OUTPUT_DIR = 'cache'  # huruf kecil — selaras LowercasePathMiddleware
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_FINDERS = [

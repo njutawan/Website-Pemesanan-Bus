@@ -18,9 +18,13 @@ class LowercasePathMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
+    ASSET_PREFIXES = ('/static/', '/media/')
+
     def __call__(self, request):
         path = request.path
-        if path != path.lower():
+        if path != path.lower() and not path.startswith(self.ASSET_PREFIXES):
+            # Aset statis/media TIDAK dialihkan: lookup file case-sensitive
+            # (301 hanya mengubah 404 menjadi 404 dengan redirect tambahan).
             try:
                 resolve(path)
             except Resolver404:

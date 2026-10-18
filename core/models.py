@@ -1,4 +1,5 @@
 """Model inti: metadata SEO per halaman, dikelola lewat /admin/."""
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -47,3 +48,46 @@ class PageMeta(models.Model):
 
     def __str__(self):
         return self.path
+
+
+class SeoKeyword(models.Model):
+    """Kata kunci -> URL internal utk auto-linking konten (in-text link).
+
+    Dikelola lewat /admin/: perubahan apapun otomatis menghapus cache
+    peta kata kunci (sinyal di core.apps.CoreConfig.ready). URL wajib
+    path internal relatif dengan slash-akhir konsisten (APPEND_SLASH).
+    """
+
+    phrase = models.CharField('frasa', max_length=100, unique=True)
+    url = models.CharField('URL internal', max_length=300)
+    is_active = models.BooleanField('aktif', default=True)
+    updated = models.DateTimeField('diperbarui', auto_now=True)
+
+    class Meta:
+        verbose_name = 'kata kunci SEO'
+        verbose_name_plural = 'kata kunci SEO'
+        ordering = ('phrase',)
+
+    def __str__(self):
+        return f'{self.phrase} → {self.url}'
+
+    def clean(self):
+        u = (self.url or '').strip()
+        if not u.startswith('/'):
+            raise ValidationError({'url': 'Wajib path internal relatif yang '
+                                          'diawali "/" (tanpa domain luar).'})
+        if '://' in u or u.startswith('//'):
+            raise ValidationError({'url': 'Skema/domain luar tidak diizinkan.'})
+        # Normalisasi: path selalu berakhir "/" (konsisten APPEND_SLASH);
+        # query (?) dan fragment (#) diletakkan setelah slash.
+        frag = ''
+        if '#' in u:
+            u, _, frag = u.partition('#')
+            frag = '#' + frag
+        query = ''
+        if '?' in u:
+            u, _, query = u.partition('?')
+            query = '?' + query
+        if not u.endswith('/'):
+            u += '/'
+        self.url = u + query + frag

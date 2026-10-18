@@ -127,7 +127,8 @@ VEHICLES = [
     ('Toyota Avanza', 'MPV', 2022, 'MATIC', 7, 400000, 250000,
      'vehicles/toyota-avanza.jpg',
      'Mobil keluaran paling populer untuk perjalanan keluarga. IRIT, '
-     'ringan dikendarai, dan mudah diparkir di perkotaan.'),
+     'ringan dikendarai, dan mudah diparkir di perkotaan. Pilihan utama '
+     'rental mobil dari Jember ke Surabaya, Malang, dan Banyuwangi.'),
     ('Mitsubishi Pajero Sport', 'SUV', 2022, 'MATIC', 7, 950000, 300000,
      'vehicles/pajero-sport.jpg',
      'SUV diesel tangguh untuk medan berat maupun tol. Cocok untuk trip '
@@ -143,7 +144,8 @@ VEHICLES = [
     ('Bus Kecil 31 Kursi', 'BUS', 2020, 'MANUAL', 31, 2500000, 500000,
      'vehicles/bus-kecil.jpg',
      'Bus kecil untuk rombongan besar: karaoke, toilet, dan bagasi luas. '
-     'Sertifikasi KIR & uji berkala.'),
+     'Sertifikasi KIR & uji berkala. Alternatif nyaman tiket bus untuk '
+     'rombongan Surabaya, Denpasar, dan Yogyakarta.'),
 ]
 
 # Redirect lama -> baru (django.contrib.redirects via RedirectFallbackMiddleware).
@@ -310,7 +312,15 @@ class Command(BaseCommand):
             f'✔ Redirect: {Redirect.objects.count()} aturan '
             f'({n_red} baru)'))
 
-        from core.models import PageMeta
+        from core.models import PageMeta, SeoKeyword
+        for phrase, url in [('tiket bus', '/bus/'),
+                            ('rental mobil', '/rental/'),
+                            ('sewa mobil', '/rental/')]:
+            SeoKeyword.objects.update_or_create(
+                phrase=phrase, defaults={'url': url})
+        self.stdout.write(self.style.SUCCESS(
+            f'✔ SEO: {SeoKeyword.objects.count()} kata kunci + '
+            f'{PageMeta.objects.count()} metadata halaman'))
         for path, title, description in PAGE_META:
             PageMeta.objects.update_or_create(
                 path=path, defaults={'title': title, 'description': description})

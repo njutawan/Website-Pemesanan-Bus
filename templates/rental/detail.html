@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n booking_extras static %}
+{% load i18n booking_extras seo_internal_links static %}
 
 {% block title %}{% blocktranslate with name=vehicle.name %}Sewa {{ name }}{% endblocktranslate %} — {{ SITE_NAME }}{% endblock %}
 {% block og_title %}{% blocktranslate with name=vehicle.name %}Sewa {{ name }}{% endblocktranslate %} — {{ SITE_NAME }}{% endblock %}
@@ -46,7 +46,7 @@
       <div class="card border-0 shadow-sm rounded-4 mt-4">
         <div class="card-body p-4">
           <h5 class="fw-bold mb-3"><i class="fa-solid fa-circle-info text-primary me-2"></i>{% trans 'Tentang Unit Ini' %}</h5>
-          <p class="text-muted mb-0">{{ vehicle.description|linebreaksbr|autolink }}</p>
+          <p class="text-muted mb-0">{{ vehicle.description|linebreaksbr|auto_internal_link:request.path }}</p>
         </div>
       </div>
       {% endif %}

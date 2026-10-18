@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n cache booking_extras %}
+{% load i18n cache booking_extras seo_internal_links %}
 
 {% block title %}{% blocktranslate with origin=route.origin.name dest=route.destination.name %}Tiket Bus {{ origin }} ke {{ dest }} — Jadwal & Harga{% endblocktranslate %} | {{ SITE_NAME }}{% endblock %}
 {% block og_title %}{% blocktranslate with origin=route.origin.name dest=route.destination.name %}Tiket Bus {{ origin }} → {{ dest }}{% endblocktranslate %} — {{ SITE_NAME }}{% endblock %}
@@ -85,7 +85,7 @@
       <div id="faq-{{ forloop.counter }}"
            class="accordion-collapse collapse{% if forloop.first %} show{% endif %}"
            data-bs-parent="#faqRoute">
-        <div class="accordion-body text-muted">{{ f.a|autolink }}</div>
+        <div class="accordion-body text-muted">{{ f.a|auto_internal_link:request.path }}</div>
       </div>
     </div>
     {% endfor %}

@@ -72,10 +72,15 @@ dwibahasa **Indonesia / English**.
     pillar antar-kota saling menyandingkan (link antar-kategori)
   * **Anchor & in-text linking**: tanpa anchor generik (audit "klik di
     sini" = nihil; semua anchor deskriptif: nama rute, "Bus dari {kota}");
-    filter templat **`autolink`** menautkan istilah kunci (frasa layanan +
-    nama kota dgn rute aktif) pada **pemunculan pertama** dalam konten
-    (jawaban FAQ, deskripsi mobil) — escape-safe, tidak menyusup ke
-    `<a>` existing, tiap istilah sekali; peta istilah di-cache 10 menit
+    filter **`auto_internal_link`** (`core/templatetags/seo_internal_links.py`)
+    menautkan istilah kunci pada **pemunculan pertama** (FAQ, deskripsi
+    mobil). Sumber istilah: model **`SeoKeyword`** (dikelola /admin/,
+    sinyal hapus cache otomatis) + pillar kota ber-rute aktif.
+    HTML-safe: escape dulu, tak menyusup ke `<a>` existing; **anti
+    self-link** via `request.path`; **batas densitas** 1 link/250 kata
+    (rentang 1-4 per blok ≈ 2-4 per 1000 kata); URL dinormalisasi
+    slash-akhir (APPEND_SLASH) & divalidasi path internal; anchor
+    distyling `.ilink` (garis bawah titik-titik)
   * **Homepage PageRank**: pillar kategori kini **1 klik** via grid
     "Pilih kota keberangkatan" (9 pillar, anchor "Bus dari {kota}") di
     samping kartu rute populer & armada unggulan; **tanpa link non-SEO**

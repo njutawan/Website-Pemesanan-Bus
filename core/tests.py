@@ -367,13 +367,17 @@ class PerformanceTest(TestCase):
         cache.clear()
 
     def test_route_detail_tanpa_n_plus_1(self):
+        from django.core.cache import cache
         from django.db import connection
         from django.test.utils import CaptureQueriesContext
+        cache.clear()  # deterministik: hitung dgn cache istilah dingin
         with CaptureQueriesContext(connection) as ctx:
             self.assertEqual(self.client.get('/bus/rute/dari/kota-a/kota-b/').status_code, 200)
         # Sebelum optimasi: 19 query (COUNT kursi per bus + City per baris).
-        # Sesudah: <=5 query — agregasi & relasi digabung via annotate+select_related.
-        self.assertLessEqual(len(ctx.captured_queries), 5)
+        # Sesudah: <=6 query — agregasi digabung (annotate+select_related);
+        # +2 dgn cache dingin: peta kata kunci SEO & pillar kota (cache 600s,
+        # render berikutnya 0 query tambahan).
+        self.assertLessEqual(len(ctx.captured_queries), 6)
         sql = ' '.join(q['sql'] for q in ctx.captured_queries)
         self.assertNotIn('SELECT COUNT(*) FROM "booking_seat"', sql)  # bukan COUNT per bus
         self.assertIn('bus_seat_count', sql)       # hasil COUNT digabung 1 query
@@ -675,28 +679,122 @@ class SiloArchitectureTest(TestCase):
 
 
 class InTextLinkingTest(TestCase):
-    """Filter autolink: anchor deskriptif, pemunculan pertama, anti-injeksi."""
+    """Auto-linking internal: model SeoKeyword, self-link, densitas, HTML-safe."""
 
     def setUp(self):
         from django.core.cache import cache
+        from core.models import SeoKeyword
+        SeoKeyword.objects.update_or_create(
+            phrase='tiket bus', defaults={'url': '/bus/'})
         cache.clear()
 
+    def _filter(self):
+        from core.templatetags.seo_internal_links import auto_internal_link
+        return auto_internal_link
+
     def test_filter_pemunculan_pertama_saja(self):
-        from booking.templatetags.booking_extras import autolink
-        hasil = str(autolink('Tiket bus murah. Tiket bus cepat.'))
+        hasil = str(self._filter()('Tiket bus murah. Tiket bus cepat.'))
         self.assertEqual(hasil.count('<a '), 1)
         self.assertIn('href="/bus/"', hasil)
         self.assertIn('>Tiket bus<', hasil)  # anchor = teks asli (deskriptif)
 
     def test_filter_tak_menautkan_di_dalam_anchor_ada(self):
-        from booking.templatetags.booking_extras import autolink
-        hasil = str(autolink('lihat <a href="/x/">Tiket bus</a> murah'))
+        hasil = str(self._filter()('lihat <a href="/x/">Tiket bus</a> murah'))
         self.assertEqual(hasil.count('<a '), 1)  # yang lama tidak digandakan
 
     def test_filter_aman_terhadap_html(self):
-        from booking.templatetags.booking_extras import autolink
-        hasil = str(autolink('<script>alert("tiket bus")</script>'))
+        hasil = str(self._filter()('<script>alert("tiket bus")</script>'))
         self.assertNotIn('<script>', hasil)  # ter-escape
+
+    def test_keyword_dari_db_dan_sinyal_invalidate_cache(self):
+        from core.models import SeoKeyword
+        kw, _ = SeoKeyword.objects.get_or_create(
+            phrase='panduan pesan', defaults={'url': '/bus/'})
+        from django.core.cache import cache
+        cache.clear()
+        hasil = str(self._filter()('baca panduan pesan tiket dulu'))
+        self.assertIn('href="/bus/"', hasil)
+        kw.url = '/rental/'          # save -> sinyal hapus cache
+        kw.save()
+        hasil = str(self._filter()('baca panduan pesan tiket dulu'))
+        self.assertIn('href="/rental/"', hasil)
+        self.assertNotIn('href="/bus/"', hasil)
+
+    def test_keyword_nonaktif_dilewati(self):
+        from core.models import SeoKeyword
+        SeoKeyword.objects.update_or_create(
+            phrase='paket wisata', defaults={'url': '/rental/',
+                                             'is_active': False})
+        hasil = str(self._filter()('paket wisata murah'))
+        self.assertNotIn('<a ', hasil)
+
+    def test_anti_self_link(self):
+        from booking.models import Bus, City, Route, Schedule
+        a = City.objects.create(name='Kota S', slug='kota-s')
+        b = City.objects.create(name='Kota T', slug='kota-t')
+        bus = Bus.objects.create(code='NT-SLF', name='Bus Self',
+                                 plate_number='E 4000 XX')
+        r = Route.objects.create(origin=a, destination=b, distance_km=70,
+                                 duration_minutes=90)
+        Schedule.objects.create(route=r, bus=bus, departure_time='07:00',
+                                arrival_time='08:30', price=80000)
+        from django.core.cache import cache
+        cache.clear()
+        f = self._filter()
+        # halaman pillar Kota S tidak menautkan "Kota S" ke dirinya sendiri
+        hasil = str(f('Kota S adalah hub.', '/bus/rute/dari/kota-s/'))
+        self.assertNotIn('<a ', hasil)
+        # halaman lain tetap menautkan
+        hasil = str(f('Kota S adalah hub.', '/bus/rute/'))
+        self.assertIn('href="/bus/rute/dari/kota-s/"', hasil)
+        # url "/" tidak pernah ditautkan (beranda = self di mana-mana jika kosong)
+        SeoKeyword = self._kw()
+        SeoKeyword.objects.update_or_create(
+            phrase='beranda', defaults={'url': '/'})
+        from django.core.cache import cache as c2
+        c2.delete('seo:db_keywords')
+        self.assertNotIn('<a ', str(f('kunjungi beranda kami')))
+
+    def _kw(self):
+        from core.models import SeoKeyword
+        return SeoKeyword
+
+    def test_url_dinormalisasi_slash_konsisten(self):
+        kw = self._kw()(phrase='bus akap', url='/bus')
+        kw.full_clean()  # validasi + normalisasi
+        kw.save()
+        self.assertEqual(kw.url, '/bus/')  # APPEND_SLASH-consistent
+        from django.core.cache import cache
+        cache.clear()
+        hasil = str(self._filter()('bus akap nyaman'))
+        self.assertIn('href="/bus/"', hasil)
+
+    def test_url_luar_ditolak(self):
+        from django.core.exceptions import ValidationError
+        for jahat in ('https://luar.com/', '//luar.com/',
+                      'javascript:alert(1)'):
+            with self.assertRaises(ValidationError):
+                kw = self._kw()(phrase='jes', url=jahat)
+                kw.full_clean()
+
+    def test_batas_densitas_link(self):
+        kw = self._kw()
+        istilah = ['alpha beta', 'gamma delta', 'epsilon', 'zeta eta',
+                   'theta', 'iota']
+        target = ['/bus/', '/rental/', '/tentang/', '/kontak/',
+                  '/bus/rute/', '/cek-booking/']
+        for frasa, url in zip(istilah, target):
+            kw.objects.update_or_create(phrase=frasa, defaults={'url': url})
+        from django.core.cache import cache
+        cache.clear()
+        f = self._filter()
+        # teks pendek (~90 kata): budget 1 link
+        pendek = 'teks ' * 80 + ' '.join(istilah)
+        self.assertEqual(str(f(pendek)).count('<a '), 1)
+        # teks panjang (1000+ kata): maksimum 4 link (2-4 per 1000 kata)
+        panjang = 'teks ' * 1000 + ' '.join(istilah)
+        self.assertLessEqual(str(f(panjang)).count('<a '), 4)
+        self.assertEqual(str(f(panjang)).count('<a '), 4)
 
     def test_faq_jawaban_tertautinkonten(self):
         from booking.models import Bus, City, Route, Schedule
@@ -709,8 +807,8 @@ class InTextLinkingTest(TestCase):
         from django.core.cache import cache
         cache.clear()
         html = self.client.get('/bus/rute/dari/kota-a/kota-b/').content.decode()
-        # "Kota A" di jawaban FAQ otomatis jadi link ke pillar kota
-        self.assertIn('<a href="/bus/rute/dari/kota-a/">Kota A</a>', html)
+        # "Kota A" di jawaban FAQ otomatis jadi link ke pillar kota (class ilink)
+        self.assertIn('<a class="ilink" href="/bus/rute/dari/kota-a/">Kota A</a>', html)
 
     def test_homepage_grid_kategori_semua_pillar(self):
         from booking.models import Bus, City, Route, Schedule
@@ -731,3 +829,22 @@ class InTextLinkingTest(TestCase):
         html = self.client.get('/').content.decode()
         for jelek in ('/admin/', 'privacy', 'terms', 'login'):
             self.assertNotIn(f'href="{jelek}', html)
+
+
+class LowercaseMiddlewareTest(TestCase):
+    """LowercasePathMiddleware: halaman kapital -> 301; aset tidak disentuh."""
+
+    def test_aset_static_media_tak_dialihkan(self):
+        from django.http import HttpResponse
+        from django.test import RequestFactory
+        from core.middleware import LowercasePathMiddleware
+        rf = RequestFactory()
+        for pth in ('/static/IMG/hero-bus.webp', '/media/vehicles/X.webp'):
+            resp = LowercasePathMiddleware(
+                lambda r: HttpResponse(status=404))(rf.get(pth))
+            self.assertEqual(resp.status_code, 404)  # lolos, tanpa 301
+
+    def test_halaman_kapital_tetap_301(self):
+        resp = self.client.get('/BUS/')
+        self.assertEqual(resp.status_code, 301)
+        self.assertEqual(resp['Location'], '/bus/')

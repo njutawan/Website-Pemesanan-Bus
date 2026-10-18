@@ -17,7 +17,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from booking.models import Booking, BookingSeat
-from core.models import PageMeta
+from core.models import PageMeta, SeoKeyword
 from rental.models import RentalBooking
 
 
@@ -160,3 +160,14 @@ def build_dashboard_context() -> dict:
             'top_routes': top_routes,
         },
     }
+
+
+@admin.register(SeoKeyword, site=admin_site)
+class SeoKeywordAdmin(admin.ModelAdmin):
+    """Kata kunci auto-link: perubahan otomatis menghapus cache peta."""
+
+    list_display = ('phrase', 'url', 'is_active', 'updated')
+    list_editable = ('is_active',)
+    list_filter = ('is_active',)
+    search_fields = ('phrase', 'url')
+    ordering = ('phrase',)
