@@ -14,7 +14,8 @@ from django.core import checks
 
 @checks.register()
 def compress_offline_manifest(app_configs, **kwargs):
-    if settings.DEBUG or not getattr(settings, 'COMPRESS_OFFLINE', False):
+    if (settings.DEBUG or getattr(settings, 'RUNNING_TESTS', False)
+            or not getattr(settings, 'COMPRESS_OFFLINE', False)):
         return []
     try:
         from compressor.storage import default_offline_manifest_storage
@@ -182,10 +183,34 @@ def production_security(app_configs, **kwargs):
             hint='Hapus *.map dari static/vendor (source map tidak untuk publik).',
             id='core.W019'))
 
-    if getattr(settings, 'PAYMENT_GATEWAY_PROVIDER', '') and not getattr(
-            settings, 'PAYMENT_WEBHOOK_SECRET', ''):
-        # Sudah ditangani di atas; hindari duplikasi.
-        pass
+    # .env di dalam proyek: jangan pernah bisa dibaca pengguna lain.
+    env_file = os.path.join(str(settings.BASE_DIR), '.env')
+    if os.path.exists(env_file):
+        try:
+            mode = os.stat(env_file).st_mode & 0o777
+        except OSError:
+            mode = 0
+        if mode & 0o077:
+            issues.append(checks.Warning(
+                f'Berkas .env dapat dibaca pengguna/grup lain (mode {mode:o}).',
+                hint='Jalankan: chmod 600 .env (atau simpan variabel di '
+                     '/etc/nusantartrans/app.env dengan mode 600).',
+                id='core.W020'))
+
+    if not debug:
+        backend = str(getattr(settings, 'EMAIL_BACKEND', ''))
+        if 'console' in backend or 'locmem' in backend or 'dummy' in backend:
+            issues.append(checks.Warning(
+                'EMAIL_BACKEND pengembangan (console/locmem/dummy) di produksi.',
+                hint='Reset password admin tidak akan terkirim. Set '
+                     'DJANGO_EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend '
+                     'dan variabel DJANGO_EMAIL_* .',
+                id='core.W021'))
+        if int(getattr(settings, 'PASSWORD_RESET_TIMEOUT', 259200)) > 24 * 3600:
+            issues.append(checks.Warning(
+                'PASSWORD_RESET_TIMEOUT lebih dari 24 jam.',
+                hint='Set DJANGO_PASSWORD_RESET_TIMEOUT=3600.',
+                id='core.W022'))
     return issues
 
 

@@ -68,7 +68,10 @@ class CompressOfflineManifestCheckTest(TestCase):
         from unittest.mock import patch
         from django.test import override_settings
         from core.checks import compress_offline_manifest
-        with override_settings(DEBUG=False, COMPRESS_OFFLINE=True), \
+        # RUNNING_TESTS=False: meniru proses `manage.py check` sungguhan
+        # (saat test runner, check ini sengaja dilewati).
+        with override_settings(DEBUG=False, COMPRESS_OFFLINE=True,
+                               RUNNING_TESTS=False), \
                 patch('compressor.storage.default_offline_manifest_storage') as st:
             st.exists.return_value = False
             errors = compress_offline_manifest(None)
@@ -80,7 +83,8 @@ class CompressOfflineManifestCheckTest(TestCase):
         from unittest.mock import patch
         from django.test import override_settings
         from core.checks import compress_offline_manifest
-        with override_settings(DEBUG=False, COMPRESS_OFFLINE=True), \
+        with override_settings(DEBUG=False, COMPRESS_OFFLINE=True,
+                               RUNNING_TESTS=False), \
                 patch('compressor.storage.default_offline_manifest_storage') as st:
             st.exists.return_value = True
             self.assertEqual(compress_offline_manifest(None), [])

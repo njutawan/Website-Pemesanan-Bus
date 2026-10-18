@@ -273,11 +273,16 @@ pip install -r requirements.txt
 ### 2. Setup database & data demo
 
 ```bash
+export DJANGO_DEBUG=1               # DEBUG default MATI (fail-closed)
 python manage.py migrate
 python manage.py seed_data          # kota, rute, bus, jadwal, mobil, akun admin
 python manage.py compile_i18n       # ekstrak + kompilasi katalog ID/EN (via polib)
 python manage.py runserver
 ```
+
+> Sejak hardening, `DEBUG` bernilai **False** bila `DJANGO_DEBUG` tidak diisi —
+> aplikasi memperlakukan lingkungan apa pun sebagai produksi. Untuk
+> pengembangan pakai `make dev` (sudah menyalakan `DJANGO_DEBUG=1`).
 
 Buka http://127.0.0.1:8000 — beranda Indonesia, http://127.0.0.1:8000/en/ untuk Inggris.
 
@@ -289,8 +294,13 @@ bukan password umum). Seed juga memperingatkan bila akun admin lama masih
 memakai password bawaan versi sebelumnya.
 
 Perintah lain: `python manage.py seed_data --flush` (hapus data demo),
-`python manage.py test` (181 unit test),
-`python manage.py security_audit` (audit 20 kontrol keamanan).
+`python manage.py test` (230 unit test, 117 di antaranya test keamanan),
+`python manage.py security_audit` (audit 20 kontrol keamanan),
+`python manage.py security_review` (19 titik hardening: secret, `.env`,
+DEBUG, error, injeksi, akses, izin DB, session, reset password, upload),
+`./deploy/scan_secrets.sh` (pindai rahasia di berkas ter-track + riwayat git).
+
+Shortcut: `make dev`, `make test`, `make audit`, `make review`, `make secrets`.
 
 ### 2b. Alternatif: Docker Compose (PostgreSQL)
 
@@ -440,6 +450,21 @@ rate limit, static/media/cache/gzip/HTTPS) tersedia di
 | 18 | Backup/restore | `deploy/backup.sh`, `restore.sh`, `verify_backup.sh` + drill di CI (`deploy/BACKUP.md`) |
 | 19 | Header | CSP hash-based, HSTS, XFO, nosniff, Referrer-Policy, Permissions-Policy, COOP/CORP |
 | 20 | Test pra-rilis | `python manage.py test` + `security_audit` + `check --deploy` di CI, termasuk test keamanan |
+
+### 19 titik hardening (audit kedua)
+
+`python manage.py security_review` memeriksa nilai nyata, bukan sekadar
+keberadaan kontrol: API key di kode, `.env` tidak ter-track dan diblokir
+Nginx, riwayat git bebas kunci, `DEBUG` fail-closed, error 400/403/404/500
+tanpa traceback, validasi + sanitasi input, nol raw SQL, nol `|safe` pada
+data pengguna, auth & cek objek di server, `is_staff` + allowlist IP admin,
+DB tanpa port publik, role `nt_app` least-privilege (bukan superuser),
+`bcrypt_sha256`, cookie `HttpOnly/Secure/SameSite=Lax` + sesi DB 8 jam,
+tanpa route reset password publik (token 60 menit), dan upload ≤6 MB /
+≤5 berkas / ekstensi allowlist / `Pillow.verify()` / 25 MP.
+
+Hasil dengan role non-superuser + SMTP: **PASS 19, WARN 0, FAIL 0**. Detail bukti
+per poin ada di [`SECURITY.md`](SECURITY.md#audit-lanjutan--19-titik-hardening).
 
 ---
 

@@ -7,8 +7,11 @@ setiap kontrol menyebutkan implementasi, test otomatis, dan sisa risiko.
 - Tanggal audit: **2026-10-18**
 - Basis kode: branch `arena/0fe36235-website-pemesanan-bus`
 - Stack: Django 5.2.18, PostgreSQL 16, Gunicorn, Nginx, Redis (opsional)
-- Hasil test: **181 test OK** (termasuk 68 test keamanan khusus)
+- Hasil test: **230 test OK** (termasuk 117 test keamanan khusus:
+  68 di `core/tests_security.py` + 49 di `core/tests_hardening.py`)
 - Hasil `security_audit`: **PASS 16, WARN 2, FAIL 0, N/A 2**
+- Hasil `security_review` (19 kontrol hardening): **PASS 19, WARN 0, FAIL 0**
+  dengan role DB non-superuser + SMTP
 
 Perintah verifikasi ulang:
 
@@ -16,6 +19,8 @@ Perintah verifikasi ulang:
 python manage.py test
 python manage.py check
 python manage.py security_audit          # exit ≠ 0 bila ada FAIL
+python manage.py security_review         # 19 kontrol hardening
+./deploy/scan_secrets.sh                 # rahasia di HEAD + riwayat git
 python manage.py check --deploy --fail-level WARNING   # dengan env produksi
 ```
 
@@ -48,7 +53,7 @@ python manage.py check --deploy --fail-level WARNING   # dengan env produksi
 | 17 | Update dependency | ✅ PASS | Patch keamanan minimum, Dependabot, `pip-audit` di CI |
 | 18 | Test backup restore | ✅ PASS | `deploy/*.sh` + drill otomatis di CI |
 | 19 | Security header | ✅ PASS | CSP hash, HSTS, XFO, nosniff, Referrer/Permissions-Policy, COOP/CORP |
-| 20 | Test keamanan pra-rilis | ✅ PASS (WARN lokal) | 181 test + CI; `DEBUG=0` wajib saat go-live |
+| 20 | Test keamanan pra-rilis | ✅ PASS (WARN lokal) | 230 test + CI; `DEBUG=0` wajib saat go-live |
 
 ### Hasil audit mode produksi
 
@@ -69,6 +74,70 @@ Nilai `127.0.0.1/32,::1/128,192.168.0.0/16` dipakai saat drill (loopback + LAN).
 (itu memang disengaja: panel admin belum dibatasi).
 
 ---
+
+## Audit lanjutan — 19 titik hardening
+
+Pemeriksaan kedua dengan sudut pandang berbeda: bukan lagi "apakah ada
+kontrol", tetapi "apakah nilainya benar di berkas, riwayat git, dan server".
+Dijalankan otomatis lewat `python manage.py security_review` (exit 1 bila ada
+FAIL) dan `deploy/scan_secrets.sh` (pemindai rahasia HEAD + riwayat git).
+
+| # | Titik periksa | Hasil | Bukti |
+|---|---|---|---|
+| 1 | API key aman | ✅ PASS | Tidak ada key literal; `PAYMENT_WEBHOOK_SECRET`/`EMAIL_PASSWORD` hanya dari env; nilai disamarkan di log |
+| 2 | File `.env` tidak publik | ✅ PASS | `.gitignore` + tidak ter-track; Nginx `location ~ /\.` → 404; `deploy/scan_secrets.sh` |
+| 3 | Tidak ada secret hardcoded | ✅ PASS (prod) | `SECRET_KEY` hanya placeholder dev (WARN lokal, `core.E002` menolak di produksi); password DB/email dari env |
+| 4 | Secret di riwayat git | ✅ PASS | 2 commit dipindai; tanpa kunci/token/privat key. Password demo lama (`admin123`) hanya di `.env.example` pra-hardening, sudah dihapus di HEAD — bukan secret produksi |
+| 5 | Debug OFF | ✅ PASS | `DEBUG = _env_bool('DJANGO_DEBUG', default=False)` — fail-closed; lupa set env tetap produksi. `check --deploy` (`security.W018`) menandai DEBUG=1 |
+| 6 | Error tidak bocorkan detail | ✅ PASS | `handler400/403/404/500` → template sendiri; tidak ada traceback/settings/nama tabel di respons |
+| 7 | Validasi input | ✅ PASS | `clean_public_code`, `clean_seat_labels`, `clean_phone`, `validate_travel_date`, `validate_image_upload`; `max_length` + rentang di form, divalidasi ulang di server |
+| 8 | Sanitasi input | ✅ PASS | `clean_text()` membuang NUL/C0/C1 dan merapatkan spasi; charset kode dibatasi; autoescape template |
+| 9 | Anti SQL injection | ✅ PASS | ORM berparameter; tanpa `.raw()`, `.extra()`, `RawSQL`, `cursor.execute` (dipindai otomatis) |
+| 10 | Anti XSS | ✅ PASS | Autoescape aktif, tanpa `\|safe` pada data pengguna; JSON-LD `\u003c`; CSP hash + `script-src-attr 'none'` |
+| 11 | Auth di server | ✅ PASS | Login/izin diperiksa Django; media privat lewat ACL sesi/staf; tombol UI bukan kontrol akses |
+| 12 | Cek akses objek (IDOR) | ✅ PASS | Booking/sewa dicari via kode acak 8 karakter, bukan ID sekuensial; bukti bayar butuh staf/grant sesi |
+| 13 | Role admin aman | ✅ PASS | `is_staff` + `is_active`; allowlist IP; `AuditLog` read-only; `User`/`Group` tidak didaftarkan di panel kustom |
+| 14 | Database tidak publik | ✅ PASS | Dev: `127.0.0.1:5432`. Produksi: `docker-compose.prod.yml` tanpa `ports:` untuk db/redis; Nginx tidak mem-proxy 5432 |
+| 15 | Izin database ketat | ✅ PASS (prod) | `deploy/db_setup.sql`: role `nt_app` `NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS`; runtime ≠ owner migrasi. WARN lokal bila memakai superuser |
+| 16 | Hash password | ✅ PASS | `BCryptSHA256PasswordHasher` (cost 12) + 4 validator (panjang ≥ 12, kemiripan, password umum, numerik) |
+| 17 | Session aman | ✅ PASS | `HttpOnly`, `Secure`, `SameSite=Lax`, umur 8 jam, sesi di DB (cookie hanya berisi ID), rotasi kunci saat login |
+| 18 | Reset password aman | ✅ PASS | Tidak ada route reset publik (anti-enumerasi); ganti password via `/admin/` butuh sesi; token (bila dipakai) 60 menit, sekali pakai, di-hash |
+| 19 | Batasi file upload | ✅ PASS | ≤ 6 MB/berkas, ≤ 5 berkas/request, ekstensi allowlist, `Pillow.verify()`, format JPEG/PNG/WEBP, batas 25 MP, Nginx 10M |
+
+### Perintah & hasil
+
+```text
+python manage.py security_review
+→ 19 kontrol — PASS 19, WARN 0, FAIL 0     (role nt_app non-superuser + SMTP, env produksi)
+
+./deploy/scan_secrets.sh
+→ ✔ Tidak ada rahasia terdeteksi.          (HEAD + riwayat git)
+```
+
+Di mesin pengembangan nilai yang sama akan menghasilkan WARN pada poin 3
+(`SECRET_KEY` placeholder), 13 (allowlist IP kosong), 15 (role DB superuser),
+dan 17 (cookie belum `Secure`/`SameSite=None`) — semuanya **kondisi lokal,
+bukan celah kode**, dan hilang saat env produksi diisi (lihat
+`deploy/db_setup.sql` untuk role `nt_app`).
+
+**Catatan 11/12:** pembayaran memakai transfer manual/QRIS, jadi tidak ada
+"server pembayaran" pihak ketiga. Helper verifikasi HMAC
+(`core/payments.py`) sudah siap dan diuji untuk saat gateway diaktifkan.
+
+### Perubahan kode pada pass ini
+
+- `DEBUG` default **False** — produksi aman meski env lupa diisi; lokal pakai
+  `DJANGO_DEBUG=1` atau `make dev`.
+- Handler error `400`/`403` baru + template bermerek, tanpa detail internal.
+- `clean_text()` dan `validate_image_upload()` di `core/validators.py`,
+  dipasang pada `PageMeta.og_image` dan `Vehicle.image`
+  (migrasi `core.0004`, `rental.0005`).
+- `core/checks.py`: `W020` (izin `.env` ≠ 600), `W021` (email console di
+  produksi → reset password tidak terkirim), `W022` (timeout reset > 24 jam).
+- Email/`PASSWORD_RESET_TIMEOUT` eksplisit; upload limit terpusat di settings.
+- `deploy/db_setup.sql` + `deploy/docker-compose.prod.yml` untuk pemisahan
+  role owner/app dan DB tanpa port publik.
+- `deploy/scan_secrets.sh`, `make` targets, `core/tests_hardening.py` (49 test).
 
 ## 1. Rate limit API/endpoint
 
@@ -552,7 +621,7 @@ setiap push/PR:
 1. `pip check` + `pip-audit -r requirements.txt`;
 2. `flake8` (error sintaks/undefined name);
 3. `python manage.py check`;
-4. `python manage.py test` (181 test, termasuk 68 test keamanan);
+4. `python manage.py test` (230 test, termasuk 117 test keamanan);
 5. `python manage.py security_audit --no-fail`;
 6. `python manage.py check --deploy --fail-level WARNING` dengan env
    produksi (DEBUG=0, HTTPS, cookie Secure, admin IP, Redis, `sslmode=require`);

@@ -65,6 +65,74 @@ def clean_seat_labels(raw, *, max_seats):
     return labels
 
 
+def clean_text(value, *, max_length=None, allow_newlines=False):
+    """Sanitasi teks bebas: buang karakter kontrol & rapikan spasi.
+
+    Dipakai sebelum data pengguna disimpan/ditampilkan. Escaping HTML tetap
+    dilakukan template (autoescape); fungsi ini mencegah karakter kontrol,
+    NUL, dan spasi berlebih yang bisa merusak log/CSV/atribut.
+    """
+    text = '' if value is None else str(value)
+    # Buang NUL & karakter kontrol C0/C1 kecuali tab/newline (bila diizinkan).
+    allowed = {'\t', '\n', '\r'} if allow_newlines else set()
+    text = ''.join(
+        ch for ch in text
+        if ch in allowed or (ord(ch) >= 32 and ord(ch) != 127
+                             and not (0x80 <= ord(ch) <= 0x9f))
+    )
+    text = ' '.join(text.split()) if not allow_newlines else text.strip()
+    if max_length is not None and len(text) > max_length:
+        raise ValidationError(
+            _('Teks terlalu panjang (maksimal %(max)s karakter).')
+            % {'max': max_length})
+    return text
+
+
+def validate_image_upload(file_obj, *, max_bytes=None):
+    """Validasi berkas gambar unggahan (admin & publik).
+
+    * ukuran berkas <= MAX_UPLOAD_SIZE (default 6 MB),
+    * ekstensi dalam MEDIA_ALLOWED_EXTENSIONS,
+    * isi benar-benar gambar (Pillow verify) dan bukan decompression bomb,
+    * nama berkas dipangkas, tanpa path.
+    """
+    from pathlib import Path
+
+    name = Path(getattr(file_obj, 'name', '') or '').name
+    if not name:
+        raise ValidationError(_('Nama berkas tidak valid.'))
+    max_bytes = int(max_bytes if max_bytes is not None else getattr(
+        settings, 'MAX_UPLOAD_SIZE', 6 * 1024 * 1024))
+    size = int(getattr(file_obj, 'size', 0) or 0)
+    if size <= 0:
+        raise ValidationError(_('Berkas kosong tidak diterima.'))
+    if size > max_bytes:
+        raise ValidationError(
+            _('Ukuran berkas maksimal %(mb)s MB.')
+            % {'mb': max_bytes // (1024 * 1024)})
+    suffix = Path(name).suffix.lower()
+    allowed = tuple(getattr(
+        settings, 'MEDIA_ALLOWED_EXTENSIONS', ('.jpg', '.jpeg', '.png', '.webp')))
+    if suffix not in allowed:
+        raise ValidationError(_('Format berkas harus JPG, PNG, atau WebP.'))
+    try:
+        from PIL import Image
+        file_obj.seek(0)
+        with Image.open(file_obj) as image:
+            image.verify()
+            fmt = (image.format or '').upper()
+            width, height = image.size
+        file_obj.seek(0)
+    except Exception:
+        raise ValidationError(_('Berkas gambar tidak valid.'))
+    if fmt not in {'JPEG', 'PNG', 'WEBP'}:
+        raise ValidationError(_('Format gambar tidak didukung.'))
+    max_pixels = int(getattr(settings, 'IMAGE_MAX_PIXELS', 25_000_000))
+    if width < 1 or height < 1 or width * height > max_pixels:
+        raise ValidationError(_('Dimensi gambar terlalu besar.'))
+    return file_obj
+
+
 def csv_safe(value):
     """Cegah CSV formula injection saat data pengguna diekspor ke Excel.
 

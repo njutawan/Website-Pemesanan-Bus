@@ -33,7 +33,9 @@ SECRET_KEY = os.environ.get(
     'DJANGO_SECRET_KEY',
     'django-insecure-ganti-di-produksi-kunci-rahasia-ini',
 )
-DEBUG = _env_bool('DJANGO_DEBUG', default=True)
+# DEBUG default OFF (fail-closed). Pengembangan lokal WAJIB menyalakannya
+# secara eksplisit: `DJANGO_DEBUG=1 python manage.py runserver`.
+DEBUG = _env_bool('DJANGO_DEBUG', default=False)
 # Django test runner memaksa settings.DEBUG=False; penanda ini mencegah system
 # check produksi "gagal" saat menjalankan test suite.
 RUNNING_TESTS = 'test' in sys.argv or 'pytest' in sys.argv
@@ -199,8 +201,10 @@ ADMIN_ALLOWED_IPS = _env_list('DJANGO_ADMIN_ALLOWED_IPS')
 # =============================================================================
 MAX_TRAVEL_DATE_DAYS = 365          # tanggal perjalanan maksimal 1 tahun ke depan
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100
+DATA_UPLOAD_MAX_NUMBER_FILES = 5          # hanya butuh 1 bukti bayar per request
 DATA_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024      # 6 MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024      # 6 MB
+MAX_UPLOAD_SIZE = 6 * 1024 * 1024                  # batas keras per berkas
 FILE_UPLOAD_PERMISSIONS = 0o640
 FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o750
 # Hanya format gambar yang benar-benar dipakai (cegah HTML/SVG tersimpan).
@@ -331,6 +335,30 @@ DATABASES = {
         'OPTIONS': {'sslmode': os.environ.get('POSTGRES_SSLMODE', 'prefer')},
     }
 }
+
+# =============================================================================
+# Email (dipakai reset password admin & notifikasi operasional)
+# - Default pengembangan: console (email tercetak di terminal, bukan dikirim).
+# - Produksi: SMTP via env; system check core.W021 memperingatkan bila masih
+#   console, karena reset password tidak akan sampai ke admin.
+# =============================================================================
+EMAIL_BACKEND = os.environ.get(
+    'DJANGO_EMAIL_BACKEND',
+    'django.core.mail.backends.console.EmailBackend' if DEBUG
+    else 'django.core.mail.backends.smtp.EmailBackend',
+)
+EMAIL_HOST = os.environ.get('DJANGO_EMAIL_HOST', 'localhost')
+EMAIL_PORT = int(os.environ.get('DJANGO_EMAIL_PORT', 587))
+EMAIL_HOST_USER = os.environ.get('DJANGO_EMAIL_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('DJANGO_EMAIL_PASSWORD', '')
+EMAIL_USE_TLS = _env_bool('DJANGO_EMAIL_TLS', default=True)
+EMAIL_TIMEOUT = int(os.environ.get('DJANGO_EMAIL_TIMEOUT', 10))
+DEFAULT_FROM_EMAIL = os.environ.get(
+    'DJANGO_DEFAULT_FROM_EMAIL', 'Nusantara Trans <no-reply@nusantartrans.example>')
+SERVER_EMAIL = os.environ.get(
+    'DJANGO_SERVER_EMAIL', 'server@nusantartrans.example')
+# Tautan reset password kedaluwarsa cepat (default Django 3 hari terlalu lama).
+PASSWORD_RESET_TIMEOUT = int(os.environ.get('DJANGO_PASSWORD_RESET_TIMEOUT', 3600))
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},

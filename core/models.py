@@ -4,6 +4,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from core.validators import validate_image_upload
+
 
 class PageMeta(models.Model):
     """Metadata SEO per halaman — menimpa nilai default templat.
@@ -27,7 +29,9 @@ class PageMeta(models.Model):
         help_text=_('Disarankan 120–160 karakter.'))
     og_image = models.ImageField(
         _('gambar Open Graph'), upload_to='meta/', blank=True,
-        help_text=_('Idealnya rasio 1.91:1, minimal 1200×630 px.'))
+        validators=[validate_image_upload],
+        help_text=_('JPG/PNG/WebP maks. 6 MB. Idealnya rasio 1.91:1, '
+                    'minimal 1200×630 px.'))
     noindex = models.BooleanField(
         _('noindex'), default=False,
         help_text=_('Tandai halaman <meta name="robots" content="noindex"> agar tidak diindeks mesin pencari.'))

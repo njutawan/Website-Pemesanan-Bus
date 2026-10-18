@@ -78,6 +78,9 @@ msgstr "Agen Surabaya — Terminal Purabaya"
 msgid "Akses admin ditolak (IP)"
 msgstr ""
 
+msgid "Akses ditolak"
+msgstr ""
+
 msgid "Aksi Cepat"
 msgstr "Aksi Cepat"
 
@@ -86,6 +89,9 @@ msgstr "Ambil"
 
 msgid "Ambil kursi favorit lewat denah interaktif."
 msgstr "Ambil kursi favorit lewat denah interaktif."
+
+msgid "Anda tidak berhak membuka halaman ini"
+msgstr ""
 
 msgid "Armada Bus"
 msgstr "Armada Bus"
@@ -367,6 +373,11 @@ msgstr "Dasbor"
 msgid "Data Pemesan"
 msgstr "Data Pemesan"
 
+msgid ""
+"Data yang dikirim tidak valid atau alamat yang digunakan tidak dikenali. "
+"Silakan kembali ke beranda dan coba lagi."
+msgstr ""
+
 msgid "Denah Kursi"
 msgstr "Denah Kursi"
 
@@ -452,6 +463,11 @@ msgstr ""
 msgid "Formulir tidak bisa dikirim karena masalah keamanan sesi"
 msgstr "Formulir tidak bisa dikirim karena masalah keamanan sesi"
 
+msgid ""
+"Halaman ini hanya untuk pengguna dengan izin tertentu. Jika Anda yakin "
+"seharusnya bisa mengaksesnya, silakan hubungi admin."
+msgstr ""
+
 msgid "Halaman tidak ditemukan"
 msgstr "Halaman tidak ditemukan"
 
@@ -485,9 +501,6 @@ msgstr "Hubungi Kami"
 msgid "IP"
 msgstr ""
 
-msgid "Idealnya rasio 1.91:1, minimal 1200×630 px."
-msgstr ""
-
 msgid "Indeks"
 msgstr ""
 
@@ -496,6 +509,12 @@ msgstr "Informasi Kontak"
 
 msgid "Isi data"
 msgstr "Isi data"
+
+msgid "JPG/PNG/WebP maks. 6 MB. Idealnya rasio 1.91:1,"
+msgstr ""
+
+msgid "JPG/PNG/WebP maks. 6 MB; otomatis dikonversi ke WebP"
+msgstr ""
 
 msgid "Jadwal"
 msgstr "Jadwal"
@@ -829,6 +848,9 @@ msgstr "Mulai dari"
 msgid "Nama Pemesan"
 msgstr "Nama Pemesan"
 
+msgid "Nama berkas tidak valid."
+msgstr ""
+
 msgid "Nama lengkap"
 msgstr "Nama lengkap"
 
@@ -872,9 +894,6 @@ msgstr "Nusantara Trans — Panel Operasional"
 
 msgid "Okupansi"
 msgstr "Okupansi"
-
-msgid "Otomatis dikonversi ke WebP (maks. lebar 1200px)."
-msgstr ""
 
 msgid "Panel Operasional"
 msgstr "Panel Operasional"
@@ -927,6 +946,12 @@ msgstr "Perjalanan Nyaman,"
 msgid ""
 "Perjalanan bus dari %(origin)s ke %(destination)s memakan waktu sekitar "
 "%(durasi)s, tergantung kondisi lalu lintas dan cuaca."
+msgstr ""
+
+msgid "Permintaan tidak bisa diproses"
+msgstr ""
+
+msgid "Permintaan tidak valid"
 msgstr ""
 
 msgid "Pertanyaan umum rute ini"
@@ -1271,6 +1296,9 @@ msgstr "Tanpa bukti"
 msgid "Tanya CS"
 msgstr "Tanya CS"
 
+msgid "Teks terlalu panjang (maksimal %(max)s karakter)."
+msgstr ""
+
 msgid "Temukan kami di Google Maps: \"Nusantara Trans Jember\""
 msgstr "Temukan kami di Google Maps: \"Nusantara Trans Jember\""
 
@@ -1371,6 +1399,9 @@ msgid ""
 msgstr ""
 
 msgid "URL lama"
+msgstr ""
+
+msgid "Ukuran berkas maksimal %(mb)s MB."
 msgstr ""
 
 msgid "Ukuran berkas maksimal 5 MB."

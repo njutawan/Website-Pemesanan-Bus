@@ -81,6 +81,9 @@ msgstr "Surabaya Agent — Purabaya Terminal"
 msgid "Akses admin ditolak (IP)"
 msgstr ""
 
+msgid "Akses ditolak"
+msgstr ""
+
 msgid "Aksi Cepat"
 msgstr "Quick Actions"
 
@@ -89,6 +92,9 @@ msgstr "Pick-up"
 
 msgid "Ambil kursi favorit lewat denah interaktif."
 msgstr "Grab your favorite seat on the interactive map."
+
+msgid "Anda tidak berhak membuka halaman ini"
+msgstr ""
 
 msgid "Armada Bus"
 msgstr "Buses"
@@ -373,6 +379,11 @@ msgstr "Dashboard"
 msgid "Data Pemesan"
 msgstr "Booking Details"
 
+msgid ""
+"Data yang dikirim tidak valid atau alamat yang digunakan tidak dikenali. "
+"Silakan kembali ke beranda dan coba lagi."
+msgstr ""
+
 msgid "Denah Kursi"
 msgstr "Seat Map"
 
@@ -459,6 +470,11 @@ msgstr ""
 msgid "Formulir tidak bisa dikirim karena masalah keamanan sesi"
 msgstr "The form could not be submitted due to a session security issue"
 
+msgid ""
+"Halaman ini hanya untuk pengguna dengan izin tertentu. Jika Anda yakin "
+"seharusnya bisa mengaksesnya, silakan hubungi admin."
+msgstr ""
+
 msgid "Halaman tidak ditemukan"
 msgstr "Page not found"
 
@@ -493,9 +509,6 @@ msgstr "Contact Us"
 msgid "IP"
 msgstr ""
 
-msgid "Idealnya rasio 1.91:1, minimal 1200×630 px."
-msgstr "Ideally 1.91:1 ratio, at least 1200×630 px."
-
 msgid "Indeks"
 msgstr "Indexing"
 
@@ -504,6 +517,12 @@ msgstr "Contact Information"
 
 msgid "Isi data"
 msgstr "Fill in details"
+
+msgid "JPG/PNG/WebP maks. 6 MB. Idealnya rasio 1.91:1,"
+msgstr ""
+
+msgid "JPG/PNG/WebP maks. 6 MB; otomatis dikonversi ke WebP"
+msgstr ""
 
 msgid "Jadwal"
 msgstr "Schedule"
@@ -836,6 +855,9 @@ msgstr "From"
 msgid "Nama Pemesan"
 msgstr "Passenger Name"
 
+msgid "Nama berkas tidak valid."
+msgstr ""
+
 msgid "Nama lengkap"
 msgstr "Full name"
 
@@ -878,9 +900,6 @@ msgstr "Nusantara Trans — Operations Panel"
 
 msgid "Okupansi"
 msgstr "Occupancy"
-
-msgid "Otomatis dikonversi ke WebP (maks. lebar 1200px)."
-msgstr ""
 
 msgid "Panel Operasional"
 msgstr "Operations Panel"
@@ -936,6 +955,12 @@ msgid ""
 msgstr ""
 "The bus trip from %(origin)s to %(destination)s takes around %(durasi)s, "
 "depending on traffic and weather conditions."
+
+msgid "Permintaan tidak bisa diproses"
+msgstr ""
+
+msgid "Permintaan tidak valid"
+msgstr ""
 
 msgid "Pertanyaan umum rute ini"
 msgstr "FAQ about this route"
@@ -1283,6 +1308,9 @@ msgstr "No proof"
 msgid "Tanya CS"
 msgstr "Ask Support"
 
+msgid "Teks terlalu panjang (maksimal %(max)s karakter)."
+msgstr ""
+
 msgid "Temukan kami di Google Maps: \"Nusantara Trans Jember\""
 msgstr "Find us on Google Maps: \"Nusantara Trans Jember\""
 
@@ -1385,6 +1413,9 @@ msgstr ""
 "prefix apply to both languages."
 
 msgid "URL lama"
+msgstr ""
+
+msgid "Ukuran berkas maksimal %(mb)s MB."
 msgstr ""
 
 msgid "Ukuran berkas maksimal 5 MB."

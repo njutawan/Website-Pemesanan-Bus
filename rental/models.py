@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from booking.models import TimeStampedModel, generate_code
+from core.validators import validate_image_upload
 
 
 class Vehicle(TimeStampedModel):
@@ -34,7 +35,9 @@ class Vehicle(TimeStampedModel):
     image = models.ImageField(
         _('foto mobil'), upload_to='vehicles/%Y/%m/',
         default='vehicles/default-vehicle.webp',
-        help_text=_('Otomatis dikonversi ke WebP (maks. lebar 1200px).'))
+        validators=[validate_image_upload],
+        help_text=_('JPG/PNG/WebP maks. 6 MB; otomatis dikonversi ke WebP '
+                    '(maks. lebar 1200px).'))
     description = models.TextField(_('deskripsi'), blank=True)
     is_available = models.BooleanField(_('tersedia'), default=True, db_index=True)
 

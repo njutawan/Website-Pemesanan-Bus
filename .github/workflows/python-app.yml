@@ -38,6 +38,8 @@ jobs:
       POSTGRES_PORT: "5432"
       POSTGRES_SSLMODE: disable
       DJANGO_ADMIN_PASSWORD: ci-admin-Passw0rd-2026
+      # DEBUG default MATI; untuk langkah dev/test eksplisit dinyalakan.
+      DJANGO_DEBUG: "1"
       # Dipakai langsung oleh pg_dump/pg_restore/psql (bukan Django).
       PGDATABASE: nusantartrans
       PGUSER: nusantar
@@ -47,6 +49,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0          # pemindai rahasia memeriksa seluruh riwayat
     - name: Set up Python 3.11
       uses: actions/setup-python@v5
       with:
@@ -58,6 +62,8 @@ jobs:
         pip check
     - name: Audit dependency (CVE)
       run: pip-audit -r requirements.txt
+    - name: Scan secrets (HEAD + riwayat git)
+      run: ./deploy/scan_secrets.sh
     - name: Lint with flake8
       run: |
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
@@ -89,6 +95,20 @@ jobs:
       run: |
         python manage.py migrate --noinput
         python manage.py seed_data
+    - name: Hardening review (19 kontrol)
+      env:
+        DJANGO_DEBUG: "0"
+        DJANGO_SECRET_KEY: ci-only-secret-key-0123456789abcdefghijklmnopqrstuvwxyz-ABCDEFGHIJKLMNOPQRSTUVWXYZ
+        DJANGO_ALLOWED_HOSTS: nusantartrans.example
+        DJANGO_CSRF_TRUSTED_ORIGINS: https://nusantartrans.example
+        DJANGO_SSL_REDIRECT: "1"
+        DJANGO_COOKIE_SAMESITE: Lax
+        DJANGO_COOKIE_SECURE: "1"
+        DJANGO_ADMIN_ALLOWED_IPS: 10.0.0.0/8
+        DJANGO_COMPRESS_ENABLED: "0"
+        DJANGO_COMPRESS_OFFLINE: "0"
+        REDIS_URL: redis://127.0.0.1:6379/1
+      run: python manage.py security_review
     - name: Backup + drill restore
       env:
         MEDIA_ROOT: ${{ github.workspace }}/media
