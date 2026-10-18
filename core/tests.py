@@ -92,6 +92,11 @@ class CompressOfflineManifestCheckTest(TestCase):
 class SEOTest(TestCase):
     """robots.txt dinamis, sitemap model-query, PageMeta, canonical, get_absolute_url."""
 
+    def setUp(self):
+        # cache_page tidak ikut rollback DB — bersihkan antar test
+        from django.core.cache import cache
+        cache.clear()
+
     @classmethod
     def setUpTestData(cls):
         from booking.models import City, Route
@@ -329,3 +334,63 @@ class ImagePipelineTest(TestCase):
         pm.refresh_from_db()
         self.assertTrue(pm.og_image.name.endswith('.webp'))
         self.assertFalse(default_storage.exists('uji-foto.jpg'))
+
+
+class PerformanceTest(TestCase):
+    """Optimasi DB & cache: anti N+1, db_index, cache_page, popular routes."""
+
+    @classmethod
+    def setUpTestData(cls):
+        from booking.models import Bus, City, Route, Schedule
+        from rental.models import Vehicle
+        a = City.objects.create(name='Kota A', slug='kota-a')
+        b = City.objects.create(name='Kota B', slug='kota-b')
+        cls.route = Route.objects.create(
+            origin=a, destination=b, distance_km=100, duration_minutes=120)
+        for i in range(1, 4):  # 3 jadwal -> N+1 lama: 3x COUNT + 6x City
+            bus = Bus.objects.create(
+                code=f'NT-00{i}', name=f'Bus {i}', plate_number=f'E 800{i} XX')
+            Schedule.objects.create(
+                route=cls.route, bus=bus, departure_time=f'0{i}:00',
+                arrival_time=f'0{i+2}:00', price=100000 + i * 1000)
+        cls.vehicle = Vehicle.objects.create(
+            name='Mobil Kinerja', slug='mobil-kinerja', category='MPV',
+            year=2023, seats=7, price_per_day=300000)
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+
+    def test_route_detail_tanpa_n_plus_1(self):
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+        with CaptureQueriesContext(connection) as ctx:
+            self.assertEqual(self.client.get('/bus/rute/kota-a-kota-b/').status_code, 200)
+        # Sebelum optimasi: 19 query (COUNT kursi per bus + City per baris).
+        # Sesudah: <=5 query — agregasi & relasi digabung via annotate+select_related.
+        self.assertLessEqual(len(ctx.captured_queries), 5)
+        sql = ' '.join(q['sql'] for q in ctx.captured_queries)
+        self.assertNotIn('SELECT COUNT(*) FROM "booking_seat"', sql)  # bukan COUNT per bus
+        self.assertIn('bus_seat_count', sql)       # hasil COUNT digabung 1 query
+        self.assertIn('INNER JOIN "booking_city"', sql)  # City via join
+
+    def test_kolom_filter_memiliki_index(self):
+        from booking.models import Booking, Schedule
+        from rental.models import Vehicle
+        self.assertTrue(Schedule._meta.get_field('departure_time').db_index)
+        self.assertTrue(Schedule._meta.get_field('is_active').db_index)
+        self.assertTrue(Vehicle._meta.get_field('is_available').db_index)
+        self.assertTrue(Booking._meta.get_field('status').db_index)
+        names = [ix.name for ix in Booking._meta.indexes]
+        self.assertIn('booking_sched_date_ix', names)
+
+    def test_cache_page_header_halaman_semi_statis(self):
+        for url in ('/tentang/', '/kontak/', '/rental/', '/bus/rute/kota-a-kota-b/'):
+            r = self.client.get(url)
+            self.assertIn('max-age=900', r['Cache-Control'], url)
+
+    def test_bus_memuat_rute_populer_dari_cache(self):
+        html = self.client.get('/bus/').content.decode()
+        self.assertIn('Kota A', html)  # kartu rute populer kini terisi
+        # kedua kali: tetap 200 (dari cache)
+        self.assertEqual(self.client.get('/bus/').status_code, 200)

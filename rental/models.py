@@ -35,7 +35,7 @@ class Vehicle(TimeStampedModel):
         default='vehicles/default-vehicle.webp',
         help_text=_('Otomatis dikonversi ke WebP (maks. lebar 1200px).'))
     description = models.TextField(_('deskripsi'), blank=True)
-    is_available = models.BooleanField(_('tersedia'), default=True)
+    is_available = models.BooleanField(_('tersedia'), default=True, db_index=True)
 
     class Meta:
         verbose_name = _('mobil rental')

@@ -4,7 +4,9 @@ from django.core.cache import cache
 from django.db.models import Count, Min
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
+from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView
 
 from booking.forms import SearchForm
@@ -60,6 +62,7 @@ class HomeView(TemplateView):
         return ctx
 
 
+@method_decorator(cache_page(60 * 15), name='dispatch')
 class AboutView(TemplateView):
     template_name = 'about.html'
 
@@ -70,6 +73,7 @@ class AboutView(TemplateView):
         return ctx
 
 
+@method_decorator(cache_page(60 * 15), name='dispatch')
 class ContactView(TemplateView):
     template_name = 'contact.html'
 
@@ -80,6 +84,7 @@ class ContactView(TemplateView):
         return ctx
 
 
+@method_decorator(cache_page(60 * 15), name='dispatch')
 class RobotsView(TemplateView):
     template_name = 'robots.txt'
     content_type = 'text/plain'

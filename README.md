@@ -120,13 +120,21 @@ dwibahasa **Indonesia / English**.
   (`COMPRESS_STORAGE = GzipCompressorFileStorage`) sehingga cocok dengan
   WhiteNoise dan `gzip_static` Nginx. `rental-form.js` sengaja di luar blok
   compress karena butuh atribut `data-*` per-request.
+- **Optimasi database (anti N+1)**: semua queryset publik memakai
+  `select_related` (rute+kota+bus) dan agregasi `annotate(Count)` untuk jumlah
+  kursi bus — halaman rute turun dari **19 → 3 query**. Kolom filter/sortir
+  terindeks: `schedule.departure_time`, `schedule.is_active`,
+  `vehicle.is_available`, `vehicle.category`, `booking.status` (+ index
+  komposit `schedule, travel_date` untuk cek ketersediaan kursi)
 - **Caching (TTFB ~5–10 ms)**: cache backend Redis bila `REDIS_URL`
   terisi (otomatis di Docker Compose), selain itu LocMem. Level aplikasi:
   beranda `home:data` (10 mnt), jadwal per rute `route:<slug>:schedules`
   (5 mnt) — **0 query DB** saat cache hangat; level fragment: grid jadwal
   rute (`{% cache 300 %}`) dan grid armada rental (`{% cache 600 %}`);
-  sitemap `cache_page(1800)`. Halaman dinamis pribadi (detail booking &
-  sewa) `never_cache` agar tidak bocor ke cache bersama.
+  sitemap `cache_page(1800)`; halaman semi-statis `@cache_page(60×15)`
+  (tentang, kontak, katalog rental, detail rute, robots.txt) dan otomatis
+  segar saat `PageMeta` disimpan (signal). Halaman dinamis pribadi (detail
+  booking & sewa) `never_cache` agar tidak bocor ke cache bersama.
 - **Mode produksi (`DJANGO_DEBUG=0`)**: compressor berjalan offline —
   jalankan `DJANGO_DEBUG=0 python3 manage.py compress --force` **sebelum**
   `collectstatic` (manifest 4 blok: CSS base, JS base, seat-map, countdown).

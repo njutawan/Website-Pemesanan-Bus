@@ -176,10 +176,10 @@ class Schedule(TimeStampedModel):
         Route, on_delete=models.CASCADE, related_name='schedules', verbose_name=_('rute'))
     bus = models.ForeignKey(
         Bus, on_delete=models.PROTECT, related_name='schedules', verbose_name=_('bus'))
-    departure_time = models.TimeField(_('jam berangkat'))
+    departure_time = models.TimeField(_('jam berangkat'), db_index=True)
     arrival_time = models.TimeField(_('jam tiba'))
     price = models.DecimalField(_('harga'), max_digits=12, decimal_places=0)
-    is_active = models.BooleanField(_('aktif'), default=True)
+    is_active = models.BooleanField(_('aktif'), default=True, db_index=True)
 
     class Meta:
         verbose_name = _('jadwal')
@@ -189,6 +189,12 @@ class Schedule(TimeStampedModel):
     @property
     def arrives_next_day(self):
         return self.arrival_time <= self.departure_time
+
+    @property
+    def bus_total_seats(self):
+        """Jumlah kursi bus — dari annotate(Count) bila ada (anti N+1)."""
+        n = getattr(self, 'bus_seat_count', None)
+        return self.bus.total_seats if n is None else n
 
     @property
     def duration_minutes(self):
@@ -240,6 +246,10 @@ class Booking(TimeStampedModel):
         verbose_name = _('booking tiket')
         verbose_name_plural = ('booking tiket')
         ordering = ['-created_at']
+        indexes = [
+            # Cek ketersediaan kursi: filter(schedule=, travel_date=, status__in=)
+            models.Index(fields=['schedule', 'travel_date'], name='booking_sched_date_ix'),
+        ]
 
     def save(self, *args, **kwargs):
         if not self.code:

@@ -7,13 +7,14 @@ from django.conf import settings
 
 from django.contrib import messages
 from django.core.cache import cache
+from django.db.models import Count, Min
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
-from django.views.decorators.cache import never_cache
+from django.views.decorators.cache import cache_page, never_cache
 from django.views.generic import FormView, TemplateView, View
 
 from booking.forms import PassengerForm, SearchForm
@@ -44,6 +45,7 @@ class SearchView(View):
             for s in (
                 Schedule.objects
                 .select_related('route__origin', 'route__destination', 'bus')
+                .annotate(bus_seat_count=Count('bus__seats'))
                 .filter(
                     route__origin=form.cleaned_data['origin'],
                     route__destination=form.cleaned_data['destination'],
@@ -54,15 +56,28 @@ class SearchView(View):
                 s.available = available_seat_count(s, search_date)
                 s.enough = s.available >= passengers
                 schedules.append(s)
-        return render(request, self.template_name, {
+        ctx = {
             'form': form,
             'schedules': schedules,
             'searched': searched,
             'search_date': search_date,
             'passengers': passengers,
-                    'schema_breadcrumbs': breadcrumb_schema(request, breadcrumb_items(
+            'schema_breadcrumbs': breadcrumb_schema(request, breadcrumb_items(
                 HOME_CRUMB, (_('Tiket Bus'), None))),
-        })
+        }
+        if not searched:
+            # Saran rute populer — jarang berubah, cache 10 menit (0 query hangat).
+            ctx['popular_routes'] = cache.get_or_set(
+                'popular:routes',
+                lambda: list(
+                    Route.objects
+                    .annotate(n_schedules=Count('schedules', distinct=True),
+                              min_price=Min('schedules__price'))
+                    .filter(n_schedules__gt=0)
+                    .select_related('origin', 'destination')
+                    .order_by('origin__name', 'destination__name')[:6]),
+                getattr(settings, 'CACHE_TTL_DEFAULT', 600))
+        return render(request, self.template_name, ctx)
 
 
 class SeatSelectionView(TemplateView):
@@ -266,6 +281,7 @@ class RouteDetailView(TemplateView):
     """Halaman SEO per rute: /bus/rute/jember-surabaya/ — daftar jadwal + harga."""
     template_name = 'booking/route_detail.html'
 
+    @method_decorator(cache_page(60 * 15))
     def get(self, request, slug):
         route = get_object_or_404(
             Route.objects.select_related('origin', 'destination'), slug=slug)
@@ -274,7 +290,8 @@ class RouteDetailView(TemplateView):
             f'route:{slug}:schedules',
             lambda: list(
                 Schedule.objects.filter(route=route, is_active=True)
-                .select_related('bus')
+                .select_related('bus', 'route__origin', 'route__destination')
+                .annotate(bus_seat_count=Count('bus__seats'))
                 .order_by('departure_time')
             ),
             getattr(settings, 'CACHE_TTL_DEFAULT', 600) // 2,

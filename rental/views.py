@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 from django.conf import settings
 from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.utils.translation import gettext as _
 from django.views.decorators.cache import never_cache
 from django.views.generic import TemplateView, View
@@ -17,6 +18,7 @@ class VehicleListView(TemplateView):
     """Katalog mobil rental dengan filter kategori (?kategori=MPV)."""
     template_name = 'rental/index.html'
 
+    @method_decorator(cache_page(60 * 15))
     def get(self, request):
         category = request.GET.get('kategori', '')
         qs = Vehicle.objects.filter(is_available=True)
