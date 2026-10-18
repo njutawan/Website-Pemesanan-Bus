@@ -26,7 +26,10 @@
     <div class="col-md-6 col-lg-4">
       <div class="card border-0 shadow-sm rounded-4 h-100">
         <div class="card-body p-4">
-          <h2 class="h6 fw-bold mb-3"><i class="fa-solid fa-city text-warning me-1"></i>{% blocktranslate with kota=city.grouper.name %}Dari {{ kota }}{% endblocktranslate %}</h2>
+          <h2 class="h6 fw-bold mb-3 d-flex justify-content-between align-items-center">
+            <span><i class="fa-solid fa-city text-warning me-1"></i>{% blocktranslate with kota=city.grouper.name %}Dari {{ kota }}{% endblocktranslate %}</span>
+            <a class="small text-decoration-none" href="{% url 'booking:city_routes' city.grouper.slug %}">{% trans 'Lihat semua' %} <i class="fa-solid fa-arrow-right ms-1"></i></a>
+          </h2>
           <ul class="list-unstyled mb-0 d-grid gap-2">
             {% for r in city.list %}
             <li>

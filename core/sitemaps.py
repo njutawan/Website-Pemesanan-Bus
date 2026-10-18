@@ -4,9 +4,10 @@ Berbasis query model — rute/mobil baru otomatis terdaftar, lengkap
 lastmod (field updated_at), changefreq, dan priority per URL.
 """
 from django.contrib.sitemaps import Sitemap
+from django.db.models import Max
 from django.urls import reverse
 
-from booking.models import Route
+from booking.models import City, Route
 from rental.models import Vehicle
 
 
@@ -48,6 +49,23 @@ class RouteSitemap(Sitemap):
         return obj.updated_at
 
 
+class CityRouteSitemap(Sitemap):
+    """Pillar per kota asal (silo kategori)."""
+    priority = 0.7
+    changefreq = 'weekly'
+
+    def items(self):
+        # related_name FK Route.origin = 'departures'
+        return City.objects.filter(departures__schedules__isnull=False).distinct()
+
+    def location(self, obj):
+        return reverse('booking:city_routes', kwargs={'city_slug': obj.slug})
+
+    def lastmod(self, obj):
+        # City tidak punya updated_at -> pakai rute terbaru miliknya
+        return obj.departures.aggregate(m=Max('updated_at'))['m']
+
+
 class VehicleSitemap(Sitemap):
     priority = 0.8
     changefreq = 'weekly'
@@ -64,6 +82,7 @@ class VehicleSitemap(Sitemap):
 
 SITEMAPS = {
     'static': StaticViewSitemap,
+    'cities': CityRouteSitemap,
     'routes': RouteSitemap,
     'vehicles': VehicleSitemap,
 }

@@ -1051,5 +1051,14 @@ TRANSLATIONS_EN = {
     "Rute lain dari %(kota)s": "Other routes from %(kota)s",
     "Lihat semua rute": "View all routes",
     "Daftar lengkap semua rute bus antar kota Nusantara Trans: jadwal keberangkatan, durasi perjalanan, dan harga tiket per kelas armada.": "Complete list of Nusantara Trans intercity bus routes: departure schedules, trip durations, and ticket prices per bus class.",
+
+    # ---- Silo pillar per kota ----
+    "Bus dari %(kota)s": "Buses from %(kota)s",
+    "Bus dari %(kota)s — Semua Rute & Harga": "Buses from %(kota)s — All Routes & Prices",
+    "Semua rute bus dari %(kota)s: %(n)s destinasi dengan jadwal keberangkatan, durasi perjalanan, dan harga tiket termurah per kelas armada.": "All bus routes from %(kota)s: %(n)s destinations with departure schedules, trip durations, and lowest ticket prices per bus class.",
+    "%(n)s rute aktif dari %(kota)s — pilih destinasi untuk melihat jadwal & harga.": "%(n)s active routes from %(kota)s — pick a destination to see schedules & prices.",
+    "Kota asal lainnya": "Other departure cities",
+    "Semua rute dari %(kota)s": "All routes from %(kota)s",
+    "Saat ini %(kota)s – %(dest)s adalah satu-satunya rute aktif dari %(kota)s.": "Currently %(kota)s – %(dest)s is the only active route from %(kota)s.",
 }
 

@@ -12,5 +12,7 @@ urlpatterns = [
     path('booking/<str:code>/upload/', views.UploadProofView.as_view(), name='upload_proof'),
     path('cek-booking/', views.CheckBookingView.as_view(), name='check'),
     path('rute/', views.RouteHubView.as_view(), name='route_hub'),
+    # Pillar per kota — WAJIB sebelum pola <slug> detail agar tak tertangkap
+    path('rute/dari/<slug:city_slug>/', views.CityRoutePillarView.as_view(), name='city_routes'),
     path('rute/<slug:slug>/', views.RouteDetailView.as_view(), name='route_detail'),
 ]

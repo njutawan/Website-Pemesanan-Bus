@@ -91,9 +91,9 @@
 </section>
 {% endif %}
 
-{% if sibling_routes %}
 <section class="container pb-5">
   <h2 class="h5 fw-bold mb-3"><i class="fa-solid fa-diagram-project text-warning me-2"></i>{% blocktranslate with kota=route.origin.name %}Rute lain dari {{ kota }}{% endblocktranslate %}</h2>
+  {% if sibling_routes %}
   <div class="row g-3">
     {% for r in sibling_routes %}
     <div class="col-md-6 col-lg-3">
@@ -108,7 +108,13 @@
     </div>
     {% endfor %}
   </div>
-  <a href="{% url 'booking:route_hub' %}" class="btn btn-outline-primary btn-sm mt-3">{% trans 'Lihat semua rute' %} <i class="fa-solid fa-arrow-right ms-1"></i></a>
+  {% else %}
+  <p class="text-muted small mb-3">{% blocktranslate with kota=route.origin.name dest=route.destination.name %}Saat ini {{ kota }} – {{ dest }} adalah satu-satunya rute aktif dari {{ kota }}.{% endblocktranslate %}</p>
+  {% endif %}
+  {# Aturan silo: upward link ke pillar kategori & hub — WAJIB di semua halaman rute #}
+  <div class="d-flex gap-2 flex-wrap mt-3">
+    <a href="{% url 'booking:city_routes' route.origin.slug %}" class="btn btn-outline-primary btn-sm">{% blocktranslate with kota=route.origin.name %}Semua rute dari {{ kota }}{% endblocktranslate %} <i class="fa-solid fa-arrow-right ms-1"></i></a>
+    <a href="{% url 'booking:route_hub' %}" class="btn btn-outline-secondary btn-sm">{% trans 'Lihat semua rute' %}</a>
+  </div>
 </section>
-{% endif %}
 {% endblock %}

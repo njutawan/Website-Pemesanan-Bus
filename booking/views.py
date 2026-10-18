@@ -20,8 +20,10 @@ from django.views.generic import FormView, TemplateView, View
 from booking.forms import PassengerForm, SearchForm
 from booking.templatetags.booking_extras import to_idr
 from core.seo import HOME_CRUMB, breadcrumb_items, breadcrumb_schema, local_business_schema
+from django.http import Http404
+
 from booking.models import (
-    Booking, BookingSeat, Route, Schedule,
+    Booking, BookingSeat, City, Route, Schedule,
     available_seat_count, expire_stale_bookings, taken_seat_ids,
 )
 from core.forms import PaymentProofForm
@@ -279,6 +281,36 @@ class RouteHubView(TemplateView):
             'routes': cached_route_catalog(),
             'schema_breadcrumbs': breadcrumb_schema(request, breadcrumb_items(
                 HOME_CRUMB, (_('Tiket Bus'), '/bus/'), (_('Semua Rute'), None))),
+        })
+
+class CityRoutePillarView(TemplateView):
+    """Pillar per silo: SEMUA rute dari satu kota asal (kategori).
+
+    Simpul tengah piramida silo: menerima downward link dari hub global,
+    menautkan turun ke seluruh rute kota ini, dan menyandingkan pillar
+    kota lain (link antar-KATEGORI — bukan antar-artikel).
+    """
+    template_name = 'booking/city_routes.html'
+
+    def get(self, request, city_slug):
+        city = get_object_or_404(City, slug=city_slug)
+        routes = [r for r in cached_route_catalog() if r.origin_id == city.pk]
+        if not routes:
+            # Kota tanpa rute aktif: jangan halaman kosong (soft-404 untuk bot)
+            raise Http404('Kota ini belum memiliki rute aktif.')
+        kota_lain, terlihat = [], {city.pk}
+        for r in cached_route_catalog():
+            o = r.origin
+            if o.pk not in terlihat:
+                terlihat.add(o.pk)
+                kota_lain.append(o)
+        return render(request, self.template_name, {
+            'city': city,
+            'routes': routes,
+            'other_cities': kota_lain,
+            'schema_breadcrumbs': breadcrumb_schema(request, breadcrumb_items(
+                HOME_CRUMB, (_('Tiket Bus'), '/bus/'), (_('Semua Rute'), '/bus/rute/'),
+                (_('Dari %(kota)s') % {'kota': city.name}, None))),
         })
 
 class CheckBookingView(FormView):

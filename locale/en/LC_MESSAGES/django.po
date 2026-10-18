@@ -12,6 +12,13 @@ msgstr ""
 msgid "#1 Travel & Rental di Jawa Timur"
 msgstr "#1 Travel & Car Rental in East Java"
 
+msgid ""
+"%(n)s rute aktif dari %(kota)s — pilih destinasi untuk melihat jadwal & "
+"harga."
+msgstr ""
+"%(n)s active routes from %(kota)s — pick a destination to see schedules & "
+"prices."
+
 msgid "%(n)s rute aktif — pilih kota asal untuk melihat jadwal & harga."
 msgstr ""
 "%(n)s active routes — pick a departure city to see schedules & prices."
@@ -239,6 +246,12 @@ msgstr "Mini Bus (20+ passengers)"
 
 msgid "Bus antar kota"
 msgstr "Intercity bus"
+
+msgid "Bus dari %(kota)s"
+msgstr "Buses from %(kota)s"
+
+msgid "Bus dari %(kota)s — Semua Rute & Harga"
+msgstr "Buses from %(kota)s — All Routes & Prices"
 
 msgid "Butuh Bantuan?"
 msgstr "Need Help?"
@@ -587,6 +600,9 @@ msgstr "Origin city"
 
 msgid "Kota asal dan tujuan tidak boleh sama."
 msgstr "Origin and destination cannot be the same."
+
+msgid "Kota asal lainnya"
+msgstr "Other departure cities"
 
 msgid "Kota tujuan"
 msgstr "Destination city"
@@ -986,6 +1002,10 @@ msgstr "Most searched routes"
 msgid "SUV (5–7 penumpang)"
 msgstr "SUV (5–7 passengers)"
 
+msgid ""
+"Saat ini %(kota)s – %(dest)s adalah satu-satunya rute aktif dari %(kota)s."
+msgstr "Currently %(kota)s – %(dest)s is the only active route from %(kota)s."
+
 msgid "Salin No. Rekening"
 msgstr "Copy account number"
 
@@ -1029,6 +1049,16 @@ msgstr "All rights reserved."
 
 msgid "Semua mobil"
 msgstr "All vehicles"
+
+msgid ""
+"Semua rute bus dari %(kota)s: %(n)s destinasi dengan jadwal keberangkatan, "
+"durasi perjalanan, dan harga tiket termurah per kelas armada."
+msgstr ""
+"All bus routes from %(kota)s: %(n)s destinations with departure schedules, "
+"trip durations, and lowest ticket prices per bus class."
+
+msgid "Semua rute dari %(kota)s"
+msgstr "All routes from %(kota)s"
 
 msgid "Semua rute…"
 msgstr "All routes…"

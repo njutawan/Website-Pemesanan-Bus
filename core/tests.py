@@ -572,3 +572,80 @@ class InternalLinkingTest(TestCase):
     def test_filter_kategori_rental_noindex_follow(self):
         r = self.client.get('/rental/?kategori=MPV')
         self.assertEqual(r['X-Robots-Tag'], 'noindex, follow')
+
+
+class SiloArchitectureTest(TestCase):
+    """Topic cluster/silo: pillar per kota, upward/downward/lateral wajib,
+    tanpa link lintas-silo dari halaman artikel."""
+
+    @classmethod
+    def setUpTestData(cls):
+        from booking.models import Bus, City, Route, Schedule
+        from rental.models import Vehicle
+        a = City.objects.create(name='Kota A', slug='kota-a')
+        b = City.objects.create(name='Kota B', slug='kota-b')
+        c = City.objects.create(name='Kota C', slug='kota-c')
+        bus = Bus.objects.create(code='NT-SIL', name='Bus Silo', plate_number='E 6000 XX')
+        for dest, slug, km in ((b, 'kota-a-kota-b', 100), (c, 'kota-a-kota-c', 80)):
+            r = Route.objects.create(
+                origin=a, destination=dest, distance_km=km, duration_minutes=120)
+            Schedule.objects.create(
+                route=r, bus=bus, departure_time='07:00', arrival_time='09:00',
+                price=90000)
+        Vehicle.objects.create(
+            name='Mobil Silo', slug='mobil-silo', category='MPV',
+            year=2023, seats=7, price_per_day=300000)
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+
+    def test_pillar_downward_link_semua_rute_sekota(self):
+        r = self.client.get('/bus/rute/dari/kota-a/')
+        self.assertEqual(r.status_code, 200)
+        html = r.content.decode()
+        self.assertIn('Bus dari Kota A', html)
+        self.assertIn('href="/bus/rute/kota-a-kota-b/"', html)   # downward
+        self.assertIn('href="/bus/rute/kota-a-kota-c/"', html)   # downward
+        self.assertIn('href="/bus/rute/"', html)                 # upward ke hub
+
+    def test_pillar_kota_tanpa_rute_404_jujur(self):
+        r = self.client.get('/bus/rute/dari/kota-c/')  # kota-c hanya tujuan
+        self.assertEqual(r.status_code, 404)
+        r = self.client.get('/bus/rute/dari/nggak-ada/')
+        self.assertEqual(r.status_code, 404)
+
+    def test_upward_link_wajib_di_semua_rute(self):
+        for slug in ('kota-a-kota-b', 'kota-a-kota-c'):
+            html = self.client.get(f'/bus/rute/{slug}/').content.decode()
+            # upward: pillar silo & hub — tanpa syarat sibling ada/tidak
+            self.assertIn('href="/bus/rute/dari/kota-a/"', html, slug)
+            self.assertIn('href="/bus/rute/"', html, slug)
+
+    def test_lateral_hanya_dalam_silo_yang_sama(self):
+        html = self.client.get('/bus/rute/kota-a-kota-b/').content.decode()
+        self.assertIn('href="/bus/rute/kota-a-kota-c/"', html)  # se-silo
+
+    def test_tidak_ada_link_lintas_silo_dari_artikel(self):
+        # Link KONTEKSTUAL (dalam <main>) di halaman rute tidak boleh keluar silo.
+        # Navbar/footer = global chrome semua situs — di luar cakupan aturan.
+        import re
+        html = self.client.get('/bus/rute/kota-a-kota-b/').content.decode()
+        main = re.search(r'<main id="main">(.*?)</main>', html, re.S).group(1)
+        tautan = set(re.findall(r'href="(/[^"]*)"', main))
+        liar = [t for t in tautan if t.startswith('/rental/')]
+        self.assertFalse(liar, f'Link lintas-silo di konten: {liar}')
+        # semua tautan rute dalam konten = se-silo kota A (lateral) atau ke atas
+        for t in (t for t in tautan if t.startswith('/bus/rute/')):
+            self.assertTrue(
+                t in ('/bus/rute/', '/bus/rute/dari/kota-a/',
+                      '/bus/rute/kota-a-kota-b/', '/bus/rute/kota-a-kota-c/'),
+                f'Tautan keluar silo: {t}')
+
+    def test_pillar_di_sitemap(self):
+        xml = self.client.get('/sitemap.xml').content.decode()
+        self.assertIn('/bus/rute/dari/kota-a/</loc>', xml)
+
+    def test_hub_link_ke_pillar_per_kota(self):
+        html = self.client.get('/bus/rute/').content.decode()
+        self.assertIn('href="/bus/rute/dari/kota-a/"', html)  # downward ke pillar
