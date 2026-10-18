@@ -17,6 +17,8 @@ from django.views.decorators.cache import never_cache
 from django.views.generic import FormView, TemplateView, View
 
 from booking.forms import PassengerForm, SearchForm
+from booking.templatetags.booking_extras import to_idr
+from core.seo import HOME_CRUMB, breadcrumb_items, breadcrumb_schema, local_business_schema
 from booking.models import (
     Booking, BookingSeat, Route, Schedule,
     available_seat_count, expire_stale_bookings, taken_seat_ids,
@@ -58,6 +60,8 @@ class SearchView(View):
             'searched': searched,
             'search_date': search_date,
             'passengers': passengers,
+                    'schema_breadcrumbs': breadcrumb_schema(request, breadcrumb_items(
+                HOME_CRUMB, (_('Tiket Bus'), None))),
         })
 
 
@@ -244,7 +248,11 @@ class CheckBookingView(FormView):
     template_name = 'booking/check.html'
 
     def get(self, request):
-        return render(request, self.template_name, {'code': request.GET.get('kode', '')})
+        return render(request, self.template_name, {
+            'code': request.GET.get('kode', ''),
+            'schema_breadcrumbs': breadcrumb_schema(request, breadcrumb_items(
+                HOME_CRUMB, (_('Cek Booking'), None))),
+        })
 
     def post(self, request):
         code = (request.POST.get('code') or '').strip()
@@ -271,8 +279,57 @@ class RouteDetailView(TemplateView):
             ),
             getattr(settings, 'CACHE_TTL_DEFAULT', 600) // 2,
         )
+        origin, dest = route.origin.name, route.destination.name
+        crumb = breadcrumb_items(
+            HOME_CRUMB, (_('Tiket Bus'), '/bus/'), (f'{origin} → {dest}', None))
+
+        # FAQ nyata (tampil di halaman + FAQPage JSON-LD) dari data rute.
+        faq = [{'q': _('Berapa lama perjalanan bus dari %(origin)s ke %(destination)s?') % {
+                    'origin': origin, 'destination': dest},
+                'a': _('Perjalanan memakan waktu sekitar %(durasi)s, tergantung kondisi lalu lintas dan cuaca.') % {'durasi': route.duration_display}}]
+        prices = [s.price for s in schedules]
+        if prices:
+            faq.append({'q': _('Berapa harga tiket bus %(origin)s ke %(destination)s?') % {
+                            'origin': origin, 'destination': dest},
+                        'a': _('Harga tiket mulai dari %(harga)s per kursi, tergantung kelas bus dan fasilitasnya.') % {
+                            'harga': to_idr(min(prices))}})
+        if schedules:
+            faq.append({'q': _('Kapan keberangkatan pertama dari %(origin)s?') % {
+                            'origin': origin},
+                        'a': _('Keberangkatan pertama pukul %(jam)s WIB. Tersedia %(jumlah)s jadwal setiap hari.') % {
+                            'jam': schedules[0].departure_time.strftime('%H.%M'),
+                            'jumlah': len(schedules)}})
+
         return render(request, self.template_name, {
             'route': route,
             'schedules': schedules,
             'today': timezone.localdate(),
+            'faq': faq,
+            'schema_breadcrumbs': breadcrumb_schema(request, crumb),
+            'schema_bustrip': {
+                '@context': 'https://schema.org',
+                '@type': 'BusTrip',
+                'name': f'{origin} → {dest}',
+                'provider': {
+                    '@type': 'Organization',
+                    'name': settings.SITE_NAME,
+                    'url': request.build_absolute_uri('/'),
+                },
+                'departureBusStop': {'@type': 'BusStop', 'name': origin,
+                                     'address': {'@type': 'PostalAddress',
+                                                 'addressLocality': origin,
+                                                 'addressCountry': 'ID'}},
+                'arrivalBusStop': {'@type': 'BusStop', 'name': dest,
+                                   'address': {'@type': 'PostalAddress',
+                                               'addressLocality': dest,
+                                               'addressCountry': 'ID'}},
+            },
+            'schema_faq': {
+                '@context': 'https://schema.org',
+                '@type': 'FAQPage',
+                'mainEntity': [
+                    {'@type': 'Question', 'name': f['q'],
+                     'acceptedAnswer': {'@type': 'Answer', 'text': f['a']}}
+                    for f in faq],
+            },
         })

@@ -1017,5 +1017,27 @@ TRANSLATIONS_EN = {
     'Lengkapi data sewa %(name)s mulai %(price)s/hari — pilih tanggal, lokasi ambil, dan opsi sopir.':
         "Complete your %(name)s rental from %(price)s/day — pick dates, pick-up location, and driver options.",
 
+
+    # ---- SEO & JSON-LD ----
+    "Pertanyaan umum rute ini": "FAQ about this route",
+    "Berapa lama perjalanan bus dari %(origin)s ke %(destination)s?": "How long is the bus trip from %(origin)s to %(destination)s?",
+    "Perjalanan memakan waktu sekitar %(durasi)s, tergantung kondisi lalu lintas dan cuaca.": "The trip takes around %(durasi)s, depending on traffic and weather conditions.",
+    "Berapa harga tiket bus %(origin)s ke %(destination)s?": "How much is the bus ticket from %(origin)s to %(destination)s?",
+    "Harga tiket mulai dari %(harga)s per kursi, tergantung kelas bus dan fasilitasnya.": "Tickets start from %(harga)s per seat, depending on bus class and amenities.",
+    "Kapan keberangkatan pertama dari %(origin)s?": "When is the first departure from %(origin)s?",
+    "Keberangkatan pertama pukul %(jam)s WIB. Tersedia %(jumlah)s jadwal setiap hari.": "The first departure is at %(jam)s WIB. There are %(jumlah)s departures daily.",
+    "Sewa %(name)s harian dengan harga terbaik.": "Rent the %(name)s daily at the best price.",
+    "path": "path",
+    "judul (title & og:title)": "title (& og:title)",
+    "meta description": "meta description",
+    "gambar Open Graph": "Open Graph image",
+    "Idealnya rasio 1.91:1, minimal 1200×630 px.": "Ideally 1.91:1 ratio, at least 1200×630 px.",
+    "Tandai halaman <meta name=\"robots\" content=\"noindex\"> agar tidak diindeks mesin pencari.": "Emit <meta name=\"robots\" content=\"noindex\"> so search engines skip this page.",
+    "Metadata halaman (SEO)": "Page metadata (SEO)",
+    "Konten SEO": "SEO content",
+    "Indeks": "Indexing",
+    "Cocokkan persis dengan URL. '/bus/' berlaku untuk ID & EN; '/en/bus/' khusus EN. Halaman detail (rute/mobil) memakai judul objek.": "Match the URL exactly. '/bus/' applies to both ID & EN; '/en/bus/' is EN-only. Detail pages (route/vehicle) use the object title.",
+    "URL halaman, contoh '/bus/'. Baris '/en/bus/' khusus EN; tanpa prefiks berlaku untuk kedua bahasa.": "Page URL, e.g. '/bus/'. A '/en/bus/' entry is EN-only; entries without a prefix apply to both languages.",
+    "Disarankan 120–160 karakter.": "Aim for 120–160 characters.",
 }
 

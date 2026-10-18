@@ -4,9 +4,11 @@ from django.core.cache import cache
 from django.db.models import Count, Min
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 
 from booking.forms import SearchForm
+from core.seo import HOME_CRUMB, breadcrumb_items, breadcrumb_schema, local_business_schema
 from booking.models import Booking, Bus, City, Route, Schedule
 from rental.models import RentalBooking, Vehicle
 
@@ -53,6 +55,7 @@ class HomeView(TemplateView):
             featured_vehicles=vehicles,
             bus_classes=Bus.BusClass.choices,
             stats=stats,
+            schema_local_business=local_business_schema(self.request),
         )
         return ctx
 
@@ -60,9 +63,21 @@ class HomeView(TemplateView):
 class AboutView(TemplateView):
     template_name = 'about.html'
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['schema_breadcrumbs'] = breadcrumb_schema(
+            self.request, breadcrumb_items(HOME_CRUMB, (_('Tentang'), None)))
+        return ctx
+
 
 class ContactView(TemplateView):
     template_name = 'contact.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['schema_breadcrumbs'] = breadcrumb_schema(
+            self.request, breadcrumb_items(HOME_CRUMB, (_('Kontak'), None)))
+        return ctx
 
 
 class RobotsView(TemplateView):

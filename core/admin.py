@@ -46,8 +46,7 @@ class PageMetaAdmin(admin.ModelAdmin):
     list_filter = ('noindex',)
     fieldsets = (
         (None, {'fields': ('path',),
-                'description': _("Cocokkan persis dengan URL. '/bus/' berlaku untuk ID & EN; "
-                                 "'/en/bus/' khusus EN. Halaman detail (rute/mobil) memakai judul objek.")}),
+                'description': _("Cocokkan persis dengan URL. '/bus/' berlaku untuk ID & EN; '/en/bus/' khusus EN. Halaman detail (rute/mobil) memakai judul objek.")}),
         (_('Konten SEO'), {'fields': ('title', 'description', 'og_image')}),
         (_('Indeks'), {'fields': ('noindex',)}),
     )

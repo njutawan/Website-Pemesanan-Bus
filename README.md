@@ -72,6 +72,14 @@ dwibahasa **Indonesia / English**.
   dan flag noindex per path. Baris tanpa prefiks (`/bus/`) berlaku untuk ID &
   EN; buat `/en/bus/` bila ingin judul khusus EN. Prioritas:
   **PageMeta > judul halaman/objek > default templat**
+- **Structured data (JSON-LD)**: dibangun sebagai dict Python di context view,
+  dirender via filter aman `jsonld` (escaping `</`, `<`, `&` — pola `json_script`
+  bawaan Django) melalui `{% block schema_json %}` di `<head>`. Tipe per halaman:
+  `Organization`+`LocalBusiness` (beranda: nama, logo, kontak, alamat,
+  jam buka), `BreadcrumbList` dinamis (semua halaman dalam, hierarki tampil
+  rapi di SERP), `BusTrip`+`FAQPage` (rute — FAQ-nya benar-benar tampil di
+  halaman, syarat kepatuhan Google), `Product`+`Offer` IDR (detail mobil —
+  kandidat rich result harga)
 - **Canonical & slug**: `<link rel="canonical">` otomatis (dari `request.path`,
   bersih dari query string) di semua halaman; `Route` & `Vehicle` memakai
   `SlugField` unique dengan generator anti-bentrok + method `get_absolute_url()`

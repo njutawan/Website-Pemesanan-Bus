@@ -155,3 +155,78 @@ class SEOTest(TestCase):
         self.assertIn('rel="canonical" href="http://testserver/tentang/"', html)
         html = self.client.get('/').content.decode()
         self.assertIn('rel="canonical" href="http://testserver/"', html)
+
+
+def _extract_jsonld(html):
+    """Ambil & parse semua blok <script type="application/ld+json">."""
+    import json
+    import re
+    bloks = re.findall(
+        r'<script type="application/ld\+json">(.*?)</script>', html, re.S)
+    return [json.loads(b) for b in bloks]
+
+
+class JSONLDTest(TestCase):
+    """Structured data: Organization/LocalBusiness, BreadcrumbList, BusTrip,
+    FAQPage, Product — semua JSON valid dari context view."""
+
+    @classmethod
+    def setUpTestData(cls):
+        from booking.models import Bus, City, Route, Schedule
+        from rental.models import Vehicle
+        a = City.objects.create(name='Kota A', slug='kota-a')
+        b = City.objects.create(name='Kota B', slug='kota-b')
+        cls.route = Route.objects.create(
+            origin=a, destination=b, distance_km=100, duration_minutes=120)
+        bus = Bus.objects.create(
+            code='NT-TEST', name='Bus Uji', plate_number='E 9000 UJI')
+        Schedule.objects.create(
+            route=cls.route, bus=bus, departure_time='07:30',
+            arrival_time='09:30', price=150000)
+        cls.vehicle = Vehicle.objects.create(
+            name='Toyota Avanza', slug='avanza', category='MPV',
+            year=2022, seats=7, price_per_day=350000, description='MPV nyaman.')
+
+    def _types(self, url):
+        data = _extract_jsonld(self.client.get(url).content.decode())
+        types = []
+        for d in data:
+            t = d.get('@type')
+            types.extend(t if isinstance(t, list) else [t])
+        return data, types
+
+    def test_home_local_business(self):
+        data, types = self._types('/')
+        self.assertIn('LocalBusiness', types)
+        lb = next(d for d in data if 'LocalBusiness' in str(d.get('@type')))
+        self.assertEqual(lb['name'], 'Nusantara Trans')
+        self.assertIn('logo', lb)
+        self.assertIn('openingHoursSpecification', lb)
+        self.assertIn('contactPoint', lb)
+
+    def test_breadcrumb_list_dinamis(self):
+        data, types = self._types('/bus/rute/kota-a-kota-b/')
+        self.assertIn('BreadcrumbList', types)
+        bc = next(d for d in data if d['@type'] == 'BreadcrumbList')
+        self.assertEqual(len(bc['itemListElement']), 3)
+        self.assertEqual(bc['itemListElement'][0]['name'], 'Beranda')
+        self.assertIn('item', bc['itemListElement'][1])  # URL absolut
+        self.assertNotIn('item', bc['itemListElement'][2])  # halaman saat ini
+
+    def test_route_bustrip_dan_faqpage(self):
+        data, types = self._types('/bus/rute/kota-a-kota-b/')
+        self.assertIn('BusTrip', types)
+        self.assertIn('FAQPage', types)
+        faq = next(d for d in data if d['@type'] == 'FAQPage')
+        self.assertEqual(len(faq['mainEntity']), 3)
+        # FAQ harus juga terlihat di halaman (syarat kepatuhan Google)
+        html = self.client.get('/bus/rute/kota-a-kota-b/').content.decode()
+        self.assertIn('accordion', html)
+
+    def test_vehicle_product_offer(self):
+        data, types = self._types('/rental/mobil/avanza/')
+        self.assertIn('Product', types)
+        prod = next(d for d in data if d['@type'] == 'Product')
+        self.assertEqual(prod['offers']['priceCurrency'], 'IDR')
+        self.assertEqual(prod['offers']['price'], '350000')
+        self.assertIn('/media/vehicles/', prod['image'])

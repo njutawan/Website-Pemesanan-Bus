@@ -152,6 +152,12 @@ msgstr "Beranda"
 msgid "Berangkat & tiba sesuai jadwal adalah janji utama kami."
 msgstr "Berangkat & tiba sesuai jadwal adalah janji utama kami."
 
+msgid "Berapa harga tiket bus %(origin)s ke %(destination)s?"
+msgstr ""
+
+msgid "Berapa lama perjalanan bus dari %(origin)s ke %(destination)s?"
+msgstr ""
+
 msgid "Berawal dari Satu Bus, Kini Layani 7+ Kota"
 msgstr "Berawal dari Satu Bus, Kini Layani 7+ Kota"
 
@@ -292,7 +298,9 @@ msgid ""
 msgstr ""
 "Coba tanggal lain, atau hubungi kami via WhatsApp untuk charter khusus."
 
-msgid "Cocokkan persis dengan URL. '/bus/' berlaku untuk ID & EN;"
+msgid ""
+"Cocokkan persis dengan URL. '/bus/' berlaku untuk ID & EN; '/en/bus/' khusus"
+" EN. Halaman detail (rute/mobil) memakai judul objek."
 msgstr ""
 
 msgid "Dari"
@@ -396,6 +404,11 @@ msgstr "Harga Bersahabat"
 msgid "Harga sewa"
 msgstr "Harga sewa"
 
+msgid ""
+"Harga tiket mulai dari %(harga)s per kursi, tergantung kelas bus dan "
+"fasilitasnya."
+msgstr ""
+
 msgid "Harga/kursi"
 msgstr "Harga/kursi"
 
@@ -465,6 +478,9 @@ msgstr ""
 msgid "Kantor Pusat"
 msgstr "Kantor Pusat"
 
+msgid "Kapan keberangkatan pertama dari %(origin)s?"
+msgstr ""
+
 msgid ""
 "Katalog rental mobil: MPV, SUV, HiAce, hingga bus kecil. Harga transparan "
 "per hari, opsi dengan sopir, bisa antar-jemput."
@@ -480,6 +496,11 @@ msgstr "Keberangkatan"
 
 msgid "Keberangkatan Hari Ini"
 msgstr "Keberangkatan Hari Ini"
+
+msgid ""
+"Keberangkatan pertama pukul %(jam)s WIB. Tersedia %(jumlah)s jadwal setiap "
+"hari."
+msgstr ""
 
 msgid "Kedaluwarsa"
 msgstr "Kedaluwarsa"
@@ -787,6 +808,14 @@ msgstr "Penyewa"
 msgid "Perjalanan Nyaman,"
 msgstr "Perjalanan Nyaman,"
 
+msgid ""
+"Perjalanan memakan waktu sekitar %(durasi)s, tergantung kondisi lalu lintas "
+"dan cuaca."
+msgstr ""
+
+msgid "Pertanyaan umum rute ini"
+msgstr ""
+
 msgid "Perusahaan"
 msgstr "Perusahaan"
 
@@ -991,6 +1020,9 @@ msgstr "Sewa"
 msgid "Sewa %(name)s"
 msgstr "Sewa %(name)s"
 
+msgid "Sewa %(name)s harian dengan harga terbaik."
+msgstr ""
+
 msgid ""
 "Sewa %(name)s mulai %(price)s/hari. Armada terawat dengan opsi sopir. Pesan "
 "online sekarang."
@@ -1046,7 +1078,9 @@ msgstr "Syarat sewa:"
 msgid "Tambahan bila pelanggan minta disertai sopir. 0 = gratis."
 msgstr "Tambahan bila pelanggan minta disertai sopir. 0 = gratis."
 
-msgid "Tandai halaman <meta name=\"robots\" content=\"noindex\">"
+msgid ""
+"Tandai halaman <meta name=\"robots\" content=\"noindex\"> agar tidak "
+"diindeks mesin pencari."
 msgstr ""
 
 msgid "Tanggal"
@@ -1173,7 +1207,9 @@ msgstr ""
 msgid "Tutup"
 msgstr "Tutup"
 
-msgid "URL halaman, contoh '/bus/'. Baris '/en/bus/' khusus EN;"
+msgid ""
+"URL halaman, contoh '/bus/'. Baris '/en/bus/' khusus EN; tanpa prefiks "
+"berlaku untuk kedua bahasa."
 msgstr ""
 
 msgid "Ukuran berkas maksimal 5 MB."

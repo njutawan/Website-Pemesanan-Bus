@@ -7,6 +7,11 @@
 {% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{{ vehicle.image.url }}{% endblock %}
 {% block meta_description %}{% blocktranslate with name=vehicle.name price=vehicle.price_per_day|to_idr %}Sewa {{ name }} mulai {{ price }}/hari. Armada terawat dengan opsi sopir. Pesan online sekarang.{% endblocktranslate %}{% endblock %}
 
+{% block schema_json %}
+{{ block.super }}
+{% include 'includes/schema_ld.html' with data=schema_product %}
+{% endblock %}
+
 {% block content %}
 <section class="page-hero-sm">
   <div class="container py-4">

@@ -152,6 +152,12 @@ msgstr "Home"
 msgid "Berangkat & tiba sesuai jadwal adalah janji utama kami."
 msgstr "Departing & arriving on schedule is our main promise."
 
+msgid "Berapa harga tiket bus %(origin)s ke %(destination)s?"
+msgstr "How much is the bus ticket from %(origin)s to %(destination)s?"
+
+msgid "Berapa lama perjalanan bus dari %(origin)s ke %(destination)s?"
+msgstr "How long is the bus trip from %(origin)s to %(destination)s?"
+
 msgid "Berawal dari Satu Bus, Kini Layani 7+ Kota"
 msgstr "From One Bus to Serving 7+ Cities"
 
@@ -291,8 +297,12 @@ msgid ""
 "Coba tanggal lain, atau hubungi kami via WhatsApp untuk charter khusus."
 msgstr "Try another date, or contact us on WhatsApp for a custom charter."
 
-msgid "Cocokkan persis dengan URL. '/bus/' berlaku untuk ID & EN;"
+msgid ""
+"Cocokkan persis dengan URL. '/bus/' berlaku untuk ID & EN; '/en/bus/' khusus"
+" EN. Halaman detail (rute/mobil) memakai judul objek."
 msgstr ""
+"Match the URL exactly. '/bus/' applies to both ID & EN; '/en/bus/' is EN-"
+"only. Detail pages (route/vehicle) use the object title."
 
 msgid "Dari"
 msgstr "From"
@@ -337,7 +347,7 @@ msgid "Digunakan untuk konfirmasi & e-tiket."
 msgstr "Used for confirmation & your e-ticket."
 
 msgid "Disarankan 120–160 karakter."
-msgstr ""
+msgstr "Aim for 120–160 characters."
 
 msgid "E-Tiket Instan"
 msgstr "Instant E-Ticket"
@@ -396,6 +406,12 @@ msgstr "Friendly Prices"
 msgid "Harga sewa"
 msgstr "Rental price"
 
+msgid ""
+"Harga tiket mulai dari %(harga)s per kursi, tergantung kelas bus dan "
+"fasilitasnya."
+msgstr ""
+"Tickets start from %(harga)s per seat, depending on bus class and amenities."
+
 msgid "Harga/kursi"
 msgstr "Price/seat"
 
@@ -403,10 +419,10 @@ msgid "Hubungi Kami"
 msgstr "Contact Us"
 
 msgid "Idealnya rasio 1.91:1, minimal 1200×630 px."
-msgstr ""
+msgstr "Ideally 1.91:1 ratio, at least 1200×630 px."
 
 msgid "Indeks"
-msgstr ""
+msgstr "Indexing"
 
 msgid "Informasi Kontak"
 msgstr "Contact Information"
@@ -463,6 +479,9 @@ msgstr ""
 msgid "Kantor Pusat"
 msgstr "Head Office"
 
+msgid "Kapan keberangkatan pertama dari %(origin)s?"
+msgstr "When is the first departure from %(origin)s?"
+
 msgid ""
 "Katalog rental mobil: MPV, SUV, HiAce, hingga bus kecil. Harga transparan "
 "per hari, opsi dengan sopir, bisa antar-jemput."
@@ -478,6 +497,13 @@ msgstr "Departure"
 
 msgid "Keberangkatan Hari Ini"
 msgstr "Departures Today"
+
+msgid ""
+"Keberangkatan pertama pukul %(jam)s WIB. Tersedia %(jumlah)s jadwal setiap "
+"hari."
+msgstr ""
+"The first departure is at %(jam)s WIB. There are %(jumlah)s departures "
+"daily."
 
 msgid "Kedaluwarsa"
 msgstr "Expired"
@@ -525,7 +551,7 @@ msgid "Kontak"
 msgstr "Contact"
 
 msgid "Konten SEO"
-msgstr ""
+msgstr "SEO content"
 
 msgid "Kota"
 msgstr "City"
@@ -663,7 +689,7 @@ msgid "Menunggu pembayaran"
 msgstr "Awaiting payment"
 
 msgid "Metadata halaman (SEO)"
-msgstr ""
+msgstr "Page metadata (SEO)"
 
 msgid "Metode pembayaran"
 msgstr "Payment method"
@@ -782,6 +808,16 @@ msgstr "Renter"
 
 msgid "Perjalanan Nyaman,"
 msgstr "Comfortable Journeys,"
+
+msgid ""
+"Perjalanan memakan waktu sekitar %(durasi)s, tergantung kondisi lalu lintas "
+"dan cuaca."
+msgstr ""
+"The trip takes around %(durasi)s, depending on traffic and weather "
+"conditions."
+
+msgid "Pertanyaan umum rute ini"
+msgstr "FAQ about this route"
 
 msgid "Perusahaan"
 msgstr "Company"
@@ -987,6 +1023,9 @@ msgstr "Rent"
 msgid "Sewa %(name)s"
 msgstr "Rent %(name)s"
 
+msgid "Sewa %(name)s harian dengan harga terbaik."
+msgstr "Rent the %(name)s daily at the best price."
+
 msgid ""
 "Sewa %(name)s mulai %(price)s/hari. Armada terawat dengan opsi sopir. Pesan "
 "online sekarang."
@@ -1042,8 +1081,12 @@ msgstr "Rental requirements:"
 msgid "Tambahan bila pelanggan minta disertai sopir. 0 = gratis."
 msgstr ""
 
-msgid "Tandai halaman <meta name=\"robots\" content=\"noindex\">"
+msgid ""
+"Tandai halaman <meta name=\"robots\" content=\"noindex\"> agar tidak "
+"diindeks mesin pencari."
 msgstr ""
+"Emit <meta name=\"robots\" content=\"noindex\"> so search engines skip this "
+"page."
 
 msgid "Tanggal"
 msgstr "Date"
@@ -1169,8 +1212,12 @@ msgstr ""
 msgid "Tutup"
 msgstr "Close"
 
-msgid "URL halaman, contoh '/bus/'. Baris '/en/bus/' khusus EN;"
+msgid ""
+"URL halaman, contoh '/bus/'. Baris '/en/bus/' khusus EN; tanpa prefiks "
+"berlaku untuk kedua bahasa."
 msgstr ""
+"Page URL, e.g. '/bus/'. A '/en/bus/' entry is EN-only; entries without a "
+"prefix apply to both languages."
 
 msgid "Ukuran berkas maksimal 5 MB."
 msgstr "File size must be at most 5 MB."
@@ -1268,7 +1315,7 @@ msgid "foto mobil"
 msgstr ""
 
 msgid "gambar Open Graph"
-msgstr ""
+msgstr "Open Graph image"
 
 msgid "harga"
 msgstr ""
@@ -1304,7 +1351,7 @@ msgid "jika pakai sopir"
 msgstr "if with driver"
 
 msgid "judul (title & og:title)"
-msgstr ""
+msgstr "title (& og:title)"
 
 msgid "jumlah baris"
 msgstr ""
@@ -1373,7 +1420,7 @@ msgid "menunggu verifikasi admin (maks. 15 menit)."
 msgstr "awaiting admin verification (max. 15 minutes)."
 
 msgid "meta description"
-msgstr ""
+msgstr "meta description"
 
 msgid "metode pembayaran"
 msgstr ""
@@ -1412,7 +1459,7 @@ msgid "nomor polisi"
 msgstr ""
 
 msgid "path"
-msgstr ""
+msgstr "path"
 
 msgid "pemesanan"
 msgstr "bookings"

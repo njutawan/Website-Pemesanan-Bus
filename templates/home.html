@@ -5,6 +5,8 @@
 {% block og_title %}{{ SITE_NAME }} — {% trans 'Tiket Bus Online & Rental Mobil' %}{% endblock %}
 {% block meta_description %}{% trans 'Pesan tiket bus antar kota pilih kursi sendiri, atau sewa mobil harian dengan sopir. Pembayaran transfer & QRIS, konfirmasi cepat via WhatsApp.' %}{% endblock %}
 
+{% block schema_json %}{% include 'includes/schema_ld.html' with data=schema_local_business %}{% endblock %}
+
 {% block preload %}
 <link rel="preload" as="image" fetchpriority="high"
       href="{% static 'img/hero-bus.webp' %}"

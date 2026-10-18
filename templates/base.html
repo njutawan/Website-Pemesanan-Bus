@@ -37,6 +37,11 @@
 
   <link rel="icon" type="image/svg+xml" href="{% static 'img/favicon.svg' %}">
 
+  {# ===== Structured data (JSON-LD) per halaman ===== #}
+  {% block schema_json %}
+  {% if schema_breadcrumbs %}{% include 'includes/schema_ld.html' with data=schema_breadcrumbs %}{% endif %}
+  {% endblock %}
+
   {# ===== Koneksi awal ke CDN ikon/font (mengurangi waktu koneksi LCP) ===== #}
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 

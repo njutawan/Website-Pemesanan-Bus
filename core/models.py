@@ -17,8 +17,7 @@ class PageMeta(models.Model):
 
     path = models.CharField(
         _('path'), max_length=200, unique=True,
-        help_text=_("URL halaman, contoh '/bus/'. Baris '/en/bus/' khusus EN; "
-                    "tanpa prefiks berlaku untuk kedua bahasa."))
+        help_text=_("URL halaman, contoh '/bus/'. Baris '/en/bus/' khusus EN; tanpa prefiks berlaku untuk kedua bahasa."))
     title = models.CharField(
         _('judul (title & og:title)'), max_length=180, blank=True)
     description = models.TextField(
@@ -29,8 +28,7 @@ class PageMeta(models.Model):
         help_text=_('Idealnya rasio 1.91:1, minimal 1200×630 px.'))
     noindex = models.BooleanField(
         _('noindex'), default=False,
-        help_text=_('Tandai halaman <meta name="robots" content="noindex"> '
-                    'agar tidak diindeks mesin pencari.'))
+        help_text=_('Tandai halaman <meta name="robots" content="noindex"> agar tidak diindeks mesin pencari.'))
     updated_at = models.DateTimeField(_('diperbarui'), auto_now=True)
 
     class Meta:

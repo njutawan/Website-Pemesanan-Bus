@@ -1,12 +1,14 @@
 """View rental: katalog mobil, detail, form sewa, upload bukti bayar."""
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
+from django.conf import settings
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.views.decorators.cache import never_cache
 from django.views.generic import TemplateView, View
 
 from core.forms import PaymentProofForm
+from core.seo import HOME_CRUMB, breadcrumb_items, breadcrumb_schema
 from rental.forms import RentalForm
 from rental.models import RentalBooking, Vehicle
 
@@ -24,6 +26,8 @@ class VehicleListView(TemplateView):
             'vehicles': qs,
             'categories': Vehicle.Category.choices,
             'active_category': category,
+            'schema_breadcrumbs': breadcrumb_schema(request, breadcrumb_items(
+                HOME_CRUMB, (_('Rental Mobil'), None))),
         })
 
 
@@ -34,8 +38,29 @@ class VehicleDetailView(TemplateView):
     def get(self, request, slug):
         vehicle = get_object_or_404(Vehicle, slug=slug, is_available=True)
         others = Vehicle.objects.filter(is_available=True).exclude(pk=vehicle.pk)[:3]
+        url = request.build_absolute_uri(vehicle.get_absolute_url())
         return render(request, self.template_name, {
             'vehicle': vehicle, 'other_vehicles': others,
+            'schema_breadcrumbs': breadcrumb_schema(request, breadcrumb_items(
+                HOME_CRUMB, (_('Rental Mobil'), '/rental/'), (vehicle.name, None))),
+            'schema_product': {
+                '@context': 'https://schema.org',
+                '@type': 'Product',
+                'name': vehicle.name,
+                'image': request.build_absolute_uri(vehicle.image.url),
+                'description': vehicle.description or _(
+                    'Sewa %(name)s harian dengan harga terbaik.') % {'name': vehicle.name},
+                'brand': {'@type': 'Brand', 'name': settings.SITE_NAME},
+                'url': url,
+                'offers': {
+                    '@type': 'Offer',
+                    'priceCurrency': 'IDR',
+                    'price': str(vehicle.price_per_day),
+                    'availability': ('https://schema.org/InStock' if vehicle.is_available
+                                     else 'https://schema.org/OutOfStock'),
+                    'url': url,
+                },
+            },
         })
 
 

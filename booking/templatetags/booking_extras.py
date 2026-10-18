@@ -1,5 +1,8 @@
-"""Template tag util: format Rupiah, durasi, akses dict."""
+"""Template tag util: format Rupiah, durasi, akses dict, JSON-LD schema."""
+import json
+
 from django import template
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 
 register = template.Library()
@@ -71,3 +74,24 @@ def nav_active(request, *prefixes):
         if view == p or view.startswith(p):
             return 'active'
     return ''
+
+
+@register.filter
+def jsonld(value):
+    """Dump dict Python -> JSON aman utk <script type="application/ld+json">.
+
+    Meng-escape '</', '<', '>', '&' serta U+2028/2029 (pola sama dengan
+    filter json_script bawaan Django) agar struktur data tidak bisa
+    "keluar" dari tag script.
+    """
+    if value is None:
+        return ''
+    text = json.dumps(value, ensure_ascii=False, separators=(',', ':'))
+    escapes = (
+        ('<', r'\u003c'), ('>', r'\u003e'), ('&', r'\u0026'),
+        ("'", r'\u0027'),
+    )
+    for old, new in escapes:
+        text = text.replace(old, new)
+    text = text.replace('\u2028', r'\u2028').replace('\u2029', r'\u2029')
+    return mark_safe(text)

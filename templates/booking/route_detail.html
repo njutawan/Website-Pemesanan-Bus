@@ -5,6 +5,12 @@
 {% block og_title %}{% blocktranslate with origin=route.origin.name dest=route.destination.name %}Tiket Bus {{ origin }} → {{ dest }}{% endblocktranslate %} — {{ SITE_NAME }}{% endblock %}
 {% block meta_description %}{% blocktranslate with origin=route.origin.name dest=route.destination.name %}Jadwal bus {{ origin }}–{{ dest }} hari ini: keberangkatan, durasi, kelas armada, dan harga tiket mulai dari harga termurah. Pesan online, pilih kursi sendiri.{% endblocktranslate %}{% endblock %}
 
+{% block schema_json %}
+{{ block.super }}
+{% include 'includes/schema_ld.html' with data=schema_bustrip %}
+{% include 'includes/schema_ld.html' with data=schema_faq %}
+{% endblock %}
+
 {% block content %}
 <section class="page-hero-sm">
   <div class="container py-4">
@@ -58,4 +64,30 @@
     </div>
   </div>
 </div>
+
+{% if faq %}
+<section class="container pb-5" aria-labelledby="faq-heading">
+  <h2 id="faq-heading" class="h5 fw-bold mb-3">
+    <i class="fa-solid fa-circle-question text-warning me-2"></i>{% trans 'Pertanyaan umum rute ini' %}
+  </h2>
+  <div class="accordion" id="faqRoute">
+    {% for f in faq %}
+    <div class="accordion-item">
+      <h3 class="accordion-header">
+        <button class="accordion-button{% if not forloop.first %} collapsed{% endif %}" type="button"
+                data-bs-toggle="collapse" data-bs-target="#faq-{{ forloop.counter }}"
+                aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}">
+          {{ f.q }}
+        </button>
+      </h3>
+      <div id="faq-{{ forloop.counter }}"
+           class="accordion-collapse collapse{% if forloop.first %} show{% endif %}"
+           data-bs-parent="#faqRoute">
+        <div class="accordion-body text-muted">{{ f.a }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
 {% endblock %}
