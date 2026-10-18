@@ -2,6 +2,7 @@
 cari jadwal → pilih kursi → isi data → booking dibuat → upload bukti bayar.
 """
 from datetime import date as date_cls
+from urllib.parse import urlencode
 
 from django.conf import settings
 
@@ -27,9 +28,10 @@ from django.http import Http404
 
 from booking.models import (
     Booking, BookingSeat, City, Route, Schedule,
-    available_seat_count, expire_stale_bookings, taken_seat_ids,
+    taken_seat_counts, taken_seat_ids,
 )
 from core.forms import PaymentProofForm
+from core.private_media import grant_private_media_access
 
 
 def cached_route_catalog():
@@ -65,7 +67,6 @@ class SearchView(View):
     template_name = 'booking/search.html'
 
     def get(self, request):
-        expire_stale_bookings()
         form = SearchForm(request.GET or None)
         schedules = []
         searched = False
@@ -75,7 +76,7 @@ class SearchView(View):
             searched = True
             search_date = form.cleaned_data['date']
             passengers = form.cleaned_data['passengers']
-            for s in (
+            schedules = list(
                 Schedule.objects
                 .select_related('route__origin', 'route__destination', 'bus')
                 .annotate(bus_seat_count=Count('bus__seats'))
@@ -85,10 +86,15 @@ class SearchView(View):
                     is_active=True,
                 )
                 .order_by('departure_time')
-            ):
-                s.available = available_seat_count(s, search_date)
+            )
+            # Ketersediaan semua jadwal dalam 1 query agregat + total kursi
+            # dari annotate di atas (anti N+1: tanpa query per jadwal).
+            taken_counts = taken_seat_counts(
+                [s.id for s in schedules], search_date)
+            for s in schedules:
+                s.available = max(
+                    s.bus_total_seats - taken_counts.get(s.id, 0), 0)
                 s.enough = s.available >= passengers
-                schedules.append(s)
         ctx = {
             'form': form,
             'schedules': schedules,
@@ -109,7 +115,6 @@ class SeatSelectionView(TemplateView):
     template_name = 'booking/seats.html'
 
     def get(self, request, schedule_id):
-        expire_stale_bookings()
         schedule = get_object_or_404(
             Schedule.objects.select_related('bus', 'route'), pk=schedule_id, is_active=True)
 
@@ -123,7 +128,9 @@ class SeatSelectionView(TemplateView):
             return redirect('booking:search')
 
         try:
-            passengers = min(max(int(request.GET.get('passengers', 1)), 1), 6)
+            passengers = min(
+                max(int(request.GET.get('passengers', 1)), 1),
+                settings.MAX_SEATS_PER_BOOKING)
         except ValueError:
             passengers = 1
 
@@ -160,8 +167,10 @@ class CreateBookingView(View):
 
         raw_seats = request.GET.get('seats') or request.POST.get('seats') or ''
         labels = [s.strip().upper() for s in raw_seats.split(',') if s.strip()]
-        if not labels or len(labels) > 6:
-            raise ValidationError(_('Pilih minimal 1 kursi (maksimal 6).'))
+        max_seats = settings.MAX_SEATS_PER_BOOKING
+        if not labels or len(labels) > max_seats:
+            raise ValidationError(
+                _('Pilih minimal 1 kursi (maksimal %(max)s).') % {'max': max_seats})
         seat_objs = list(schedule.bus.seats.filter(label__in=labels))
         if len(seat_objs) != len(labels):
             raise ValidationError(_('Ada kursi yang tidak ditemukan pada bus ini.'))
@@ -179,7 +188,15 @@ class CreateBookingView(View):
             messages.error(
                 request,
                 _('Maaf, beberapa kursi yang Anda pilih baru saja diambil. Silakan pilih ulang.'))
-            return redirect('booking:seats', schedule_id)
+            # Teruskan tanggal & jumlah penumpang — tanpa query string ini
+            # SeatSelectionView gagal mem-parsing tanggal kosong dan
+            # mengusir user kembali ke pencarian, kehilangan pilihannya.
+            seats_url = reverse('booking:seats', args=[schedule_id])
+            query = urlencode({
+                'date': travel_date.isoformat(),
+                'passengers': len(seat_objs),
+            })
+            return redirect(f'{seats_url}?{query}')
 
         form = PassengerForm()
         return self._render(request, schedule, travel_date, seat_objs, form)
@@ -220,7 +237,8 @@ class CreateBookingView(View):
 
         messages.success(
             request, _('Booking berhasil dibuat! Selesaikan pembayaran sebelum batas waktu.'))
-        return redirect('booking:detail', code=booking.code)
+        detail_url = reverse('booking:detail', kwargs={'code': booking.code})
+        return redirect(f'{detail_url}?{urlencode({"baru": 1})}')
 
     def _render(self, request, schedule, travel_date, seats, form, status=200):
         return render(request, self.template_name, {
@@ -240,12 +258,15 @@ class BookingDetailView(TemplateView):
     template_name = 'booking/detail.html'
 
     def get(self, request, code):
-        expire_stale_bookings()
         booking = get_object_or_404(
             Booking.objects.select_related(
                 'schedule__bus', 'schedule__route__origin',
                 'schedule__route__destination'),
             code__iexact=code)
+        # Kode booking adalah kredensial pemilik halaman ini: izinkan sesi
+        # ini memuat thumbnail buktinya sendiri dari media privat.
+        grant_private_media_access(
+            request, booking.payment_proof.name if booking.payment_proof else None)
         return render(request, self.template_name, {
             'booking': booking,
             'seats': [i.seat for i in booking.seat_items.select_related('seat')],
@@ -272,6 +293,7 @@ class UploadProofView(View):
             booking.payment_method = form.cleaned_data['payment_method']
             booking.payment_proof = form.cleaned_data['payment_proof']
             booking.save(update_fields=['payment_method', 'payment_proof', 'updated_at'])
+            grant_private_media_access(request, booking.payment_proof.name)
             messages.success(
                 request,
                 _('Bukti pembayaran terkirim. Tim kami verifikasi maksimal 15 menit.'))

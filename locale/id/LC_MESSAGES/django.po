@@ -686,6 +686,13 @@ msgstr ""
 "Maaf, terjadi kesalahan tak terduga. Tim teknis kami sudah diberi tahu. "
 "Silakan coba beberapa saat lagi atau hubungi kami via WhatsApp."
 
+msgid ""
+"Maaf, unit ini sudah dipesan pada tanggal yang tumpang tindih. Silakan pilih"
+" tanggal atau unit lain."
+msgstr ""
+"Maaf, unit ini sudah dipesan pada tanggal yang tumpang tindih. Silakan pilih"
+" tanggal atau unit lain."
+
 msgid "Maksimal sewa 30 hari. Untuk lebih, hubungi kami."
 msgstr "Maksimal sewa 30 hari. Untuk lebih, hubungi kami."
 
@@ -955,8 +962,8 @@ msgstr "Pilih kota tujuan"
 msgid "Pilih kursi"
 msgstr "Pilih kursi"
 
-msgid "Pilih minimal 1 kursi (maksimal 6)."
-msgstr "Pilih minimal 1 kursi (maksimal 6)."
+msgid "Pilih minimal 1 kursi (maksimal %(max)s)."
+msgstr "Pilih minimal 1 kursi (maksimal %(max)s)."
 
 msgid "Pilihanmu"
 msgstr "Pilihanmu"

@@ -374,6 +374,17 @@ gunicorn core.wsgi:application --bind 127.0.0.1:8001 --workers 3
 > `manage.py check` gagal dengan error `core.E001` bila langkah 2 terlewat —
 > gagal cepat sebelum traffic produksi menghantam halaman 500.
 
+Booking bus & pesanan sewa yang melewati batas bayar dikedaluwarsakan oleh
+tugas berkala (bukan lagi oleh kunjungan halaman — GET publik tidak menulis ke DB).
+Jadwalkan tiap 5 menit, mis. lewat cron di host:
+
+```cron
+*/5 * * * * cd /var/www/website-pemesanan-bus && .venv/bin/python manage.py expire_stale_bookings && .venv/bin/python manage.py expire_stale_rental_bookings
+```
+
+Di Docker Compose, kedua perintah yang sama dijadwalkan dari host:
+`docker compose exec -T web python manage.py expire_stale_bookings && docker compose exec -T web python manage.py expire_stale_rental_bookings`.
+
 Konfigurasi Nginx reverse proxy lengkap (static/media/cache/gzip/HTTPS) tersedia di
 [`deploy/nginx.conf`](deploy/nginx.conf). Produksi sebaiknya juga:
 - Ganti `DJANGO_SECRET_KEY` & `DJANGO_DEBUG=0`

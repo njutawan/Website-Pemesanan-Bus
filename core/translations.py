@@ -437,7 +437,9 @@ TRANSLATIONS_ID = {
     'Tanggal perjalanan tidak valid.': 'Tanggal perjalanan tidak valid.',
     'Maaf, beberapa kursi yang Anda pilih baru saja diambil. Silakan pilih ulang.':
         'Maaf, beberapa kursi yang Anda pilih baru saja diambil. Silakan pilih ulang.',
-    'Pilih minimal 1 kursi (maksimal 6).': 'Pilih minimal 1 kursi (maksimal 6).',
+    'Pilih minimal 1 kursi (maksimal %(max)s).': 'Pilih minimal 1 kursi (maksimal %(max)s).',
+    'Maaf, unit ini sudah dipesan pada tanggal yang tumpang tindih. Silakan pilih tanggal atau unit lain.':
+        'Maaf, unit ini sudah dipesan pada tanggal yang tumpang tindih. Silakan pilih tanggal atau unit lain.',
     'Ada kursi yang tidak ditemukan pada bus ini.': 'Ada kursi yang tidak ditemukan pada bus ini.',
     'Maaf, beberapa kursi baru saja diambil orang lain. Silakan pilih ulang.':
         'Maaf, beberapa kursi baru saja diambil orang lain. Silakan pilih ulang.',
@@ -891,7 +893,9 @@ TRANSLATIONS_EN = {
         'Sorry, some of your chosen seats were just taken. Please choose again.',
     'Maaf, beberapa kursi baru saja diambil orang lain. Silakan pilih ulang.':
         'Sorry, some seats were just taken by someone else. Please choose again.',
-    'Pilih minimal 1 kursi (maksimal 6).': 'Select at least 1 seat (maximum 6).',
+    'Pilih minimal 1 kursi (maksimal %(max)s).': 'Select at least 1 seat (maximum %(max)s).',
+    'Maaf, unit ini sudah dipesan pada tanggal yang tumpang tindih. Silakan pilih tanggal atau unit lain.':
+        'Sorry, this unit is already booked for overlapping dates. Please choose other dates or another unit.',
     'Ada kursi yang tidak ditemukan pada bus ini.': 'Some seats were not found on this bus.',
 
     # Form

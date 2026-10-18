@@ -1,4 +1,6 @@
-/* Hitung mundur batas pembayaran: elemen .countdown dengan data-deadline ISO lokal */
+/* Hitung mundur batas pembayaran: data-deadline ISO 8601 ber-offset zona
+   (mis. +07:00), agar Date menguraikannya sebagai instant yang sama di
+   zona waktu browser mana pun — bukan waktu lokal browser. */
 (function () {
   'use strict';
 

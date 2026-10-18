@@ -1,13 +1,12 @@
-from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
 from django.urls import include, path, re_path
-from django.views.static import serve
 from django.contrib.sitemaps.views import sitemap
 from django.views.decorators.cache import cache_page
 from django.views.i18n import JavaScriptCatalog
 
 from core import views, sitemaps
 from core.admin import admin_site
+from core.private_media import serve_media
 
 SITEMAPS = sitemaps.SITEMAPS
 
@@ -35,10 +34,12 @@ urlpatterns += [
     path('robots.txt', views.RobotsView.as_view(), name='robots'),
 ]
 
-# Media (foto mobil, bukti bayar) dilayani Django sebagai fallback dev/preview
-# (helper static() bawaan no-op saat DEBUG=0, maka re_path eksplisit).
-# Di produksi Nginx menyajikan /media/ langsung (location /media/) sehingga
-# request tidak pernah sampai ke sini — aman performanya.
+# Media dilayani Django sebagai fallback dev/preview lewat view terkontrol
+# akses (core.private_media): foto mobil & OG image publik bebas diakses,
+# tetapi bukti pembayaran (payment_proofs/ & rental_proofs/) hanya untuk
+# staf atau sesi pemilik bookingnya — berlaku juga saat DEBUG=0, URL saja
+# tidak cukup. Di produksi Nginx menyajikan media publik langsung dan
+# mem-proxy awalan bukti pembayaran ke view ini (lihat deploy/nginx.conf).
 urlpatterns += [
-    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    re_path(r'^media/(?P<path>.*)$', serve_media),
 ]

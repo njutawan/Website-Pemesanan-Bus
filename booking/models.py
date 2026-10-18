@@ -4,7 +4,7 @@ import string
 from datetime import timedelta
 
 from django.db import models
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -315,12 +315,42 @@ def taken_seat_ids(schedule: Schedule, travel_date) -> set:
 
 def available_seat_count(schedule: Schedule, travel_date) -> int:
     taken = taken_seat_ids(schedule, travel_date)
-    return max(schedule.bus.total_seats - len(taken), 0)
+    # bus_total_seats memakai hasil annotate(bus_seat_count=Count(...))
+    # bila tersedia; bus.total_seats selalu menembak COUNT kursi baru.
+    return max(schedule.bus_total_seats - len(taken), 0)
+
+
+def taken_seat_counts(schedule_ids, travel_date) -> dict:
+    """Peta ``{schedule_id: jumlah kursi terkunci}`` dalam SATU query agregat.
+
+    Pasangan untuk daftar jadwal (hasil pencarian): menggantikan pola
+    memanggil available_seat_count()/taken_seat_ids() per jadwal (N+1).
+    DISTINCT menjaga semantik taken_seat_ids (kursi yang sama, walau
+    tercatat di lebih dari satu booking, tetap dihitung sekali).
+    """
+    ids = [getattr(s, 'pk', s) for s in schedule_ids]
+    if not ids:
+        return {}
+    rows = (
+        BookingSeat.objects
+        .filter(
+            booking__schedule_id__in=ids,
+            booking__travel_date=travel_date,
+            booking__status__in=Booking.LOCKING_STATUSES,
+        )
+        .values('booking__schedule_id')
+        .annotate(n=Count('seat', distinct=True))
+    )
+    return {row['booking__schedule_id']: row['n'] for row in rows}
 
 
 def expire_stale_bookings() -> int:
-    """Tandai EXPIRED untuk booking PENDING yang lewat batas bayar (kursi otomatis lepas)."""
-    deadline = timezone.now() - timedelta(hours=1)  # placeholder, diganti di bawah
+    """Tandai EXPIRED untuk booking PENDING yang lewat batas bayar (kursi otomatis lepas).
+
+    Dipanggil dari management command ``expire_stale_bookings`` yang
+    dijadwalkan cron/periodic task — BUKAN dari request handler, agar
+    GET halaman publik tidak menulis (UPDATE) ke database.
+    """
     from django.conf import settings
     deadline = timezone.now() - timedelta(hours=settings.PAYMENT_TIMEOUT_HOURS)
     return Booking.objects.filter(

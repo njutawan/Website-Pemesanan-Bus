@@ -35,6 +35,8 @@
               <span class="status-badge confirmed"><i class="fa-solid fa-circle-check me-1"></i>{{ booking.get_status_display }}</span>
             {% elif booking.status == 'COMPLETED' %}
               <span class="status-badge confirmed"><i class="fa-solid fa-flag-checkered me-1"></i>{{ booking.get_status_display }}</span>
+            {% elif booking.status == 'EXPIRED' %}
+              <span class="status-badge expired"><i class="fa-solid fa-clock-rotate-left me-1"></i>{{ booking.get_status_display }}</span>
             {% else %}
               <span class="status-badge cancelled"><i class="fa-solid fa-ban me-1"></i>{{ booking.get_status_display }}</span>
             {% endif %}
@@ -119,7 +121,7 @@
           </form>
         </div>
       </div>
-      {% elif booking.is_payment_overdue %}
+      {% elif booking.is_payment_overdue or booking.status == 'EXPIRED' %}
       <div class="alert alert-warning rounded-4">
         <i class="fa-solid fa-triangle-exclamation me-2"></i>
         {% blocktrans %}Batas waktu pembayaran terlewat. Silakan buat pesanan baru.{% endblocktrans %}
