@@ -1,0 +1,24 @@
+# Jangan pernah memasukkan rahasia/data runtime ke image Docker.
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+.venv
+venv
+__pycache__
+*.py[cod]
+*.sqlite3
+media
+staticfiles
+backups
+backup
+*.dump
+*.sql
+*.tar.gz
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage
+htmlcov
+node_modules

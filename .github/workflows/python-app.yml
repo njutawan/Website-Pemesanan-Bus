@@ -1,7 +1,5 @@
-# CI: lint + Django test suite (manage.py test) against a real PostgreSQL
-# service — the project settings are PostgreSQL-only, and plain `pytest`
-# without pytest-django would silently collect zero Django tests.
-
+# CI: lint, Django test suite, audit keamanan, dependency audit, dan
+# drill backup/restore terhadap PostgreSQL sungguhan.
 name: Python application
 
 on:
@@ -15,7 +13,6 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     services:
@@ -24,7 +21,7 @@ jobs:
         env:
           POSTGRES_DB: nusantartrans
           POSTGRES_USER: nusantar
-          POSTGRES_PASSWORD: nusantar
+          POSTGRES_PASSWORD: ci-db-Passw0rd-2026
         ports:
           - 5432:5432
         options: >-
@@ -36,13 +33,24 @@ jobs:
     env:
       POSTGRES_DB: nusantartrans
       POSTGRES_USER: nusantar
-      POSTGRES_PASSWORD: nusantar
+      POSTGRES_PASSWORD: ci-db-Passw0rd-2026
       POSTGRES_HOST: localhost
       POSTGRES_PORT: "5432"
       POSTGRES_SSLMODE: disable
+      DJANGO_ADMIN_PASSWORD: ci-admin-Passw0rd-2026
+      # DEBUG default MATI; untuk langkah dev/test eksplisit dinyalakan.
+      DJANGO_DEBUG: "1"
+      # Dipakai langsung oleh pg_dump/pg_restore/psql (bukan Django).
+      PGDATABASE: nusantartrans
+      PGUSER: nusantar
+      PGPASSWORD: ci-db-Passw0rd-2026
+      PGHOST: localhost
+      PGPORT: "5432"
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0          # pemindai rahasia memeriksa seluruh riwayat
     - name: Set up Python 3.11
       uses: actions/setup-python@v5
       with:
@@ -50,15 +58,63 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install -r requirements-dev.txt
+        pip check
+    - name: Audit dependency (CVE)
+      run: pip-audit -r requirements.txt
+    - name: Scan secrets (HEAD + riwayat git)
+      run: ./deploy/scan_secrets.sh
     - name: Lint with flake8
       run: |
-        # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Django checks
+      run: python manage.py check
     - name: Test with Django test runner
+      run: python manage.py test --verbosity=2
+    - name: Security audit (20 kontrol)
+      run: python manage.py security_audit --no-fail
+    - name: Deploy checks (production settings)
+      env:
+        DJANGO_DEBUG: "0"
+        DJANGO_SECRET_KEY: ci-only-secret-key-0123456789abcdefghijklmnopqrstuvwxyz-ABCDEFGHIJKLMNOPQRSTUVWXYZ
+        DJANGO_ALLOWED_HOSTS: nusantartrans.example
+        DJANGO_CSRF_TRUSTED_ORIGINS: https://nusantartrans.example
+        DJANGO_SSL_REDIRECT: "1"
+        DJANGO_COOKIE_SAMESITE: Lax
+        DJANGO_COOKIE_SECURE: "1"
+        DJANGO_ADMIN_ALLOWED_IPS: 10.0.0.0/8
+        DJANGO_RATELIMIT_ENABLED: "1"
+        DJANGO_CSP_ENABLED: "1"
+        DJANGO_COMPRESS_ENABLED: "0"
+        DJANGO_COMPRESS_OFFLINE: "0"
+        REDIS_URL: redis://127.0.0.1:6379/1
+        POSTGRES_SSLMODE: require
+      run: python manage.py check --deploy --fail-level WARNING
+    - name: Migrate + seed (untuk drill backup)
       run: |
-        python manage.py check
-        python manage.py test --verbosity=2
+        python manage.py migrate --noinput
+        python manage.py seed_data
+    - name: Hardening review (19 kontrol)
+      env:
+        DJANGO_DEBUG: "0"
+        DJANGO_SECRET_KEY: ci-only-secret-key-0123456789abcdefghijklmnopqrstuvwxyz-ABCDEFGHIJKLMNOPQRSTUVWXYZ
+        DJANGO_ALLOWED_HOSTS: nusantartrans.example
+        DJANGO_CSRF_TRUSTED_ORIGINS: https://nusantartrans.example
+        DJANGO_SSL_REDIRECT: "1"
+        DJANGO_COOKIE_SAMESITE: Lax
+        DJANGO_COOKIE_SECURE: "1"
+        DJANGO_ADMIN_ALLOWED_IPS: 10.0.0.0/8
+        DJANGO_COMPRESS_ENABLED: "0"
+        DJANGO_COMPRESS_OFFLINE: "0"
+        REDIS_URL: redis://127.0.0.1:6379/1
+      run: python manage.py security_review
+    - name: Backup + drill restore
+      env:
+        MEDIA_ROOT: ${{ github.workspace }}/media
+        BACKUP_DIR: ${{ runner.temp }}/nt-backup
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq postgresql-client
+        ./deploy/backup.sh
+        ./deploy/verify_backup.sh "$BACKUP_DIR/latest"

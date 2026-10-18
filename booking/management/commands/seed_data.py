@@ -5,11 +5,13 @@ Jalankan: python manage.py seed_data           (idempotent, aman diulang)
           python manage.py seed_data --flush   (hapus data demo dulu)
 """
 import os
+import secrets
 from pathlib import Path
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 
 from booking.models import Bus, City, Route, Schedule
 from rental.models import Vehicle
@@ -277,19 +279,33 @@ class Command(BaseCommand):
             )
         self.stdout.write(self.style.SUCCESS(f'✔ Mobil rental: {Vehicle.objects.count()}'))
 
-        # ---- Admin demo ----
+        # ---- Admin ----
+        # TIDAK ada password default. Di produksi (DEBUG=0) env wajib diisi;
+        # di pengembangan password acak dibuat & ditampilkan sekali.
         User = get_user_model()
-        if not User.objects.filter(username='admin').exists():
-            User.objects.create_superuser(
-                'admin',
-                email='admin@nusantartrans.example',
-                password=os.environ.get('DJANGO_ADMIN_PASSWORD', 'admin123'),
-            )
-            self.stdout.write(self.style.SUCCESS(
-                '✔ Admin demo: username=admin password=admin123 '
-                '(hash bcrypt — GANTI di produksi!)'))
+        username = os.environ.get('DJANGO_ADMIN_USERNAME', 'admin').strip()
+        email = os.environ.get('DJANGO_ADMIN_EMAIL',
+                               'admin@nusantartrans.example').strip()
+        existing = User.objects.filter(username=username).first()
+        if existing is None:
+            password, generated = _resolve_admin_password()
+            User.objects.create_superuser(username, email=email, password=password)
+            if generated:
+                self.stdout.write(self.style.WARNING(
+                    f'✔ Admin dibuat: username={username} password={password} '
+                    '— HANYA ditampilkan sekali. Simpan di password manager.'))
+            else:
+                self.stdout.write(self.style.SUCCESS(
+                    f'✔ Admin dibuat: username={username} '
+                    '(password dari DJANGO_ADMIN_PASSWORD).'))
         else:
-            self.stdout.write('• Admin sudah ada, dilewati.')
+            if existing.check_password('admin123'):
+                self.stdout.write(self.style.ERROR(
+                    '✖ Admin masih memakai password default "admin123"! '
+                    'Jalankan: python manage.py changepassword '
+                    f'{username}'))
+            else:
+                self.stdout.write('• Admin sudah ada, dilewati.')
 
         # ---- Redirect 301 (SEO) + record Site ----
         from django.contrib.redirects.models import Redirect
@@ -335,3 +351,25 @@ class Command(BaseCommand):
         call_command('convert_media_webp', stdout=self.stdout)
 
         self.stdout.write(self.style.SUCCESS('Seed selesai. 🚍'))
+
+
+WEAK_ADMIN_PASSWORDS = {
+    'admin', 'admin123', 'password', 'password123', '12345678',
+    '123456789', 'qwerty123', 'nusantar', 'changeme', 'letmein123',
+}
+
+
+def _resolve_admin_password():
+    """(password, generated). Produksi wajib env; dev boleh acak."""
+    password = os.environ.get('DJANGO_ADMIN_PASSWORD', '')
+    if password:
+        if len(password) < 12 or password.lower() in WEAK_ADMIN_PASSWORDS:
+            raise CommandError(
+                'DJANGO_ADMIN_PASSWORD terlalu lemah (min. 12 karakter, '
+                'bukan password umum).')
+        return password, False
+    if not (settings.DEBUG or getattr(settings, 'RUNNING_TESTS', False)):
+        raise CommandError(
+            'DJANGO_ADMIN_PASSWORD wajib diisi saat DEBUG=0. '
+            'Gunakan: openssl rand -base64 24')
+    return secrets.token_urlsafe(18), True

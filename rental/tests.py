@@ -52,7 +52,7 @@ class RentalBookingTest(TestCase):
             return_date=date.today(), pickup_location='Jember',
             contact_name='Uji', contact_phone='081234567890',
             days=1, total_price=400000)
-        self.assertRegex(b.code, r'^SEWA-[A-Z2-9]{6}$')
+        self.assertRegex(b.code, r'^SEWA-[A-Z2-9]{8}$')
 
     def test_batas_waktu_kedaluwarsa(self):
         b = RentalBooking.objects.create(

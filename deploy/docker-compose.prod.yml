@@ -1,0 +1,111 @@
+# =============================================================================
+# Docker Compose PRODUKSI — Nusantara Trans
+# =============================================================================
+# Perbedaan penting dari docker-compose.yml (development):
+#   * TIDAK ada port database yang dipublikasikan (hanya jaringan internal).
+#   * Web menjalankan Gunicorn (bukan runserver), tanpa mount kode.
+#   * Container web: read-only root + no-new-privileges + cap_drop ALL.
+#   * Tidak ada password default: semua dari .env (mode 600).
+#
+# Pakai:
+#   cp .env.example .env && chmod 600 .env     # isi nilai produksi
+#   sudo -u postgres psql -v ON_ERROR_STOP=1 \
+#     -v owner_password=... -v app_password=... -f deploy/db_setup.sql
+#   (isi POSTGRES_APP_USER=nt_app + POSTGRES_APP_PASSWORD di .env)
+#   docker compose -f deploy/docker-compose.prod.yml up -d --build
+#   docker compose -f deploy/docker-compose.prod.yml exec web python manage.py security_review
+# =============================================================================
+services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-nusantartrans}
+      # Superuser cluster HANYA untuk container db; aplikasi memakai nt_app.
+      POSTGRES_USER: ${POSTGRES_SUPERUSER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_SUPERUSER_PASSWORD:?POSTGRES_SUPERUSER_PASSWORD wajib diisi}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # SENGAJA tanpa "ports:" — database tidak boleh terjangkau dari host/internet.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_SUPERUSER:-postgres} -d ${POSTGRES_DB:-nusantartrans}"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: >
+      redis-server
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --save ""
+      --appendonly no
+    # Tanpa port publik: cache hanya dipakai container web.
+    security_opt:
+      - no-new-privileges:true
+
+  web:
+    build: ..
+    restart: always
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py compile_i18n &&
+             python manage.py collectstatic --noinput &&
+             python manage.py compress --force &&
+             gunicorn core.wsgi:application
+               --bind 0.0.0.0:8000
+               --workers 3
+               --timeout 30
+               --access-logfile -
+               --error-logfile -"
+    env_file:
+      - ../.env
+    environment:
+      DJANGO_DEBUG: "0"
+      DJANGO_SSL_REDIRECT: "1"
+      DJANGO_COOKIE_SECURE: "1"
+      DJANGO_COOKIE_SAMESITE: Lax
+      # Role runtime aplikasi (bukan superuser) — buat dengan deploy/db_setup.sql.
+      POSTGRES_USER: ${POSTGRES_APP_USER:-nt_app}
+      POSTGRES_PASSWORD: ${POSTGRES_APP_PASSWORD:?POSTGRES_APP_PASSWORD wajib diisi}
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+      POSTGRES_SSLMODE: require
+      REDIS_URL: redis://redis:6379/1
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    expose:
+      - "8000"
+    # Nginx di host meneruskan ke 127.0.0.1:8001.
+    ports:
+      - "127.0.0.1:8001:8000"
+    read_only: true
+    tmpfs:
+      - /tmp          # compressor/collectstatic butuh ruang tulis sementara
+    volumes:
+      - media:/app/media
+      - staticfiles:/app/staticfiles
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+volumes:
+  pgdata:
+  media:
+  staticfiles:

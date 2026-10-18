@@ -194,7 +194,7 @@ TRANSLATIONS_ID = {
     'Booking dengan kode <strong>%(code)s</strong> tidak ditemukan. Periksa kembali penulisannya.':
         'Booking dengan kode <strong>%(code)s</strong> tidak ditemukan. Periksa kembali penulisannya.',
     'Lihat Status': 'Lihat Status',
-    'Kode booking terlihat seperti: NT-A7K2QP': 'Kode booking terlihat seperti: NT-A7K2QP',
+    'Kode booking terlihat seperti: NT-A7K2QP9M': 'Kode booking terlihat seperti: NT-A7K2QP9M',
 
     # ---- Halaman rute (SEO) ----
     'Tiket Bus %(origin)s ke %(dest)s — Jadwal & Harga': 'Tiket Bus %(origin)s ke %(dest)s — Jadwal & Harga',
@@ -761,7 +761,7 @@ TRANSLATIONS_EN = {
     'Booking dengan kode <strong>%(code)s</strong> tidak ditemukan. Periksa kembali penulisannya.':
         'No booking found with code <strong>%(code)s</strong>. Please check it again.',
     'Lihat Status': 'View Status',
-    'Kode booking terlihat seperti: NT-A7K2QP': 'A booking code looks like: NT-A7K2QP',
+    'Kode booking terlihat seperti: NT-A7K2QP9M': 'A booking code looks like: NT-A7K2QP9M',
 
     # Halaman rute (SEO)
     'Tiket Bus %(origin)s ke %(dest)s — Jadwal & Harga': 'Bus Tickets %(origin)s to %(dest)s — Schedule & Prices',
@@ -1079,3 +1079,56 @@ TRANSLATIONS_EN = {
     "Keberangkatan pertama dari %(origin)s pukul %(jam)s WIB. Tersedia %(jumlah)s jadwal setiap hari.": "The first departure from %(origin)s is at %(jam)s WIB. There are %(jumlah)s departures daily.",
 }
 
+# ---------------------------------------------------------------------------
+# Pembayaran QRIS online (Pakasir) — ditambahkan 2026-10-19
+# ---------------------------------------------------------------------------
+TRANSLATIONS_EN.update({
+    "QRIS Online (otomatis)": "QRIS Online (automatic)",
+    "Bayar dengan GoPay, OVO, DANA, atau m-banking apa pun. Status pembayaran terverifikasi otomatis.":
+        "Pay with GoPay, OVO, DANA, or any mobile banking app. Payment status is verified automatically.",
+    "Pembayaran diterima, tetapi perlu ditinjau admin. Tim kami akan menghubungi Anda melalui WhatsApp.":
+        "Payment received, but it needs admin review. Our team will contact you via WhatsApp.",
+    "Pembayaran sudah diterima gateway. Halaman ini akan diperbarui otomatis; jika status belum berubah, muat ulang.":
+        "The gateway has received your payment. This page updates automatically; reload if the status has not changed.",
+    "Nominal": "Amount",
+    "Link berlaku sampai": "Link valid until",
+    "Lanjutkan Pembayaran QRIS": "Continue QRIS Payment",
+    "Saya sudah bayar — cek status": "I have paid — check status",
+    "Bayar QRIS Online": "Pay with QRIS Online",
+    "Anda akan diarahkan ke halaman pembayaran resmi Pakasir.":
+        "You will be redirected to the official Pakasir payment page.",
+    "Diproses oleh Pakasir. Nominal dihitung di server dan diverifikasi ulang sebelum booking dikonfirmasi.":
+        "Processed by Pakasir. The amount is calculated on the server and re-verified before the booking is confirmed.",
+    "Khusus QRIS, gunakan panel QRIS Online di atas agar pembayaran terverifikasi otomatis. Untuk transfer bank, unggah bukti pembayaran pada form di bawah ini (verifikasi maksimal 15 menit, 07.00–21.00 WIB).":
+        "For QRIS, use the QRIS Online panel above so payment is verified automatically. For bank transfers, upload the payment proof in the form below (verification within 15 minutes, 07.00–21.00 WIB).",
+    "Pembayaran QRIS online gagal dibuat. Silakan coba lagi atau gunakan transfer manual di bawah.":
+        "Could not create the online QRIS payment. Please try again or use the manual transfer option below.",
+    "Booking ini sudah tidak menunggu pembayaran.":
+        "This booking is no longer awaiting payment.",
+    "Belum ada transaksi QRIS untuk booking ini.":
+        "There is no QRIS transaction for this booking yet.",
+    "Pembayaran diterima, tetapi perlu ditinjau admin. Tim kami akan menghubungi Anda.":
+        "Payment received, but it needs admin review. Our team will contact you.",
+    "Pembayaran berhasil dikonfirmasi!": "Payment confirmed successfully!",
+    "Transaksi QRIS ini dibatalkan/kedaluwarsa. Silakan buat pembayaran baru.":
+        "This QRIS transaction was canceled/expired. Please create a new payment.",
+    "Pembayaran belum diterima. Jika sudah membayar, tunggu beberapa saat lalu cek lagi.":
+        "Payment not received yet. If you have paid, wait a moment and check again.",
+    "Pembayaran QRIS online tidak aktif.": "Online QRIS payment is not active.",
+    "Pembayaran QRIS online belum tersedia.": "Online QRIS payment is not available yet.",
+    "Status baru saja diperiksa. Tunggu beberapa detik lagi.":
+        "Status was just checked. Please wait a few seconds.",
+    "Pembayaran QRIS online belum dikonfigurasi.":
+        "Online QRIS payment is not configured.",
+    "Status pembayaran belum dapat diperiksa. Coba lagi nanti.":
+        "Payment status cannot be checked yet. Please try again later.",
+    "Batas waktu pembayaran sudah lewat.": "The payment deadline has passed.",
+    "Terlalu banyak percobaan pembayaran untuk booking ini. Hubungi CS untuk dibantu.":
+        "Too many payment attempts for this booking. Contact support for help.",
+    "Pembuatan pembayaran sedang diproses. Coba lagi.":
+        "A payment is being created. Please try again.",
+    "Nominal booking di luar batas pembayaran QRIS online. Silakan transfer manual.":
+        "The booking amount is outside the online QRIS limits. Please use manual transfer.",
+    "Gagal membuat pembayaran QRIS. Coba lagi atau gunakan transfer manual.":
+        "Failed to create the QRIS payment. Try again or use manual transfer.",
+})

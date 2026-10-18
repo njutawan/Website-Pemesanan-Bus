@@ -106,12 +106,18 @@ def auto_internal_link(value, request_path=None):
         for term, url in terms:
             if term in used or budget <= 0:
                 continue
+            # Output validation: hanya path internal absolut. Data DB yang
+            # disusupi (mis. javascript:) tidak boleh masuk atribut href.
+            if (not url or not url.startswith('/') or url.startswith('//')
+                    or ':' in url.split('?', 1)[0]):
+                continue
             if _norm(url) == self_path or url == '/':
                 continue  # anti self-link
             m = re.search(re.escape(term), part, re.IGNORECASE)
             if m:
+                safe_url = escape(url)
                 part = (part[:m.start()] +
-                        f'<a class="ilink" href="{url}">{m.group(0)}</a>' +
+                        f'<a class="ilink" href="{safe_url}">{m.group(0)}</a>' +
                         part[m.end():])
                 used.add(term)
                 budget -= 1

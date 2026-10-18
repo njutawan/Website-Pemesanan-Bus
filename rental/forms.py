@@ -1,9 +1,9 @@
 """Form pemesanan sewa mobil."""
 from django import forms
 from django.core.exceptions import ValidationError
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from core.validators import clean_phone, validate_travel_date
 from rental.models import Vehicle
 
 
@@ -35,10 +35,10 @@ class RentalForm(forms.Form):
         widget=forms.EmailInput(attrs={'class': 'form-control'}))
 
     def clean_pickup_date(self):
-        pickup = self.cleaned_data['pickup_date']
-        if pickup < timezone.localdate():
-            raise ValidationError(_('Tanggal ambil tidak boleh di masa lalu.'))
-        return pickup
+        return validate_travel_date(self.cleaned_data['pickup_date'])
+
+    def clean_contact_phone(self):
+        return clean_phone(self.cleaned_data['contact_phone'])
 
     def clean(self):
         cleaned = super().clean()

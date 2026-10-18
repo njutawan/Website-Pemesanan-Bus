@@ -1,7 +1,10 @@
-"""Model inti: metadata SEO per halaman, dikelola lewat /admin/."""
+"""Model inti: metadata SEO per halaman, audit keamanan, dikelola lewat /admin/."""
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+from core.validators import validate_image_upload
 
 
 class PageMeta(models.Model):
@@ -26,7 +29,9 @@ class PageMeta(models.Model):
         help_text=_('Disarankan 120–160 karakter.'))
     og_image = models.ImageField(
         _('gambar Open Graph'), upload_to='meta/', blank=True,
-        help_text=_('Idealnya rasio 1.91:1, minimal 1200×630 px.'))
+        validators=[validate_image_upload],
+        help_text=_('JPG/PNG/WebP maks. 6 MB. Idealnya rasio 1.91:1, '
+                    'minimal 1200×630 px.'))
     noindex = models.BooleanField(
         _('noindex'), default=False,
         help_text=_('Tandai halaman <meta name="robots" content="noindex"> agar tidak diindeks mesin pencari.'))
@@ -36,6 +41,18 @@ class PageMeta(models.Model):
         verbose_name = _('Metadata halaman (SEO)')
         verbose_name_plural = _('Metadata halaman (SEO)')
         ordering = ['path']
+
+    def clean(self):
+        path = (self.path or '').strip()
+        if not path.startswith('/') or path.startswith('//'):
+            raise ValidationError({
+                'path': _('Path internal wajib diawali satu "/" (bukan URL penuh).')
+            })
+        if '://' in path or '\\' in path:
+            raise ValidationError({
+                'path': _('Skema/domain luar dan backslash tidak diizinkan.')
+            })
+        self.path = path
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -91,3 +108,127 @@ class SeoKeyword(models.Model):
         if not u.endswith('/'):
             u += '/'
         self.url = u + query + frag
+
+
+class PaymentTransaction(models.Model):
+    """Transaksi gateway pembayaran (saat ini: Pakasir QRIS).
+
+    Satu booking dapat memiliki beberapa percobaan (``order_id`` unik per
+    percobaan) bila link kedaluwarsa/dibatalkan. Status booking TIDAK
+    pernah diubah dari payload webhook saja: alur ``core.payment_service``
+    memverifikasi ulang ke API Pakasir dan mencocokkan nominal server-side.
+
+    Tidak ada nomor kartu/kredensial pelanggan yang disimpan di sini.
+    """
+
+    class Provider(models.TextChoices):
+        PAKASIR = 'pakasir', _('Pakasir')
+
+    class Kind(models.TextChoices):
+        BUS = 'bus', _('Tiket bus')
+        RENTAL = 'rental', _('Sewa mobil')
+
+    class Status(models.TextChoices):
+        PENDING = 'PENDING', _('Menunggu pembayaran')
+        COMPLETED = 'COMPLETED', _('Lunas')
+        CANCELED = 'CANCELED', _('Dibatalkan')
+        EXPIRED = 'EXPIRED', _('Kedaluwarsa')
+        FAILED = 'FAILED', _('Gagal dibuat')
+
+    provider = models.CharField(
+        _('penyedia'), max_length=20, choices=Provider.choices,
+        default=Provider.PAKASIR, db_index=True)
+    order_id = models.CharField(
+        _('order id'), max_length=64, unique=True,
+        help_text=_('ID unik yang dikirim ke gateway; tidak pernah dari input pengguna.'))
+    kind = models.CharField(_('jenis'), max_length=10, choices=Kind.choices)
+    booking_code = models.CharField(_('kode booking'), max_length=16, db_index=True)
+    amount = models.PositiveBigIntegerField(_('nominal (IDR)'))
+    fee = models.PositiveBigIntegerField(_('biaya gateway'), default=0)
+    total_payment = models.PositiveBigIntegerField(_('total dibayar'), default=0)
+    txn_id = models.CharField(_('id transaksi gateway'), max_length=64, blank=True, db_index=True)
+    payment_url = models.URLField(_('link pembayaran'), max_length=500, blank=True)
+    status = models.CharField(
+        _('status'), max_length=12, choices=Status.choices,
+        default=Status.PENDING, db_index=True)
+    is_sandbox = models.BooleanField(_('mode sandbox'), default=False)
+    needs_review = models.BooleanField(
+        _('perlu tinjauan admin'), default=False,
+        help_text=_('Payment masuk tetapi tidak dapat dicocokkan otomatis dengan booking.'))
+    expires_at = models.DateTimeField(_('kedaluwarsa'), null=True, blank=True)
+    paid_at = models.DateTimeField(_('dibayar pada'), null=True, blank=True)
+    last_event = models.JSONField(_('event terakhir'), default=dict, blank=True)
+    created_at = models.DateTimeField(_('dibuat'), auto_now_add=True, db_index=True)
+    updated_at = models.DateTimeField(_('diperbarui'), auto_now=True)
+
+    class Meta:
+        verbose_name = _('transaksi pembayaran')
+        verbose_name_plural = _('transaksi pembayaran')
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['kind', 'booking_code'], name='pay_kind_code_ix'),
+            models.Index(fields=['status', 'expires_at'], name='pay_status_exp_ix'),
+        ]
+
+    @property
+    def is_pending_valid(self) -> bool:
+        from django.utils import timezone
+        return (
+            self.status == self.Status.PENDING
+            and (self.expires_at is None or self.expires_at > timezone.now())
+        )
+
+    def __str__(self):
+        return f'{self.order_id} · {self.get_status_display()}'
+
+
+class AuditLog(models.Model):
+    """Jejak audit keamanan — hanya superuser yang boleh membacanya.
+
+    Data sensitif (password, token, email, telepon, nama, URL bukti bayar)
+    TIDAK disimpan di sini. Kode booking disamarkan oleh ``core.audit``;
+    metadata hanya berisi field operasional yang aman. Retensi default 180
+    hari (``AUDIT_RETENTION_DAYS``).
+    """
+
+    class Action(models.TextChoices):
+        LOGIN_SUCCESS = 'LOGIN_SUCCESS', _('Login berhasil')
+        LOGIN_FAILED = 'LOGIN_FAILED', _('Login gagal')
+        LOGOUT = 'LOGOUT', _('Logout')
+        BOOKING_CREATED = 'BOOKING_CREATED', _('Booking dibuat')
+        PROOF_UPLOADED = 'PROOF_UPLOADED', _('Bukti bayar diunggah')
+        PAYMENT_CONFIRMED = 'PAYMENT_CONFIRMED', _('Pembayaran dikonfirmasi')
+        PAYMENT_CANCELLED = 'PAYMENT_CANCELLED', _('Booking dibatalkan')
+        PAYMENT_LINK_CREATED = 'PAYMENT_LINK_CREATED', _('Link bayar dibuat')
+        PAYMENT_RECEIVED = 'PAYMENT_RECEIVED', _('Pembayaran diterima gateway')
+        PAYMENT_UNMATCHED = 'PAYMENT_UNMATCHED', _('Pembayaran perlu tinjauan')
+        EXPORT = 'EXPORT', _('Ekspor data admin')
+        RATE_LIMITED = 'RATE_LIMITED', _('Rate limit terlampaui')
+        ADMIN_IP_DENIED = 'ADMIN_IP_DENIED', _('Akses admin ditolak (IP)')
+        WEBHOOK_REJECTED = 'WEBHOOK_REJECTED', _('Webhook ditolak')
+        SECURITY_EVENT = 'SECURITY_EVENT', _('Peristiwa keamanan lain')
+
+    created_at = models.DateTimeField(_('waktu'), auto_now_add=True, db_index=True)
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL, verbose_name=_('pelaku'), null=True, blank=True,
+        on_delete=models.SET_NULL, related_name='audit_events')
+    action = models.CharField(
+        _('aksi'), max_length=32, choices=Action.choices, db_index=True)
+    success = models.BooleanField(_('berhasil'), default=True)
+    target = models.CharField(_('target (disamarkan)'), max_length=120, blank=True)
+    ip = models.GenericIPAddressField(_('IP'), null=True, blank=True)
+    user_agent = models.CharField(_('user agent'), max_length=255, blank=True)
+    request_id = models.CharField(_('request id'), max_length=64, blank=True)
+    metadata = models.JSONField(_('metadata aman'), default=dict, blank=True)
+
+    class Meta:
+        verbose_name = _('log audit')
+        verbose_name_plural = _('log audit')
+        ordering = ('-created_at',)
+        indexes = [
+            models.Index(fields=['action', 'created_at'], name='audit_action_time_ix'),
+            models.Index(fields=['ip', 'created_at'], name='audit_ip_time_ix'),
+        ]
+
+    def __str__(self):
+        return f'{self.created_at:%Y-%m-%d %H:%M} {self.action} {self.target}'

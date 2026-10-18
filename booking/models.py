@@ -12,7 +12,7 @@ ALPHABET = string.ascii_uppercase + string.digits  # tanpa simbol
 AMBIGUOUS = set('O0I1')  # dihilangkan dari kode booking agar tidak tertukar
 
 
-def generate_code(prefix: str, length: int = 6) -> str:
+def generate_code(prefix: str, length: int = 8) -> str:
     chars = [c for c in ALPHABET if c not in AMBIGUOUS]
     body = ''.join(secrets.choice(chars) for _ in range(length))
     return f'{prefix}-{body}'

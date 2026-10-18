@@ -140,6 +140,7 @@
     <!-- Panel pembayaran -->
     <div class="col-lg-5">
       {% if booking.status == 'PENDING' %}
+        {% include 'includes/pakasir_payment.html' %}
         {% include 'includes/payment_methods.html' with amount=booking.total_price code=booking.code deadline=booking.payment_deadline %}
       {% else %}
         <div class="card border-0 shadow-sm rounded-4">

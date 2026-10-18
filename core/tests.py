@@ -68,7 +68,10 @@ class CompressOfflineManifestCheckTest(TestCase):
         from unittest.mock import patch
         from django.test import override_settings
         from core.checks import compress_offline_manifest
-        with override_settings(DEBUG=False, COMPRESS_OFFLINE=True), \
+        # RUNNING_TESTS=False: meniru proses `manage.py check` sungguhan
+        # (saat test runner, check ini sengaja dilewati).
+        with override_settings(DEBUG=False, COMPRESS_OFFLINE=True,
+                               RUNNING_TESTS=False), \
                 patch('compressor.storage.default_offline_manifest_storage') as st:
             st.exists.return_value = False
             errors = compress_offline_manifest(None)
@@ -80,7 +83,8 @@ class CompressOfflineManifestCheckTest(TestCase):
         from unittest.mock import patch
         from django.test import override_settings
         from core.checks import compress_offline_manifest
-        with override_settings(DEBUG=False, COMPRESS_OFFLINE=True), \
+        with override_settings(DEBUG=False, COMPRESS_OFFLINE=True,
+                               RUNNING_TESTS=False), \
                 patch('compressor.storage.default_offline_manifest_storage') as st:
             st.exists.return_value = True
             self.assertEqual(compress_offline_manifest(None), [])
@@ -299,7 +303,7 @@ class URLNormalizationTest(TestCase):
         self.assertEqual(r['Location'], '/tentang/?utm_source=ig')  # query utuh
 
     def test_kode_booking_kapital_tidak_diredirect(self):
-        # path resolve (kode NT-XXXXXX memang kapital) -> lewat ke view -> 404
+        # path resolve (kode NT-XXXXXXXX memang kapital) -> lewat ke view -> 404
         r = self.client.get('/bus/booking/NT-ABC123/')
         self.assertEqual(r.status_code, 404)
         self.assertNotIn('Location', r)

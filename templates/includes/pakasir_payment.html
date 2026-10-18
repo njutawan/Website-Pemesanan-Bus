@@ -1,0 +1,65 @@
+{% load i18n booking_extras %}
+{% if pakasir_enabled and booking.status == 'PENDING' and not booking.is_payment_overdue %}
+<div class="card border-0 shadow-sm rounded-4 mb-4">
+  <div class="card-body p-4">
+    <h5 class="fw-bold mb-1">
+      <i class="fa-solid fa-qrcode text-primary me-2"></i>{% trans 'QRIS Online (otomatis)' %}
+    </h5>
+    <p class="small text-muted mb-3">
+      {% trans 'Bayar dengan GoPay, OVO, DANA, atau m-banking apa pun. Status pembayaran terverifikasi otomatis.' %}
+    </p>
+
+    {% if pakasir_txn and pakasir_txn.status == 'COMPLETED' %}
+      <div class="alert alert-success small mb-0">
+        <i class="fa-solid fa-circle-check me-1"></i>
+        {% if pakasir_txn.needs_review %}
+          {% trans 'Pembayaran diterima, tetapi perlu ditinjau admin. Tim kami akan menghubungi Anda melalui WhatsApp.' %}
+        {% else %}
+          {% trans 'Pembayaran sudah diterima gateway. Halaman ini akan diperbarui otomatis; jika status belum berubah, muat ulang.' %}
+        {% endif %}
+      </div>
+
+    {% elif pakasir_txn and pakasir_txn.status == 'PENDING' and pakasir_payment_link %}
+      <div class="total-box mb-3 small">
+        <div class="d-flex justify-content-between">
+          <span class="text-muted">{% trans 'Nominal' %}</span>
+          <span class="fw-bold">{{ booking.total_price|to_idr }}</span>
+        </div>
+        {% if pakasir_txn.expires_at %}
+        <div class="d-flex justify-content-between mt-1">
+          <span class="text-muted">{% trans 'Link berlaku sampai' %}</span>
+          <span class="fw-semibold">{{ pakasir_txn.expires_at|date:'d M Y — H:i' }} WIB</span>
+        </div>
+        {% endif %}
+      </div>
+      <a class="btn btn-accent w-100 mb-2" href="{{ pakasir_payment_link }}"
+         rel="noopener noreferrer">
+        <i class="fa-solid fa-arrow-up-right-from-square me-2"></i>{% trans 'Lanjutkan Pembayaran QRIS' %}
+      </a>
+      <form method="post" action="{% url 'payment_status' payment_kind booking.code %}">
+        {% csrf_token %}
+        <button class="btn btn-outline-primary w-100 btn-sm" type="submit">
+          <i class="fa-solid fa-rotate me-2"></i>{% trans 'Saya sudah bayar — cek status' %}
+        </button>
+      </form>
+
+    {% else %}
+      <form method="post" action="{% url 'payment_create' payment_kind booking.code %}">
+        {% csrf_token %}
+        <button class="btn btn-accent w-100" type="submit">
+          <i class="fa-solid fa-bolt me-2"></i>{% trans 'Bayar QRIS Online' %}
+        </button>
+      </form>
+      <p class="small text-muted mt-2 mb-0">
+        {% trans 'Anda akan diarahkan ke halaman pembayaran resmi Pakasir.' %}
+      </p>
+    {% endif %}
+
+    <hr class="my-3">
+    <p class="small text-muted mb-0">
+      <i class="fa-solid fa-shield-halved me-1"></i>
+      {% trans 'Diproses oleh Pakasir. Nominal dihitung di server dan diverifikasi ulang sebelum booking dikonfirmasi.' %}
+    </p>
+  </div>
+</div>
+{% endif %}

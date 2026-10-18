@@ -30,8 +30,13 @@ from booking.models import (
     Booking, BookingSeat, City, Route, Schedule,
     taken_seat_counts, taken_seat_ids,
 )
+from core import payment_service
+from core.audit import log_event
 from core.forms import PaymentProofForm
 from core.private_media import grant_private_media_access
+from core.validators import (
+    clean_public_code, clean_seat_labels, validate_travel_date,
+)
 
 
 def cached_route_catalog():
@@ -120,18 +125,19 @@ class SeatSelectionView(TemplateView):
 
         try:
             travel_date = date_cls.fromisoformat(request.GET.get('date') or '')
-        except ValueError:
+            validate_travel_date(travel_date)
+        except (ValueError, TypeError):
             messages.error(request, _('Tanggal perjalanan tidak valid.'))
             return redirect('booking:search')
-        if travel_date < timezone.localdate():
-            messages.error(request, _('Tanggal perjalanan tidak boleh di masa lalu.'))
+        except ValidationError as exc:
+            messages.error(request, ''.join(exc.messages))
             return redirect('booking:search')
 
         try:
             passengers = min(
                 max(int(request.GET.get('passengers', 1)), 1),
                 settings.MAX_SEATS_PER_BOOKING)
-        except ValueError:
+        except (ValueError, TypeError):
             passengers = 1
 
         taken = taken_seat_ids(schedule, travel_date)
@@ -158,19 +164,17 @@ class CreateBookingView(View):
         schedule = get_object_or_404(
             Schedule.objects.select_related('bus', 'route'), pk=schedule_id, is_active=True)
         raw_date = request.GET.get('date') or request.POST.get('date') or ''
+        if len(str(raw_date)) > 20:
+            raise ValidationError(_('Tanggal perjalanan tidak valid.'))
         try:
             travel_date = date_cls.fromisoformat(raw_date)
-        except ValueError:
+        except (ValueError, TypeError):
             raise ValidationError(_('Tanggal perjalanan tidak valid.'))
-        if travel_date < timezone.localdate():
-            raise ValidationError(_('Tanggal perjalanan tidak boleh di masa lalu.'))
+        validate_travel_date(travel_date)
 
         raw_seats = request.GET.get('seats') or request.POST.get('seats') or ''
-        labels = [s.strip().upper() for s in raw_seats.split(',') if s.strip()]
-        max_seats = settings.MAX_SEATS_PER_BOOKING
-        if not labels or len(labels) > max_seats:
-            raise ValidationError(
-                _('Pilih minimal 1 kursi (maksimal %(max)s).') % {'max': max_seats})
+        labels = clean_seat_labels(
+            raw_seats, max_seats=settings.MAX_SEATS_PER_BOOKING)
         seat_objs = list(schedule.bus.seats.filter(label__in=labels))
         if len(seat_objs) != len(labels):
             raise ValidationError(_('Ada kursi yang tidak ditemukan pada bus ini.'))
@@ -235,6 +239,13 @@ class CreateBookingView(View):
             BookingSeat.objects.bulk_create(
                 [BookingSeat(booking=booking, seat=s) for s in seat_objs])
 
+        log_event(
+            'BOOKING_CREATED', request=request, target=booking.code,
+            metadata={
+                'schedule_id': locked.pk,
+                'travel_date': travel_date.isoformat(),
+                'seats': len(seat_objs),
+            })
         messages.success(
             request, _('Booking berhasil dibuat! Selesaikan pembayaran sebelum batas waktu.'))
         detail_url = reverse('booking:detail', kwargs={'code': booking.code})
@@ -258,6 +269,10 @@ class BookingDetailView(TemplateView):
     template_name = 'booking/detail.html'
 
     def get(self, request, code):
+        try:
+            code = clean_public_code(code)
+        except ValidationError:
+            raise Http404('Booking tidak ditemukan.')
         booking = get_object_or_404(
             Booking.objects.select_related(
                 'schedule__bus', 'schedule__route__origin',
@@ -272,6 +287,9 @@ class BookingDetailView(TemplateView):
             'seats': [i.seat for i in booking.seat_items.select_related('seat')],
             'proof_form': PaymentProofForm(initial={'payment_method': 'bca'}),
             'is_new': request.GET.get('baru') == '1',
+            'payment_kind': 'bus',
+            **payment_service.payment_page_context(
+                'bus', booking.code, request, booking),
             'step': 4,
         })
 
@@ -280,6 +298,10 @@ class UploadProofView(View):
     """Pelanggan mengirim bukti transfer/QRIS → admin memverifikasi di panel admin."""
 
     def post(self, request, code):
+        try:
+            code = clean_public_code(code)
+        except ValidationError:
+            raise Http404('Booking tidak ditemukan.')
         booking = get_object_or_404(Booking, code__iexact=code)
         if booking.status != Booking.Status.PENDING:
             messages.error(request, _('Booking ini sudah tidak bisa menerima unggahan bukti.'))
@@ -294,6 +316,10 @@ class UploadProofView(View):
             booking.payment_proof = form.cleaned_data['payment_proof']
             booking.save(update_fields=['payment_method', 'payment_proof', 'updated_at'])
             grant_private_media_access(request, booking.payment_proof.name)
+            log_event(
+                'PROOF_UPLOADED', request=request, target=booking.code,
+                metadata={'channel': 'bus',
+                          'method': booking.payment_method})
             messages.success(
                 request,
                 _('Bukti pembayaran terkirim. Tim kami verifikasi maksimal 15 menit.'))
@@ -367,18 +393,25 @@ class CheckBookingView(FormView):
     template_name = 'booking/check.html'
 
     def get(self, request):
+        code = (request.GET.get('kode') or '').strip()[:20]
         return render(request, self.template_name, {
-            'code': request.GET.get('kode', ''),
+            'code': code,
             'schema_breadcrumbs': breadcrumb_schema(request, breadcrumb_items(
                 HOME_CRUMB, (_('Cek Booking'), None))),
         })
 
     def post(self, request):
-        code = (request.POST.get('code') or '').strip()
-        if code and Booking.objects.filter(code__iexact=code).exists():
+        raw_code = (request.POST.get('code') or '').strip()
+        try:
+            code = clean_public_code(raw_code)
+        except ValidationError:
+            return render(request, self.template_name,
+                          {'code': raw_code[:20], 'not_found': True},
+                          status=404 if raw_code else 200)
+        if Booking.objects.filter(code__iexact=code).exists():
             return redirect('booking:detail', code=code)
         return render(request, self.template_name,
-                      {'code': code, 'not_found': bool(code)}, status=404 if code else 200)
+                      {'code': code, 'not_found': True}, status=404)
 
 
 class RouteDetailView(TemplateView):

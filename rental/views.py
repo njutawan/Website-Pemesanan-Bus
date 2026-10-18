@@ -2,6 +2,8 @@
 from urllib.parse import urlencode
 
 from django.contrib import messages
+from django.core.exceptions import ValidationError
+from django.http import Http404
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.conf import settings
@@ -12,8 +14,11 @@ from django.utils.translation import gettext as _
 from django.views.decorators.cache import never_cache
 from django.views.generic import TemplateView, View
 
+from core.audit import log_event
+from core import payment_service
 from core.forms import PaymentProofForm
 from core.private_media import grant_private_media_access
+from core.validators import clean_public_code
 from core.seo import HOME_CRUMB, breadcrumb_items, breadcrumb_schema
 from rental.forms import RentalForm
 from rental.models import RentalBooking, Vehicle, has_overlapping_rental
@@ -131,6 +136,14 @@ class CreateRentalView(View):
                 total_price=self.calc_total(
                     locked, cleaned['days'], cleaned['with_driver']),
             )
+        log_event(
+            'BOOKING_CREATED', request=request, target=booking.code,
+            metadata={
+                'channel': 'rental',
+                'vehicle_id': locked.pk,
+                'days': cleaned['days'],
+                'with_driver': bool(cleaned['with_driver']),
+            })
         messages.success(
             request, _('Pesanan sewa berhasil dibuat! Selesaikan pembayaran sebelum batas waktu.'))
         detail_url = reverse(
@@ -144,6 +157,10 @@ class RentalDetailView(TemplateView):
     template_name = 'rental/detail_booking.html'
 
     def get(self, request, code):
+        try:
+            code = clean_public_code(code)
+        except ValidationError:
+            raise Http404('Pesanan tidak ditemukan.')
         booking = get_object_or_404(
             RentalBooking.objects.select_related('vehicle'), code__iexact=code)
         # Kode sewa adalah kredensial pemilik halaman ini: izinkan sesi ini
@@ -153,6 +170,9 @@ class RentalDetailView(TemplateView):
         return render(request, self.template_name, {
             'booking': booking,
             'proof_form': PaymentProofForm(initial={'payment_method': 'bca'}),
+            'payment_kind': 'rental',
+            **payment_service.payment_page_context(
+                'rental', booking.code, request, booking),
             'is_new': request.GET.get('baru') == '1',
         })
 
@@ -161,6 +181,10 @@ class UploadRentalProofView(View):
     """Upload bukti transfer/QRIS untuk sewa (diverifikasi admin)."""
 
     def post(self, request, code):
+        try:
+            code = clean_public_code(code)
+        except ValidationError:
+            raise Http404('Pesanan tidak ditemukan.')
         booking = get_object_or_404(RentalBooking, code__iexact=code)
         if booking.status != RentalBooking.Status.PENDING:
             messages.error(request, _('Pesanan ini sudah tidak bisa menerima unggahan bukti.'))
@@ -175,6 +199,10 @@ class UploadRentalProofView(View):
             booking.payment_proof = form.cleaned_data['payment_proof']
             booking.save(update_fields=['payment_method', 'payment_proof', 'updated_at'])
             grant_private_media_access(request, booking.payment_proof.name)
+            log_event(
+                'PROOF_UPLOADED', request=request, target=booking.code,
+                metadata={'channel': 'rental',
+                          'method': booking.payment_method})
             messages.success(
                 request,
                 _('Bukti pembayaran terkirim. Tim kami verifikasi maksimal 15 menit.'))

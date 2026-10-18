@@ -4,12 +4,14 @@ from django.contrib.sitemaps.views import sitemap
 from django.views.decorators.cache import cache_page
 from django.views.i18n import JavaScriptCatalog
 
-from core import views, sitemaps
+from core import payment_views, views, sitemaps
 from core.admin import admin_site
 from core.private_media import serve_media
 
 SITEMAPS = sitemaps.SITEMAPS
 
+handler400 = 'core.views.error_400'
+handler403 = 'core.views.error_403'
 handler404 = 'core.views.error_404'
 handler500 = 'core.views.error_500'
 
@@ -27,6 +29,18 @@ urlpatterns += i18n_patterns(
     path('rental/', include('rental.urls')),
     prefix_default_language=False,
 )
+
+urlpatterns += [
+    # Pembayaran QRIS Pakasir. Webhook di luar i18n_patterns agar URL stabil
+    # dan tidak berprefiks bahasa; endpoint lain juga memakai kode booking
+    # sebagai kredensial (sama seperti halaman detail).
+    re_path(r'^pembayaran/pakasir/webhook/?$', payment_views.pakasir_webhook,
+            name='pakasir_webhook'),
+    re_path(r'^pembayaran/(?P<kind>bus|rental)/(?P<code>[A-Za-z0-9-]{1,16})/$',
+            payment_views.create_payment, name='payment_create'),
+    re_path(r'^pembayaran/(?P<kind>bus|rental)/(?P<code>[A-Za-z0-9-]{1,16})/status/$',
+            payment_views.payment_status, name='payment_status'),
+]
 
 urlpatterns += [
     # Sitemap publik & identik untuk semua — aman di-cache 30 menit (TTFB crawler)

@@ -114,5 +114,19 @@ def error_404(request, exception=None):
 
 
 def error_500(request):
-    """Halaman 500 branded (hanya aktif saat DEBUG=False)."""
+    """Halaman 500 branded (hanya aktif saat DEBUG=False).
+
+    Sengaja TIDAK memuat detail exception, settings, atau traceback: pesan
+    error internal hanya masuk log (sudah disaring RedactSecretsFilter).
+    """
     return render(request, '500.html', status=500)
+
+
+def error_400(request, exception=None):
+    """Permintaan tidak valid (Host header asing, body rusak, dsb.)."""
+    return render(request, '400.html', status=400)
+
+
+def error_403(request, exception=None):
+    """Akses ditolak — tanpa membocorkan objek/aturan yang gagal."""
+    return render(request, '403.html', status=403)
