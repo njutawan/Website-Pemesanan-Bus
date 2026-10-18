@@ -47,6 +47,18 @@ dwibahasa **Indonesia / English**.
 - Filter **bukti pembayaran** (sudah/belum unggah) + kolom status bukti
 - Branding admin kustom (header navy/oranye, ikon Font Awesome)
 
+### ⚡ Optimasi Core Web Vitals
+- **LCP**: gambar hero WebP dua ukuran (`srcset` 900w/1600w) + `fetchpriority="high"`
+  + `<link rel="preload" imagesrcset>`; gambar WebP untuk semua foto (hero 222→92KB,
+  QRIS 123→7KB, mobil ±120→20-30KB); CSS non-kritis (Font Awesome, Google Fonts)
+  dimuat async; preconnect ke CDN
+- **CLS**: atribut `width`/`height` di semua `<img>`, `aspect-ratio` pembungkus
+  gambar mobil, angka countdown `tabular-nums`
+- **INP**: semua JavaScript `defer` (Bootstrap bundle + skrip kustom),
+  `content-visibility: auto` untuk section di bawah lipatan
+- **Server**: WhiteNoise (gzip + cache header panjang static), Nginx
+  `gzip_static` + `open_file_cache` (`deploy/nginx.conf`)
+
 ---
 
 ## 🚀 Menjalankan Proyek
@@ -163,7 +175,7 @@ Konfigurasi Nginx reverse proxy lengkap (static/media/cache/gzip/HTTPS) tersedia
 | Bahasa | PHP *(tidak dipakai — final: Python)*, Python 3.11+ |
 | Framework | Django 5.2 |
 | UI | Bootstrap 5.3, Font Awesome 6.7, Plus Jakarta Sans |
-| Web server | Nginx (reverse proxy) + Gunicorn |
+| Web server | Nginx (reverse proxy) + Gunicorn + WhiteNoise |
 | Database | SQLite (dev) → PostgreSQL (produksi) |
 | SEO | Open Graph, Twitter Card, sitemap.xml, robots.txt, hreflang |
 | i18n | Django LocaleMiddleware + katalog gettext (ID/EN) |

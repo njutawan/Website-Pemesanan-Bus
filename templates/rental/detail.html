@@ -25,7 +25,11 @@
 <div class="container py-5">
   <div class="row g-4">
     <div class="col-lg-7">
-      <img src="{{ vehicle.image.url }}" class="img-fluid rounded-4 shadow-sm w-100" style="max-height:430px;object-fit:cover" alt="{{ vehicle.name }}">
+      <picture>
+        <source type="image/webp" srcset="{{ vehicle.image.url|webp_url }}">
+        <img src="{{ vehicle.image.url }}" class="img-fluid rounded-4 shadow-sm w-100 vehicle-hero"
+             width="900" height="491" fetchpriority="high" decoding="async" alt="{{ vehicle.name }}">
+      </picture>
       <div class="row g-3 mt-1 spec-grid">
         {% for icon, label in vehicle.spec_list %}
         <div class="col-6 col-md-3">
@@ -143,7 +147,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/rental-form.js' %}"
+<script src="{% static 'js/rental-form.js' %}" defer
         data-price="{{ vehicle.price_per_day }}"
         data-driver="{{ vehicle.driver_fee_per_day }}"></script>
 {% endblock %}

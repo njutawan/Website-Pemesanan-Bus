@@ -26,7 +26,12 @@
         </div>
       </div>
       <div class="col-lg-6">
-        <img src="{% static 'img/fleet-bus.jpg' %}" class="img-fluid rounded-4 shadow" alt="{% trans 'Armada Nusantara Trans' %}" loading="lazy">
+        <picture>
+          <source type="image/webp" srcset="{% static 'img/fleet-bus.webp' %}">
+          <img src="{% static 'img/fleet-bus.jpg' %}" class="img-fluid rounded-4 shadow"
+               width="1200" height="655" loading="lazy" decoding="async"
+               alt="{% trans 'Armada Nusantara Trans' %}">
+        </picture>
       </div>
     </div>
   </div>

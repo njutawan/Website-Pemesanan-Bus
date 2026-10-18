@@ -32,7 +32,11 @@
         <div class="accordion-body">
           {% if key == 'qris' %}
             <div class="text-center">
-              <img src="{% static 'img/qris-placeholder.png' %}" alt="QRIS" class="img-fluid qris-img mb-2">
+              <picture>
+                <source type="image/webp" srcset="{% static 'img/qris-placeholder.webp' %}">
+                <img src="{% static 'img/qris-placeholder.png' %}" alt="QRIS" width="560" height="560"
+                     class="img-fluid qris-img mb-2" loading="lazy" decoding="async">
+              </picture>
               <p class="small text-muted mb-1">{% blocktrans %}Scan QRIS dengan aplikasi e-wallet atau m-banking apa pun, lalu masukkan nilai tepat sesuai total.{% endblocktrans %}</p>
             </div>
           {% else %}

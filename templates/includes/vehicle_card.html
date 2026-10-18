@@ -2,7 +2,11 @@
 {# Kartu mobil rental — variabel: vehicle #}
 <div class="card vehicle-card h-100 shadow-sm">
   <div class="vehicle-img-wrap">
-    <img src="{{ vehicle.image.url }}" class="card-img-top" alt="{{ vehicle.name }}" loading="lazy">
+    <picture>
+      <source type="image/webp" srcset="{{ vehicle.image.url|webp_url }}">
+      <img src="{{ vehicle.image.url }}" class="card-img-top" width="900" height="491"
+           alt="{{ vehicle.name }}" loading="lazy" decoding="async">
+    </picture>
     <span class="badge class-badge position-absolute top-0 start-0 m-3">
       {{ vehicle.get_category_display }}
     </span>

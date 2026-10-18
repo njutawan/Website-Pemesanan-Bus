@@ -50,3 +50,14 @@ STATUS_CLASS = {
 def status_class(status):
     """'PENDING' -> 'warn' — kelas warna badge status untuk dasbor admin."""
     return STATUS_CLASS.get(status, 'muted')
+
+
+@register.filter
+def webp_url(url):
+    """/media/a.jpg -> /media/a.webp — URL varian WebP dari gambar media."""
+    if not url or not isinstance(url, str):
+        return url
+    head, sep, ext = url.rpartition('.')
+    if len(ext) > 5 or not head:
+        return url
+    return f'{head}.webp'

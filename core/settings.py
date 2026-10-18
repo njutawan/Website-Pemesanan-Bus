@@ -62,6 +62,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     # Deteksi bahasa (/id/, /en/) — wajib sebelum CommonMiddleware
     'django.middleware.locale.LocaleMiddleware',
@@ -138,6 +139,18 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# =============================================================================
+# Static files: WhiteNoise — kompresi gzip + header cache panjang untuk produksi
+# (jalankan `python manage.py collectstatic` saat deploy; pratinjau DEBUG tak
+# terpengaruh karena staticfiles menyajikan langsung dari STATICFILES_DIRS)
+# =============================================================================
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+    },
+}
 
 # =============================================================================
 # Konfigurasi bisnis (di-expose ke template via core.context_processors)
