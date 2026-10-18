@@ -61,3 +61,13 @@ def webp_url(url):
     if len(ext) > 5 or not head:
         return url
     return f'{head}.webp'
+
+
+@register.simple_tag
+def nav_active(request, *prefixes):
+    """{% nav_active request 'booking:' %} -> 'active' bila halaman cocok."""
+    view = getattr(getattr(request, 'resolver_match', None), 'view_name', '') or ''
+    for p in prefixes:
+        if view == p or view.startswith(p):
+            return 'active'
+    return ''

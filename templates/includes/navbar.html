@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n booking_extras %}
 <nav class="navbar navbar-expand-lg nt-navbar sticky-top">
   <div class="container">
     <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home' %}">
@@ -14,12 +14,30 @@
 
     <div class="collapse navbar-collapse" id="mainNav">
       <ul class="navbar-nav mx-auto gap-lg-2">
-        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}"><i class="fa-solid fa-house me-1 d-lg-none"></i>{% trans 'Beranda' %}</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'booking:search' %}"><i class="fa-solid fa-ticket me-1 d-lg-none"></i>{% trans 'Tiket Bus' %}</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'rental:index' %}"><i class="fa-solid fa-car me-1 d-lg-none"></i>{% trans 'Rental Mobil' %}</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'booking:check' %}"><i class="fa-solid fa-magnifying-glass me-1 d-lg-none"></i>{% trans 'Cek Booking' %}</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'about' %}"><i class="fa-solid fa-circle-info me-1 d-lg-none"></i>{% trans 'Tentang' %}</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}"><i class="fa-solid fa-headset me-1 d-lg-none"></i>{% trans 'Kontak' %}</a></li>
+        <li class="nav-item">
+          <a class="nav-link {% nav_active request 'home' 'about' 'contact' %}" href="{% url 'home' %}">
+            <i class="fa-solid fa-house me-1 d-lg-none"></i>{% trans 'Beranda' %}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% nav_active request 'booking:' %}" href="{% url 'booking:search' %}">
+            <i class="fa-solid fa-ticket me-1 d-lg-none"></i>{% trans 'Tiket Bus' %}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% nav_active request 'rental:' %}" href="{% url 'rental:index' %}">
+            <i class="fa-solid fa-car me-1 d-lg-none"></i>{% trans 'Rental Mobil' %}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% nav_active request 'booking:check' %}" href="{% url 'booking:check' %}">
+            <i class="fa-solid fa-magnifying-glass me-1 d-lg-none"></i>{% trans 'Cek Booking' %}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% nav_active request 'about' %}" href="{% url 'about' %}">
+            <i class="fa-solid fa-circle-info me-1 d-lg-none"></i>{% trans 'Tentang' %}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% nav_active request 'contact' %}" href="{% url 'contact' %}">
+            <i class="fa-solid fa-headset me-1 d-lg-none"></i>{% trans 'Kontak' %}</a>
+        </li>
       </ul>
 
       <!-- Pengalih bahasa (ID default / EN) -->
