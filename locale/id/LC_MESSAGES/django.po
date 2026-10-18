@@ -40,6 +40,9 @@ msgstr "AC"
 msgid "Ada bukti"
 msgstr "Ada bukti"
 
+msgid "Ada gangguan di sisi kami"
+msgstr "Ada gangguan di sisi kami"
+
 msgid "Ada kursi yang tidak ditemukan pada bus ini."
 msgstr "Ada kursi yang tidak ditemukan pada bus ini."
 
@@ -249,6 +252,9 @@ msgstr "Cari Bus"
 msgid "Cari Jadwal"
 msgstr "Cari Jadwal"
 
+msgid "Cari Jadwal Bus"
+msgstr "Cari Jadwal Bus"
+
 msgid "Cari jadwal"
 msgstr "Cari jadwal"
 
@@ -365,6 +371,16 @@ msgstr ""
 msgid "Formulir tidak bisa dikirim karena masalah keamanan sesi"
 msgstr "Formulir tidak bisa dikirim karena masalah keamanan sesi"
 
+msgid "Halaman tidak ditemukan"
+msgstr "Halaman tidak ditemukan"
+
+msgid ""
+"Halaman yang Anda cari tidak ada atau sudah dipindah. Jangan khawatir — "
+"perjalanan Anda tetap bisa dimulai dari sini:"
+msgstr ""
+"Halaman yang Anda cari tidak ada atau sudah dipindah. Jangan khawatir — "
+"perjalanan Anda tetap bisa dimulai dari sini:"
+
 msgid "Hampir selesai! Periksa ringkasan & lengkapi kontakmu."
 msgstr "Hampir selesai! Periksa ringkasan & lengkapi kontakmu."
 
@@ -462,6 +478,9 @@ msgstr "Kembali"
 msgid "Kembali & Ulangi"
 msgstr "Kembali & Ulangi"
 
+msgid "Kembali ke detail mobil"
+msgstr "Kembali ke detail mobil"
+
 msgid "Kirim Bukti Pembayaran"
 msgstr "Kirim Bukti Pembayaran"
 
@@ -552,6 +571,13 @@ msgstr "Langkah pemesanan"
 msgid "Lanjut Isi Data"
 msgstr "Lanjut Isi Data"
 
+msgid ""
+"Lengkapi data sewa %(name)s mulai %(price)s/hari — pilih tanggal, lokasi "
+"ambil, dan opsi sopir."
+msgstr ""
+"Lengkapi data sewa %(name)s mulai %(price)s/hari — pilih tanggal, lokasi "
+"ambil, dan opsi sopir."
+
 msgid "Lepas kunci"
 msgstr "Lepas kunci"
 
@@ -582,6 +608,13 @@ msgid ""
 "Maaf, beberapa kursi yang Anda pilih baru saja diambil. Silakan pilih ulang."
 msgstr ""
 "Maaf, beberapa kursi yang Anda pilih baru saja diambil. Silakan pilih ulang."
+
+msgid ""
+"Maaf, terjadi kesalahan tak terduga. Tim teknis kami sudah diberi tahu. "
+"Silakan coba beberapa saat lagi atau hubungi kami via WhatsApp."
+msgstr ""
+"Maaf, terjadi kesalahan tak terduga. Tim teknis kami sudah diberi tahu. "
+"Silakan coba beberapa saat lagi atau hubungi kami via WhatsApp."
 
 msgid "Maksimal sewa 30 hari. Untuk lebih, hubungi kami."
 msgstr "Maksimal sewa 30 hari. Untuk lebih, hubungi kami."
@@ -871,6 +904,9 @@ msgstr "Rute Populer"
 msgid "Rute Terpopuler — 30 Hari"
 msgstr "Rute Terpopuler — 30 Hari"
 
+msgid "Rute ini belum tersedia"
+msgstr "Rute ini belum tersedia"
+
 msgid "Rute paling dicari"
 msgstr "Rute paling dicari"
 
@@ -1054,6 +1090,9 @@ msgstr "Tercepat untuk konfirmasi & bantuan booking."
 
 msgid "Terisi"
 msgstr "Terisi"
+
+msgid "Terjadi kesalahan"
+msgstr "Terjadi kesalahan"
 
 msgid "Terkonfirmasi"
 msgstr "Terkonfirmasi"

@@ -40,6 +40,9 @@ msgstr ""
 msgid "Ada bukti"
 msgstr "With proof"
 
+msgid "Ada gangguan di sisi kami"
+msgstr "We're experiencing a hiccup"
+
 msgid "Ada kursi yang tidak ditemukan pada bus ini."
 msgstr "Some seats were not found on this bus."
 
@@ -248,6 +251,9 @@ msgstr "Search Buses"
 msgid "Cari Jadwal"
 msgstr "Find Schedule"
 
+msgid "Cari Jadwal Bus"
+msgstr "Find Bus Schedules"
+
 msgid "Cari jadwal"
 msgstr "Find a schedule"
 
@@ -365,6 +371,16 @@ msgstr ""
 msgid "Formulir tidak bisa dikirim karena masalah keamanan sesi"
 msgstr "The form could not be submitted due to a session security issue"
 
+msgid "Halaman tidak ditemukan"
+msgstr "Page not found"
+
+msgid ""
+"Halaman yang Anda cari tidak ada atau sudah dipindah. Jangan khawatir — "
+"perjalanan Anda tetap bisa dimulai dari sini:"
+msgstr ""
+"The page you're looking for doesn't exist or has moved. Don't worry — you "
+"can start your journey right here:"
+
 msgid "Hampir selesai! Periksa ringkasan & lengkapi kontakmu."
 msgstr "Almost done! Review the summary & complete your contact info."
 
@@ -460,6 +476,9 @@ msgstr "Return"
 msgid "Kembali & Ulangi"
 msgstr "Go Back & Retry"
 
+msgid "Kembali ke detail mobil"
+msgstr "Back to vehicle details"
+
 msgid "Kirim Bukti Pembayaran"
 msgstr "Submit Payment Proof"
 
@@ -549,6 +568,13 @@ msgstr "Booking steps"
 msgid "Lanjut Isi Data"
 msgstr "Continue to Details"
 
+msgid ""
+"Lengkapi data sewa %(name)s mulai %(price)s/hari — pilih tanggal, lokasi "
+"ambil, dan opsi sopir."
+msgstr ""
+"Complete your %(name)s rental from %(price)s/day — pick dates, pick-up "
+"location, and driver options."
+
 msgid "Lepas kunci"
 msgstr "Self-drive"
 
@@ -579,6 +605,13 @@ msgid ""
 "Maaf, beberapa kursi yang Anda pilih baru saja diambil. Silakan pilih ulang."
 msgstr ""
 "Sorry, some of your chosen seats were just taken. Please choose again."
+
+msgid ""
+"Maaf, terjadi kesalahan tak terduga. Tim teknis kami sudah diberi tahu. "
+"Silakan coba beberapa saat lagi atau hubungi kami via WhatsApp."
+msgstr ""
+"Sorry, an unexpected error occurred. Our technical team has been notified. "
+"Please try again shortly or reach us on WhatsApp."
 
 msgid "Maksimal sewa 30 hari. Untuk lebih, hubungi kami."
 msgstr "Maximum rental is 30 days. For longer periods, contact us."
@@ -867,6 +900,9 @@ msgstr "Popular Routes"
 msgid "Rute Terpopuler — 30 Hari"
 msgstr "Top Routes — 30 Days"
 
+msgid "Rute ini belum tersedia"
+msgstr "This route isn't available"
+
 msgid "Rute paling dicari"
 msgstr "Most searched routes"
 
@@ -1050,6 +1086,9 @@ msgstr "The fastest way to confirm & get booking assistance."
 
 msgid "Terisi"
 msgstr "Taken"
+
+msgid "Terjadi kesalahan"
+msgstr "Something went wrong"
 
 msgid "Terkonfirmasi"
 msgstr "Confirmed"

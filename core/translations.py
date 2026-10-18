@@ -560,11 +560,25 @@ TRANSLATIONS_ID = {
     'Booking %s dikonfirmasi.': 'Booking %s dikonfirmasi.',
     'Booking tidak berstatus menunggu pembayaran.': 'Booking tidak berstatus menunggu pembayaran.',
     'Pesanan sewa %s dikonfirmasi.': 'Pesanan sewa %s dikonfirmasi.',
-    'Pesanan sewa tidak berstatus menunggu pembayaran.': 'Pesanan sewa tidak berstatus menunggu pembayaran.',    'Jadwal': 'Jadwal',
+    'Pesanan sewa tidak berstatus menunggu pembayaran.': 'Pesanan sewa tidak berstatus menunggu pembayaran.',
+    'Jadwal': 'Jadwal',
     'Keberangkatan Hari Ini': 'Keberangkatan Hari Ini',
     'Nusantara Trans Admin': 'Nusantara Trans Admin',
     'Nusantara Trans — Panel Operasional': 'Nusantara Trans — Panel Operasional',
     'Status': 'Status',
+    'Halaman tidak ditemukan': 'Halaman tidak ditemukan',
+    'Rute ini belum tersedia': 'Rute ini belum tersedia',
+    'Halaman yang Anda cari tidak ada atau sudah dipindah. Jangan khawatir — perjalanan Anda tetap bisa dimulai dari sini:':
+        'Halaman yang Anda cari tidak ada atau sudah dipindah. Jangan khawatir — perjalanan Anda tetap bisa dimulai dari sini:',
+    'Cari Jadwal Bus': 'Cari Jadwal Bus',
+    'Terjadi kesalahan': 'Terjadi kesalahan',
+    'Ada gangguan di sisi kami': 'Ada gangguan di sisi kami',
+    'Maaf, terjadi kesalahan tak terduga. Tim teknis kami sudah diberi tahu. Silakan coba beberapa saat lagi atau hubungi kami via WhatsApp.':
+        'Maaf, terjadi kesalahan tak terduga. Tim teknis kami sudah diberi tahu. Silakan coba beberapa saat lagi atau hubungi kami via WhatsApp.',
+    'Kembali ke detail mobil': 'Kembali ke detail mobil',
+    'Lengkapi data sewa %(name)s mulai %(price)s/hari — pilih tanggal, lokasi ambil, dan opsi sopir.':
+        'Lengkapi data sewa %(name)s mulai %(price)s/hari — pilih tanggal, lokasi ambil, dan opsi sopir.',
+
 }
 
 
@@ -990,5 +1004,18 @@ TRANSLATIONS_EN = {
     'Nusantara Trans Admin': 'Nusantara Trans Admin',
     'Nusantara Trans — Panel Operasional': 'Nusantara Trans — Operations Panel',
     'Status': 'Status',
+    'Halaman tidak ditemukan': 'Page not found',
+    'Rute ini belum tersedia': "This route isn't available",
+    'Halaman yang Anda cari tidak ada atau sudah dipindah. Jangan khawatir — perjalanan Anda tetap bisa dimulai dari sini:':
+        "The page you're looking for doesn't exist or has moved. Don't worry — you can start your journey right here:",
+    'Cari Jadwal Bus': 'Find Bus Schedules',
+    'Terjadi kesalahan': 'Something went wrong',
+    'Ada gangguan di sisi kami': "We're experiencing a hiccup",
+    'Maaf, terjadi kesalahan tak terduga. Tim teknis kami sudah diberi tahu. Silakan coba beberapa saat lagi atau hubungi kami via WhatsApp.':
+        "Sorry, an unexpected error occurred. Our technical team has been notified. Please try again shortly or reach us on WhatsApp.",
+    'Kembali ke detail mobil': 'Back to vehicle details',
+    'Lengkapi data sewa %(name)s mulai %(price)s/hari — pilih tanggal, lokasi ambil, dan opsi sopir.':
+        "Complete your %(name)s rental from %(price)s/day — pick dates, pick-up location, and driver options.",
+
 }
 

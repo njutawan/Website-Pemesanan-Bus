@@ -47,7 +47,7 @@
       {% endif %}
     </div>
 
-    <!-- Form sewa -->
+    <!-- Harga + CTA ke halaman form sewa -->
     <div class="col-lg-5">
       <div class="card border-0 shadow-sm rounded-4 position-sticky" style="top:90px">
         <div class="card-body p-4">
@@ -64,71 +64,22 @@
             {% endif %}
           </div>
 
-          <form method="post" action="{% url 'rental:book' vehicle.slug %}" id="rentalForm" novalidate>
-            {% csrf_token %}
-            {% if form.non_field_errors %}
-            <div class="alert alert-danger small">
-              {% for e in form.non_field_errors %}{{ e }}<br>{% endfor %}
-            </div>
-            {% endif %}
-            <div class="row g-3">
-              <div class="col-6">
-                <label class="form-label small fw-semibold" for="id_pickup_date">{{ form.pickup_date.label }}</label>
-                {{ form.pickup_date }}
-                {% for e in form.pickup_date.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
-              </div>
-              <div class="col-6">
-                <label class="form-label small fw-semibold" for="id_return_date">{{ form.return_date.label }}</label>
-                {{ form.return_date }}
-                {% for e in form.return_date.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
-              </div>
-              <div class="col-12">
-                <label class="form-label small fw-semibold" for="id_pickup_location">{{ form.pickup_location.label }}</label>
-                {{ form.pickup_location }}
-                {% if form.pickup_location.help_text %}<div class="form-text">{{ form.pickup_location.help_text }}</div>{% endif %}
-                {% for e in form.pickup_location.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
-              </div>
-              <div class="col-12">
-                <div class="form-check driver-check">
-                  {{ form.with_driver }}
-                  <label class="form-check-label small fw-semibold" for="id_with_driver">{{ form.with_driver.label }}</label>
-                </div>
-              </div>
-              <div class="col-12"><hr class="my-1"></div>
-              <div class="col-12">
-                <label class="form-label small fw-semibold" for="id_contact_name">{{ form.contact_name.label }}</label>
-                {{ form.contact_name }}
-                {% for e in form.contact_name.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
-              </div>
-              <div class="col-12">
-                <label class="form-label small fw-semibold" for="id_contact_phone">{{ form.contact_phone.label }}</label>
-                {{ form.contact_phone }}
-                {% for e in form.contact_phone.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
-              </div>
-              <div class="col-12">
-                <label class="form-label small fw-semibold" for="id_contact_email">{{ form.contact_email.label }}</label>
-                {{ form.contact_email }}
-                {% for e in form.contact_email.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
-              </div>
-            </div>
+          <ul class="list-unstyled small text-muted trip-summary mb-3">
+            <li><i class="fa-solid fa-users me-2 text-primary"></i>{{ vehicle.seats }} {% trans 'kursi' %}</li>
+            <li><i class="fa-solid fa-gear me-2 text-primary"></i>{{ vehicle.get_transmission_display }}</li>
+            <li><i class="fa-solid fa-circle-check me-2 text-primary"></i>{% blocktrans with h=PAYMENT_TIMEOUT_HOURS %}Unit dipegang {{ h }} jam menunggu pembayaran.{% endblocktrans %}</li>
+          </ul>
 
-            <div class="estimate-box mt-3">
-              <div class="d-flex justify-content-between small mb-1">
-                <span class="text-muted">{% trans 'Lama sewa' %}</span><strong id="estDays">—</strong>
-              </div>
-              <div class="d-flex justify-content-between align-items-center">
-                <span class="fw-semibold">{% trans 'Estimasi total' %}</span>
-                <strong class="fs-4 text-primary" id="estTotal">{{ vehicle.price_per_day|to_idr }}</strong>
-              </div>
-            </div>
+          <a href="{% url 'rental:book' vehicle.slug %}" class="btn btn-accent btn-lg w-100">
+            <i class="fa-solid fa-key me-2"></i>{% trans 'Pesan Sekarang' %}
+          </a>
 
-            <button class="btn btn-accent btn-lg w-100 mt-3" type="submit">
-              <i class="fa-solid fa-key me-2"></i>{% trans 'Pesan Sekarang' %}
-            </button>
-            <p class="small text-muted text-center mt-3 mb-0">
-              <i class="fa-solid fa-lock me-1"></i>{% blocktrans with h=PAYMENT_TIMEOUT_HOURS %}Unit dipegang {{ h }} jam menunggu pembayaran.{% endblocktrans %}
-            </p>
-          </form>
+          <hr>
+          <p class="small text-muted mb-0">
+            <i class="fa-solid fa-circle-question text-primary me-1"></i>
+            <strong>{% trans 'Syarat sewa:' %}</strong>
+            {% blocktrans %}KTP/SIM asli, minimal 1 hari sewa, DP 50% untuk reservasi. Unit diantar dalam kota Jember gratis — luar kota hubungi CS.{% endblocktrans %}
+          </p>
         </div>
       </div>
     </div>
@@ -144,10 +95,4 @@
   </div>
   {% endif %}
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script src="{% static 'js/rental-form.js' %}" defer
-        data-price="{{ vehicle.price_per_day }}"
-        data-driver="{{ vehicle.driver_fee_per_day }}"></script>
 {% endblock %}

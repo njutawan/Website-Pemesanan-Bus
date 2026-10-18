@@ -56,3 +56,13 @@ class RobotsView(TemplateView):
 def csrf_failure(request, reason='', template_name='csrf_failure.html'):
     """Halaman ramah saat verifikasi CSRF gagal (mis. cookie diblokir iframe)."""
     return render(request, 'csrf_failure.html', status=403)
+
+
+def error_404(request, exception=None):
+    """Halaman 404 branded (status tetap 404 untuk SEO)."""
+    return render(request, '404.html', status=404)
+
+
+def error_500(request):
+    """Halaman 500 branded (hanya aktif saat DEBUG=False)."""
+    return render(request, '500.html', status=500)

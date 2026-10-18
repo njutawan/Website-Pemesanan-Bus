@@ -10,6 +10,9 @@ from core.admin import admin_site
 
 SITEMAPS = sitemaps.SITEMAPS
 
+handler404 = 'core.views.error_404'
+handler500 = 'core.views.error_500'
+
 urlpatterns = [
     path('admin/', admin_site.urls),
 ]
