@@ -108,7 +108,7 @@ main { flex: 1 0 auto; }
   border-top: 5px solid var(--nt-accent);
 }
 .search-card .form-label { margin-bottom: .3rem; }
-.search-card .form-select, .search-card .form-control { padding-block: .55rem; }
+.search-card .form-select, .search-card .form-control { padding-block: .62rem; }
 .swap-btn { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; }
 
 /* ---------- Sections ---------- */

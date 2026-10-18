@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic import TemplateView
 
+from booking.forms import SearchForm
 from booking.models import Booking, Bus, City, Route, Schedule
 from rental.models import RentalBooking, Vehicle
 
@@ -24,6 +25,7 @@ class HomeView(TemplateView):
             .order_by('origin__name', 'destination__name')
         )
         ctx.update(
+            form=SearchForm(),  # kartu pencarian di hero — wajib ada!
             popular_routes=routes[:6],
             featured_vehicles=Vehicle.objects.filter(is_available=True)[:3],
             bus_classes=Bus.BusClass.choices,
