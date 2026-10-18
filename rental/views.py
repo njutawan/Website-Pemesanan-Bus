@@ -15,6 +15,7 @@ from django.views.decorators.cache import never_cache
 from django.views.generic import TemplateView, View
 
 from core.audit import log_event
+from core import payment_service
 from core.forms import PaymentProofForm
 from core.private_media import grant_private_media_access
 from core.validators import clean_public_code
@@ -169,6 +170,9 @@ class RentalDetailView(TemplateView):
         return render(request, self.template_name, {
             'booking': booking,
             'proof_form': PaymentProofForm(initial={'payment_method': 'bca'}),
+            'payment_kind': 'rental',
+            **payment_service.payment_page_context(
+                'rental', booking.code, request, booking),
             'is_new': request.GET.get('baru') == '1',
         })
 

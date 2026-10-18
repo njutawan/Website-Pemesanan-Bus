@@ -185,6 +185,10 @@ RATELIMIT_RULES = {
     'booking_create': {'limit': 15, 'window': 3600},
     'proof_upload': {'limit': 15, 'window': 3600},
     'lookup': {'limit': 120, 'window': 600},
+    # Pembuatan link bayar & sinkronisasi status (panggilan keluar ke Pakasir)
+    'payment_create': {'limit': 10, 'window': 3600},
+    'payment_sync': {'limit': 30, 'window': 600},
+    'payment_webhook': {'limit': 120, 'window': 60},
 }
 RATELIMIT_EXEMPT_PREFIXES = ('/static/',)
 
@@ -215,15 +219,37 @@ AUDIT_RETENTION_DAYS = int(os.environ.get('DJANGO_AUDIT_RETENTION_DAYS', 180))
 
 # =============================================================================
 # Pembayaran
-# - Saat ini transfer manual/QRIS: TIDAK ada webhook maupun payment gateway.
-# - Bila gateway diaktifkan: isi PAYMENT_WEBHOOK_SECRET (HMAC) dan gunakan
-#   core.payments.verify_webhook_signature() — endpoint WAJIB memverifikasi
-#   signature + timestamp + idempotency sebelum mengubah status booking.
+# - Default: transfer manual / QRIS statis, diverifikasi admin.
+# - `PAYMENT_GATEWAY_PROVIDER=pakasir` mengaktifkan QRIS online lewat
+#   Pakasir API v2 (hosted payment link). Kredensial HANYA dari env:
+#     PAKASIR_SLUG, PAKASIR_API_KEY, PAKASIR_WEBHOOK_SECRET
+# - Webhook Pakasir memakai header `X-Secret` (bukan HMAC bertimestamp).
+#   Endpoint tetap memverifikasi ulang status ke API Pakasir sebelum
+#   mengubah status booking (lihat core/pakasir.py & payment_service.py).
+# - Base URL dikunci ke host resmi (anti-SSRF) dan tidak bisa diubah env.
 # =============================================================================
-PAYMENT_GATEWAY_PROVIDER = os.environ.get('PAYMENT_GATEWAY_PROVIDER', '').strip()
+PAYMENT_GATEWAY_PROVIDER = os.environ.get('PAYMENT_GATEWAY_PROVIDER', '').strip().lower()
 PAYMENT_WEBHOOK_SECRET = os.environ.get('PAYMENT_WEBHOOK_SECRET', '')
 PAYMENT_WEBHOOK_TOLERANCE_SECONDS = int(
     os.environ.get('PAYMENT_WEBHOOK_TOLERANCE_SECONDS', 300))
+
+PAKASIR_BASE_URL = 'https://app.pakasir.com'
+PAKASIR_SLUG = os.environ.get('PAKASIR_SLUG', '').strip()
+PAKASIR_API_KEY = os.environ.get('PAKASIR_API_KEY', '').strip()
+# Fallback ke nama lama agar deployment lama tidak langsung mati.
+PAKASIR_WEBHOOK_SECRET = (
+    os.environ.get('PAKASIR_WEBHOOK_SECRET', '').strip()
+    or PAYMENT_WEBHOOK_SECRET.strip()
+)
+# Mode sandbox ditandai eksplisit; respons API juga membawa `is_sandbox`
+# dan nilainya WAJIB cocok (mencegah kunci sandbox dipakai di produksi).
+PAKASIR_SANDBOX = _env_bool('PAKASIR_SANDBOX', default=False)
+PAKASIR_TIMEOUT_SECONDS = int(os.environ.get('PAKASIR_TIMEOUT_SECONDS', 8))
+PAKASIR_MIN_AMOUNT = 500                 # minimum QRIS/payment link Pakasir
+PAKASIR_MAX_AMOUNT = 50_000_000
+# Metode yang dipakai: payment_link + `qris_only=1` (pelanggan hanya melihat QRIS).
+PAKASIR_METHOD = 'payment_link'
+PAYMENT_METHOD_PAKASIR = 'pakasir_qris'
 
 
 # =============================================================================

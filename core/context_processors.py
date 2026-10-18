@@ -6,6 +6,8 @@ from core.models import PageMeta
 from django.urls import translate_url
 from django.utils.translation import get_language
 
+from core.pakasir import is_enabled as pakasir_enabled
+
 PAGE_META_CACHE_KEY = 'seo:pagemeta:all'
 
 
@@ -25,6 +27,7 @@ def site_settings(request):
         'PAYMENT_DETAILS': settings.PAYMENT_DETAILS,
         'PAYMENT_TIMEOUT_HOURS': settings.PAYMENT_TIMEOUT_HOURS,
         'MAX_SEATS_PER_BOOKING': settings.MAX_SEATS_PER_BOOKING,
+        'PAKASIR_ENABLED': pakasir_enabled(),
     }
 
 

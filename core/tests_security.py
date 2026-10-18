@@ -202,7 +202,12 @@ class SsrfTest(BaseTestCase):
         self.assertTrue(Redirect.objects.count() == 0)
 
     def test_tidak_ada_http_client_keluar_di_kode_app(self):
-        needles = ('requests.', 'urlopen(', 'httpx.', 'aiohttp.', 'socket.socket(')
+        # Satu-satunya HTTP client keluar yang diizinkan adalah klien Pakasir
+        # (host tetap, header API key, tanpa redirect). File lain harus bersih
+        # agar tidak ada jalur SSRF baru.
+        needles = ('requests.', 'urlopen(', 'httpx.', 'aiohttp.',
+                   'socket.socket(', 'http.client')
+        allowed = Path(settings.BASE_DIR) / 'core' / 'pakasir.py'
         hits = []
         for path in Path(settings.BASE_DIR).rglob('*.py'):
             if any(part in {'.venv', 'venv', 'node_modules', '.git'}
@@ -210,9 +215,18 @@ class SsrfTest(BaseTestCase):
                 continue
             if path.name.startswith('test') or path.name == 'security_audit.py':
                 continue
+            if path == allowed:
+                continue
             text = path.read_text(errors='ignore')
             hits += [f'{path.name}:{n}' for n in needles if n in text]
         self.assertEqual(hits, [])
+
+    def test_klien_pakasir_memakai_host_tetap(self):
+        text = (Path(settings.BASE_DIR) / 'core' / 'pakasir.py').read_text()
+        self.assertEqual(text.count('HTTPSConnection('), 1)
+        self.assertIn("'app.pakasir.com'", text)
+        self.assertNotIn('urlopen(', text)
+        self.assertIn("'X-Api-Key'", text)
 
 
 # =============================================================================

@@ -110,6 +110,78 @@ class SeoKeyword(models.Model):
         self.url = u + query + frag
 
 
+class PaymentTransaction(models.Model):
+    """Transaksi gateway pembayaran (saat ini: Pakasir QRIS).
+
+    Satu booking dapat memiliki beberapa percobaan (``order_id`` unik per
+    percobaan) bila link kedaluwarsa/dibatalkan. Status booking TIDAK
+    pernah diubah dari payload webhook saja: alur ``core.payment_service``
+    memverifikasi ulang ke API Pakasir dan mencocokkan nominal server-side.
+
+    Tidak ada nomor kartu/kredensial pelanggan yang disimpan di sini.
+    """
+
+    class Provider(models.TextChoices):
+        PAKASIR = 'pakasir', _('Pakasir')
+
+    class Kind(models.TextChoices):
+        BUS = 'bus', _('Tiket bus')
+        RENTAL = 'rental', _('Sewa mobil')
+
+    class Status(models.TextChoices):
+        PENDING = 'PENDING', _('Menunggu pembayaran')
+        COMPLETED = 'COMPLETED', _('Lunas')
+        CANCELED = 'CANCELED', _('Dibatalkan')
+        EXPIRED = 'EXPIRED', _('Kedaluwarsa')
+        FAILED = 'FAILED', _('Gagal dibuat')
+
+    provider = models.CharField(
+        _('penyedia'), max_length=20, choices=Provider.choices,
+        default=Provider.PAKASIR, db_index=True)
+    order_id = models.CharField(
+        _('order id'), max_length=64, unique=True,
+        help_text=_('ID unik yang dikirim ke gateway; tidak pernah dari input pengguna.'))
+    kind = models.CharField(_('jenis'), max_length=10, choices=Kind.choices)
+    booking_code = models.CharField(_('kode booking'), max_length=16, db_index=True)
+    amount = models.PositiveBigIntegerField(_('nominal (IDR)'))
+    fee = models.PositiveBigIntegerField(_('biaya gateway'), default=0)
+    total_payment = models.PositiveBigIntegerField(_('total dibayar'), default=0)
+    txn_id = models.CharField(_('id transaksi gateway'), max_length=64, blank=True, db_index=True)
+    payment_url = models.URLField(_('link pembayaran'), max_length=500, blank=True)
+    status = models.CharField(
+        _('status'), max_length=12, choices=Status.choices,
+        default=Status.PENDING, db_index=True)
+    is_sandbox = models.BooleanField(_('mode sandbox'), default=False)
+    needs_review = models.BooleanField(
+        _('perlu tinjauan admin'), default=False,
+        help_text=_('Payment masuk tetapi tidak dapat dicocokkan otomatis dengan booking.'))
+    expires_at = models.DateTimeField(_('kedaluwarsa'), null=True, blank=True)
+    paid_at = models.DateTimeField(_('dibayar pada'), null=True, blank=True)
+    last_event = models.JSONField(_('event terakhir'), default=dict, blank=True)
+    created_at = models.DateTimeField(_('dibuat'), auto_now_add=True, db_index=True)
+    updated_at = models.DateTimeField(_('diperbarui'), auto_now=True)
+
+    class Meta:
+        verbose_name = _('transaksi pembayaran')
+        verbose_name_plural = _('transaksi pembayaran')
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['kind', 'booking_code'], name='pay_kind_code_ix'),
+            models.Index(fields=['status', 'expires_at'], name='pay_status_exp_ix'),
+        ]
+
+    @property
+    def is_pending_valid(self) -> bool:
+        from django.utils import timezone
+        return (
+            self.status == self.Status.PENDING
+            and (self.expires_at is None or self.expires_at > timezone.now())
+        )
+
+    def __str__(self):
+        return f'{self.order_id} · {self.get_status_display()}'
+
+
 class AuditLog(models.Model):
     """Jejak audit keamanan — hanya superuser yang boleh membacanya.
 
@@ -127,6 +199,9 @@ class AuditLog(models.Model):
         PROOF_UPLOADED = 'PROOF_UPLOADED', _('Bukti bayar diunggah')
         PAYMENT_CONFIRMED = 'PAYMENT_CONFIRMED', _('Pembayaran dikonfirmasi')
         PAYMENT_CANCELLED = 'PAYMENT_CANCELLED', _('Booking dibatalkan')
+        PAYMENT_LINK_CREATED = 'PAYMENT_LINK_CREATED', _('Link bayar dibuat')
+        PAYMENT_RECEIVED = 'PAYMENT_RECEIVED', _('Pembayaran diterima gateway')
+        PAYMENT_UNMATCHED = 'PAYMENT_UNMATCHED', _('Pembayaran perlu tinjauan')
         EXPORT = 'EXPORT', _('Ekspor data admin')
         RATE_LIMITED = 'RATE_LIMITED', _('Rate limit terlampaui')
         ADMIN_IP_DENIED = 'ADMIN_IP_DENIED', _('Akses admin ditolak (IP)')

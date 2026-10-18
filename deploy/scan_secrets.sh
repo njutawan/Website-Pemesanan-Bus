@@ -28,6 +28,7 @@ EXCLUDES=(
   ':!core/management/commands/security_review.py'
   ':!deploy/scan_secrets.sh' ':!SECURITY.md'
   ':!core/tests_security.py' ':!core/tests_hardening.py'
+  ':!core/tests_pakasir.py'
   ':!*.po' ':!*.mo'
 )
 PATTERNS=(

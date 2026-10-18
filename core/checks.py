@@ -7,6 +7,7 @@ Catatan: saat DEBUG=0 compressor membaca sumber dari STATIC_ROOT — urutan
 yang benar adalah `collectstatic` DULULU, baru `compress --force`.
 """
 import os
+import re
 
 from django.conf import settings
 from django.core import checks
@@ -149,11 +150,15 @@ def production_security(app_configs, **kwargs):
                 'Koneksi PostgreSQL belum memakai TLS ketat.',
                 hint='Set POSTGRES_SSLMODE=require (atau verify-full).',
                 id='core.W014'))
-        if getattr(settings, 'PAYMENT_GATEWAY_PROVIDER', ''):
+        # Provider generik (HMAC) selain Pakasir: =====
+        # Pakasir divalidasi terpisah di bawah (E020) karena memakai
+        # header X-Secret, bukan signature HMAC bertimestamp.
+        _provider = (getattr(settings, 'PAYMENT_GATEWAY_PROVIDER', '') or '')
+        if _provider and _provider.lower() != 'pakasir':
             if not getattr(settings, 'PAYMENT_WEBHOOK_SECRET', ''):
                 issues.append(checks.Error(
                     'Payment gateway aktif tanpa PAYMENT_WEBHOOK_SECRET.',
-                    hint='Webhook wajib diverifikasi HMAC; isi secret acak.',
+                    hint='Webhook wajib diverifikasi (HMAC/X-Secret).',
                     id='core.E015'))
         if settings.SECURE_HSTS_SECONDS < 31_536_000:
             issues.append(checks.Warning(
@@ -211,6 +216,55 @@ def production_security(app_configs, **kwargs):
                 'PASSWORD_RESET_TIMEOUT lebih dari 24 jam.',
                 hint='Set DJANGO_PASSWORD_RESET_TIMEOUT=3600.',
                 id='core.W022'))
+
+    # --- Payment gateway (Pakasir) -------------------------------------
+    provider = (getattr(settings, 'PAYMENT_GATEWAY_PROVIDER', '') or '').lower()
+    slug = getattr(settings, 'PAKASIR_SLUG', '') or ''
+    api_key = getattr(settings, 'PAKASIR_API_KEY', '') or ''
+    webhook_secret = getattr(settings, 'PAKASIR_WEBHOOK_SECRET', '') or ''
+    if provider not in {'', 'pakasir'}:
+        issues.append(checks.Error(
+            f'PAYMENT_GATEWAY_PROVIDER tidak dikenal: {provider!r}.',
+            hint="Nilai yang didukung: kosong (manual) atau 'pakasir'.",
+            id='core.E019'))
+    if provider == 'pakasir':
+        missing = [
+            name for name, value in (
+                ('PAKASIR_SLUG', slug),
+                ('PAKASIR_API_KEY', api_key),
+                ('PAKASIR_WEBHOOK_SECRET', webhook_secret),
+            ) if not value
+        ]
+        if missing:
+            issues.append(checks.Error(
+                'Gateway Pakasir aktif tetapi kredensial belum lengkap: '
+                + ', '.join(missing) + '.',
+                hint='Isi variabel tersebut dari halaman detail proyek '
+                     'Pakasir (Environment Variable), lalu restart aplikasi.',
+                id='core.E020'))
+        else:
+            if len(api_key) < 16:
+                issues.append(checks.Error(
+                    'PAKASIR_API_KEY terlalu pendek.',
+                    hint='Salin ulang API key dari dashboard Pakasir.',
+                    id='core.E021'))
+            if not re.match(r'^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$', slug):
+                issues.append(checks.Error(
+                    'PAKASIR_SLUG berisi karakter tidak valid.',
+                    hint='Slug hanya huruf/angka/underscore/hyphen, maks. 64.',
+                    id='core.E022'))
+        if getattr(settings, 'PAKASIR_SANDBOX', False) and not debug:
+            issues.append(checks.Warning(
+                'PAKASIR_SANDBOX aktif saat DEBUG=False.',
+                hint='Kunci sandbox TIDAK menerima uang nyata. Set '
+                     'PAKASIR_SANDBOX=0 dan pakai API key production '
+                     'sebelum go-live.',
+                id='core.W023'))
+    elif slug or api_key or webhook_secret:
+        issues.append(checks.Warning(
+            'Kredensial Pakasir diisi tetapi PAYMENT_GATEWAY_PROVIDER kosong.',
+            hint="Set PAYMENT_GATEWAY_PROVIDER=pakasir agar QRIS online aktif.",
+            id='core.W024'))
     return issues
 
 

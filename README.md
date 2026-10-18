@@ -294,7 +294,7 @@ bukan password umum). Seed juga memperingatkan bila akun admin lama masih
 memakai password bawaan versi sebelumnya.
 
 Perintah lain: `python manage.py seed_data --flush` (hapus data demo),
-`python manage.py test` (230 unit test, 117 di antaranya test keamanan),
+`python manage.py test` (287 unit test, 174 di antaranya test keamanan),
 `python manage.py security_audit` (audit 20 kontrol keamanan),
 `python manage.py security_review` (19 titik hardening: secret, `.env`,
 DEBUG, error, injeksi, akses, izin DB, session, reset password, upload),
@@ -335,9 +335,72 @@ docker compose down -v                     # berhenti + hapus data database
 1. Beranda → cari `Jember → Surabaya` → pilih jadwal
 2. Pilih kursi di denah (kursi merah = terisi) → **Lanjut Isi Data**
 3. Isi nama + WhatsApp → **Buat Booking** → kode `NT-XXXXXXXX` terbit
-4. Transfer/QRIS sesuai instruksi → unggah bukti
-5. Login admin → menu *Booking tiket* → pilih booking → aksi
-   **Konfirmasi pembayaran yang dipilih** → e-tiket aktif di halaman booking
+4. Pilih **Bayar QRIS Online (Pakasir)** → bayar di halaman QRIS → booking
+   terkonfirmasi otomatis lewat webhook (atau transfer bank lalu unggah bukti)
+5. Tanpa gateway: login admin → *Booking tiket* → **Konfirmasi pembayaran**
+
+---
+
+<a id="pembayaran-pakasir"></a>
+
+### 4. Pembayaran QRIS online (Pakasir)
+
+Situs mendukung **dua kanal** pembayaran:
+
+1. **Transfer bank manual** + unggah bukti — selalu tersedia, diverifikasi admin.
+2. **QRIS online via Pakasir** — pembayaran terkonfirmasi otomatis.
+
+#### Mengaktifkan
+
+1. Daftar di <https://app.pakasir.com>, buat Proyek, catat **Slug**,
+   **API Key**, dan **Webhook Secret** (halaman detail proyek).
+2. Isi `.env` (mode `600`):
+
+```bash
+PAYMENT_GATEWAY_PROVIDER=pakasir
+PAKASIR_SLUG=slug-proyek-anda
+PAKASIR_API_KEY=...            # hanya dibaca server, tidak pernah ke browser
+PAKASIR_WEBHOOK_SECRET=...     # dari halaman detail proyek
+PAKASIR_SANDBOX=0              # 1 untuk proyek sandbox
+```
+
+3. Di dashboard Pakasir → **Edit Proyek** → Webhook URL:
+
+```text
+https://domain-anda.example/pembayaran/pakasir/webhook/
+```
+
+4. `python manage.py migrate && python manage.py check --deploy`
+   (check menolak start bila kredensial tidak lengkap: `core.E020`).
+
+#### Cara kerja & pengamanan
+
+- Memakai **API v2** (`/api/v2/create-transaction/...`) — API v1 dimatikan
+  **20 Oktober 2026**. Metode `payment_link` + `qris_only=1`, jadi pelanggan
+  hanya melihat QRIS di halaman hosted Pakasir.
+- Nominal selalu dihitung server dari database (`Booking.total_price` /
+  `RentalBooking.total_price`); tidak ada nominal dari klien.
+- `X-Api-Key` dikirim lewat **header** dari server (bukan query string),
+  tidak pernah masuk template, URL, atau log.
+- Webhook memakai header `X-Secret` (dibandingkan constant-time). Setelah itu
+  server **memanggil ulang** transaction-status API dan mencocokkan
+  `order_id`, `amount`, dan `is_sandbox` sebelum mengubah status booking.
+- Idempoten: webhook ganda tidak mengubah `paid_at`/status dua kali.
+- Bila pembayaran masuk setelah booking `EXPIRED`/`CANCELLED`, transaksi
+  ditandai **perlu tinjauan** (`needs_review`) di
+  `/admin/core/paymenttransaction/` — booking tidak dikonfirmasi otomatis.
+- Tombol **“Saya sudah bayar — cek status”** adalah cadangan bila webhook
+  terlambat; maksimal 1 panggilan API per 4 detik per transaksi.
+- Booking tetap kedaluwarsa `PAYMENT_TIMEOUT_HOURS` (2 jam), sedangkan link
+  Pakasir berlaku 24 jam.
+- Gateway mati/kredensial kurang → panel online hilang, QRIS statis manual
+  tampil kembali (tidak ada gangguan pada alur lama).
+
+#### Uji sandbox
+
+Set `PAKASIR_SANDBOX=1` dan gunakan API key proyek sandbox. Dengan
+`PAKASIR_SANDBOX=0`, transaksi sandbox **ditolak** (uang nyata tidak masuk),
+dan sebaliknya — ini pengaman agar kunci sandbox tidak dipakai di produksi.
 
 ---
 
@@ -349,7 +412,8 @@ Semua konstanta bisnis ada di [`core/settings.py`](core/settings.py):
 |---|---|---|
 | `SITE_NAME` | Nama situs | `Nusantara Trans` |
 | `WHATSAPP_NUMBER` | Nomor CS (format `62…`) | `6281234567890` |
-| `PAYMENT_METHODS` / `PAYMENT_DETAILS` | Bank/QRIS & nomor rekening | BCA, Mandiri, QRIS |
+| `PAYMENT_METHODS` / `PAYMENT_DETAILS` | Bank/QRIS manual & nomor rekening | BCA, Mandiri, QRIS |
+| `PAYMENT_GATEWAY_PROVIDER` | `pakasir` = QRIS online otomatis | kosong (manual) |
 | `PAYMENT_TIMEOUT_HOURS` | Batas waktu bayar booking | `2` jam |
 | `MAX_SEATS_PER_BOOKING` | Batas kursi per transaksi | `6` |
 
@@ -359,8 +423,8 @@ rekening pada `PAYMENT_DETAILS`.
 Variabel environment produksi: `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=0`,
 `DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS`, `POSTGRES_*` (wajib,
 `sslmode=require`), `REDIS_URL`, `DJANGO_ADMIN_ALLOWED_IPS`,
-`DJANGO_ADMIN_PASSWORD`, serta `DJANGO_PAYMENT_WEBHOOK_SECRET` bila memakai
-gateway pembayaran. Salin [`.env.example`](.env.example) → `.env` dan isi
+`DJANGO_ADMIN_PASSWORD`, serta `PAYMENT_GATEWAY_PROVIDER=pakasir` +
+`PAKASIR_SLUG`/`PAKASIR_API_KEY`/`PAKASIR_WEBHOOK_SECRET` untuk QRIS online. Salin [`.env.example`](.env.example) → `.env` dan isi
 nilainya; jangan pernah commit `.env`.
 
 > Sejak hardening, `docker compose up` **gagal cepat** bila
@@ -433,7 +497,7 @@ rate limit, static/media/cache/gzip/HTTPS) tersedia di
 | 1 | Rate limit | `core.middleware.RateLimitMiddleware` + `RATELIMIT_RULES` (global, POST, login admin, booking bus/rental, cek booking, upload bukti) → 429 + `Retry-After`; Nginx `limit_req`/`limit_conn` |
 | 2 | CORS ketat | `CorsMiddleware`: hanya origin eksplisit di `CORS_ALLOWED_ORIGINS`, wildcard ditolak, preflight 403 |
 | 3 | CSRF | `CsrfViewMiddleware` + token di semua form; cookie `SameSite=Lax/Strict` & `Secure` di produksi |
-| 4 | SSRF | Tidak ada HTTP client keluar / subprocess / eval di kode aplikasi (dijaga test) |
+| 4 | SSRF | Satu HTTP client keluar (Pakasir) dengan host tetap, path tervalidasi, tanpa redirect; tidak ada subprocess/eval (dijaga test) |
 | 5 | Path traversal | Normalisasi path media, allowlist ekstensi, 404 untuk `.php/.html/.js/.svg/.map`, `nosniff` + `Content-Security-Policy: sandbox` |
 | 6 | Validasi input | `core.validators`: kode publik `NT-/SEWA-` 8 karakter, label kursi, tanggal, ukuran & piksel gambar; form Django ketat |
 | 7 | Validasi output | Autoescape, JSON-LD `\u003c`, `csv_safe` (anti formula injection), escaping URL di `auto_internal_link` |

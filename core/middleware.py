@@ -300,6 +300,12 @@ _RATE_SCOPE_PATTERNS = (
         r'^/(?:en/)?(?:bus/booking|rental/sewa)/[^/]+/upload/?$')),
     ('lookup', re.compile(
         r'^/(?:en/)?(?:bus/booking|bus/cek-booking|rental/sewa)/[^/]*/?$')),
+    # Pembayaran QRIS (panggilan keluar ke Pakasir) — batasi per IP.
+    ('payment_create', re.compile(
+        r'^/pembayaran/(?:bus|rental)/[^/]+/?$')),
+    ('payment_sync', re.compile(
+        r'^/pembayaran/(?:bus|rental)/[^/]+/status/?$')),
+    ('payment_webhook', re.compile(r'^/pembayaran/pakasir/webhook/?$')),
 )
 
 

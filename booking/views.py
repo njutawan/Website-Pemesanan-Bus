@@ -30,6 +30,7 @@ from booking.models import (
     Booking, BookingSeat, City, Route, Schedule,
     taken_seat_counts, taken_seat_ids,
 )
+from core import payment_service
 from core.audit import log_event
 from core.forms import PaymentProofForm
 from core.private_media import grant_private_media_access
@@ -286,6 +287,9 @@ class BookingDetailView(TemplateView):
             'seats': [i.seat for i in booking.seat_items.select_related('seat')],
             'proof_form': PaymentProofForm(initial={'payment_method': 'bca'}),
             'is_new': request.GET.get('baru') == '1',
+            'payment_kind': 'bus',
+            **payment_service.payment_page_context(
+                'bus', booking.code, request, booking),
             'step': 4,
         })
 

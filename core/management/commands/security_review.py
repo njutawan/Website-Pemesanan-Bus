@@ -91,17 +91,28 @@ class Command(BaseCommand):
             text = path.read_text(errors='ignore')
             for match in _SECRET_LITERAL_RE.finditer(text):
                 hits.append(f'{path.relative_to(self.base)}: {match.group(0)[:40]}')
-        env_only = all(
-            os.environ.get(name, '') == str(getattr(settings, name, ''))
-            for name in ('PAYMENT_WEBHOOK_SECRET',)
-        )
+        def _from_env(name, value):
+            value = str(value or '')
+            if not value:
+                return True
+            return (os.environ.get(name, '') == value
+                    or os.environ.get('PAYMENT_WEBHOOK_SECRET', '') == value)
+
+        env_only = all((
+            _from_env('PAYMENT_WEBHOOK_SECRET',
+                      getattr(settings, 'PAYMENT_WEBHOOK_SECRET', '')),
+            _from_env('PAKASIR_SLUG', getattr(settings, 'PAKASIR_SLUG', '')),
+            _from_env('PAKASIR_API_KEY', getattr(settings, 'PAKASIR_API_KEY', '')),
+            _from_env('PAKASIR_WEBHOOK_SECRET',
+                      getattr(settings, 'PAKASIR_WEBHOOK_SECRET', '')),
+        ))
         if hits:
             self._add(1, 'API key aman', FAIL,
                       f'Literal key di kode: {hits[:2]}')
         else:
             self._add(1, 'API key aman', PASS if env_only else WARN,
                       'Tidak ada API key di kode; secret hanya dari env '
-                      '(PAYMENT_WEBHOOK_SECRET/EMAIL_PASSWORD).' if env_only
+                      '(Pakasir/webhook/EMAIL_PASSWORD).' if env_only
                       else 'Ada secret konfigurasi yang bukan dari env.')
 
     # -- 2 -------------------------------------------------------------

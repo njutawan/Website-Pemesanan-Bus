@@ -90,6 +90,9 @@ msgstr "Ambil"
 msgid "Ambil kursi favorit lewat denah interaktif."
 msgstr "Ambil kursi favorit lewat denah interaktif."
 
+msgid "Anda akan diarahkan ke halaman pembayaran resmi Pakasir."
+msgstr ""
+
 msgid "Anda tidak berhak membuka halaman ini"
 msgstr ""
 
@@ -148,6 +151,14 @@ msgstr "Batas waktu pembayaran terlewat. Silakan buat pesanan baru."
 msgid "Bayar & berangkat"
 msgstr "Bayar & berangkat"
 
+msgid "Bayar QRIS Online"
+msgstr ""
+
+msgid ""
+"Bayar dengan GoPay, OVO, DANA, atau m-banking apa pun. Status pembayaran "
+"terverifikasi otomatis."
+msgstr ""
+
 msgid "Bayar sebelum"
 msgstr "Bayar sebelum"
 
@@ -171,6 +182,9 @@ msgstr "Belum ada penumpang untuk keberangkatan hari ini."
 
 msgid "Belum ada pesanan sewa."
 msgstr "Belum ada pesanan sewa."
+
+msgid "Belum ada transaksi QRIS untuk booking ini."
+msgstr ""
 
 msgid "Belum unggah"
 msgstr "Belum unggah"
@@ -238,6 +252,9 @@ msgstr "Booking ini sudah tidak aktif."
 
 msgid "Booking ini sudah tidak bisa menerima unggahan bukti."
 msgstr "Booking ini sudah tidak bisa menerima unggahan bukti."
+
+msgid "Booking ini sudah tidak menunggu pembayaran."
+msgstr ""
 
 msgid "Booking tidak berstatus menunggu pembayaran."
 msgstr "Booking tidak berstatus menunggu pembayaran."
@@ -414,6 +431,11 @@ msgstr "Digunakan untuk konfirmasi & e-tiket."
 msgid "Dimensi gambar terlalu besar."
 msgstr ""
 
+msgid ""
+"Diproses oleh Pakasir. Nominal dihitung di server dan diverifikasi ulang "
+"sebelum booking dikonfirmasi."
+msgstr ""
+
 msgid "Disarankan 120–160 karakter."
 msgstr ""
 
@@ -463,6 +485,9 @@ msgstr ""
 msgid "Formulir tidak bisa dikirim karena masalah keamanan sesi"
 msgstr "Formulir tidak bisa dikirim karena masalah keamanan sesi"
 
+msgid "Gagal dibuat"
+msgstr ""
+
 msgid ""
 "Halaman ini hanya untuk pengguna dengan izin tertentu. Jika Anda yakin "
 "seharusnya bisa mengaksesnya, silakan hubungi admin."
@@ -497,6 +522,9 @@ msgstr "Harga/kursi"
 
 msgid "Hubungi Kami"
 msgstr "Hubungi Kami"
+
+msgid "ID unik yang dikirim ke gateway; tidak pernah dari input pengguna."
+msgstr ""
 
 msgid "IP"
 msgstr ""
@@ -603,6 +631,12 @@ msgstr "Kembali & Ulangi"
 msgid "Kembali ke detail mobil"
 msgstr "Kembali ke detail mobil"
 
+msgid ""
+"Khusus QRIS, gunakan panel QRIS Online di atas agar pembayaran terverifikasi"
+" otomatis. Untuk transfer bank, unggah bukti pembayaran pada form di bawah "
+"ini (verifikasi maksimal 15 menit, 07.00–21.00 WIB)."
+msgstr ""
+
 msgid "Kirim Bukti Pembayaran"
 msgstr "Kirim Bukti Pembayaran"
 
@@ -708,6 +742,9 @@ msgstr "Langkah pemesanan"
 msgid "Lanjut Isi Data"
 msgstr "Lanjut Isi Data"
 
+msgid "Lanjutkan Pembayaran QRIS"
+msgstr ""
+
 msgid ""
 "Lengkapi data sewa %(name)s mulai %(price)s/hari — pilih tanggal, lokasi "
 "ambil, dan opsi sopir."
@@ -733,6 +770,12 @@ msgstr "Lihat semua"
 msgid "Lihat semua rute"
 msgstr ""
 
+msgid "Link bayar dibuat"
+msgstr ""
+
+msgid "Link berlaku sampai"
+msgstr ""
+
 msgid "Login berhasil"
 msgstr ""
 
@@ -744,6 +787,9 @@ msgstr ""
 
 msgid "Lokasi ambil"
 msgstr "Lokasi ambil"
+
+msgid "Lunas"
+msgstr ""
 
 msgid "MPV (5–7 penumpang)"
 msgstr "MPV (5–7 penumpang)"
@@ -866,6 +912,9 @@ msgstr "Nilai Kami"
 msgid "No. WhatsApp"
 msgstr "No. WhatsApp"
 
+msgid "Nominal"
+msgstr ""
+
 msgid "Nomor kursi"
 msgstr "Nomor kursi"
 
@@ -895,6 +944,9 @@ msgstr "Nusantara Trans — Panel Operasional"
 msgid "Okupansi"
 msgstr "Okupansi"
 
+msgid "Pakasir"
+msgstr ""
+
 msgid "Panel Operasional"
 msgstr "Panel Operasional"
 
@@ -902,6 +954,9 @@ msgid "Pastikan cookie diizinkan di browser Anda."
 msgstr "Pastikan cookie diizinkan di browser Anda."
 
 msgid "Path internal wajib diawali satu \"/\" (bukan URL penuh)."
+msgstr ""
+
+msgid "Payment masuk tetapi tidak dapat dicocokkan otomatis dengan booking."
 msgstr ""
 
 msgid "Pembatalan gratis sebelum pembayaran."
@@ -913,10 +968,44 @@ msgstr "Pembayaran"
 msgid "Pembayaran Aman"
 msgstr "Pembayaran Aman"
 
+msgid ""
+"Pembayaran QRIS online gagal dibuat. Silakan coba lagi atau gunakan transfer"
+" manual di bawah."
+msgstr ""
+
 msgid "Pembayaran Terverifikasi"
 msgstr "Pembayaran Terverifikasi"
 
+msgid ""
+"Pembayaran belum diterima. Jika sudah membayar, tunggu beberapa saat lalu "
+"cek lagi."
+msgstr ""
+
+msgid "Pembayaran berhasil dikonfirmasi!"
+msgstr ""
+
 msgid "Pembayaran dikonfirmasi"
+msgstr ""
+
+msgid "Pembayaran diterima gateway"
+msgstr ""
+
+msgid ""
+"Pembayaran diterima, tetapi perlu ditinjau admin. Tim kami akan menghubungi "
+"Anda melalui WhatsApp."
+msgstr ""
+
+msgid ""
+"Pembayaran diterima, tetapi perlu ditinjau admin. Tim kami akan menghubungi "
+"Anda."
+msgstr ""
+
+msgid "Pembayaran perlu tinjauan"
+msgstr ""
+
+msgid ""
+"Pembayaran sudah diterima gateway. Halaman ini akan diperbarui otomatis; "
+"jika status belum berubah, muat ulang."
 msgstr ""
 
 msgid "Pembayaran: Transfer Bank & QRIS"
@@ -1071,6 +1160,9 @@ msgstr "Pisahkan dengan koma, mis. \"AC, WiFi, Toilet, Snack\""
 msgid "Pool Jember — Jl. Kalimantan No. 27"
 msgstr "Pool Jember — Jl. Kalimantan No. 27"
 
+msgid "QRIS Online (otomatis)"
+msgstr ""
+
 msgid "Ramah Pelanggan"
 msgstr "Ramah Pelanggan"
 
@@ -1125,6 +1217,9 @@ msgstr "Salin No. Rekening"
 
 msgid "Saya menyetujui syarat & ketentuan pemesanan."
 msgstr "Saya menyetujui syarat & ketentuan pemesanan."
+
+msgid "Saya sudah bayar — cek status"
+msgstr ""
 
 msgid ""
 "Scan QRIS dengan aplikasi e-wallet atau m-banking apa pun, lalu masukkan "
@@ -1212,6 +1307,9 @@ msgstr "Sewa Mobil Harian dengan Sopir"
 
 msgid "Sewa Mobil untuk Perjalanan Fleksibel"
 msgstr "Sewa Mobil untuk Perjalanan Fleksibel"
+
+msgid "Sewa mobil"
+msgstr ""
 
 msgid "Sewa mobil lain"
 msgstr "Sewa mobil lain"
@@ -1350,6 +1448,9 @@ msgstr "Tiket Bus %(origin)s → %(dest)s"
 msgid "Tiket Bus Online & Rental Mobil"
 msgstr "Tiket Bus Online & Rental Mobil"
 
+msgid "Tiket bus"
+msgstr ""
+
 msgid "Tim siap membantu via WhatsApp setiap hari."
 msgstr "Tim siap membantu via WhatsApp setiap hari."
 
@@ -1370,6 +1471,10 @@ msgstr "Total Bayar"
 
 msgid "Total yang harus dibayar"
 msgstr "Total yang harus dibayar"
+
+msgid ""
+"Transaksi QRIS ini dibatalkan/kedaluwarsa. Silakan buat pembayaran baru."
+msgstr ""
 
 msgid "Transfer bank atau scan QRIS dari e-wallet apa pun."
 msgstr "Transfer bank atau scan QRIS dari e-wallet apa pun."
@@ -1456,6 +1561,9 @@ msgstr "batas bayar"
 msgid "berhasil"
 msgstr ""
 
+msgid "biaya gateway"
+msgstr ""
+
 msgid "biaya sopir per hari"
 msgstr "biaya sopir per hari"
 
@@ -1498,6 +1606,9 @@ msgstr "durasi (menit)"
 msgid "email"
 msgstr "email"
 
+msgid "event terakhir"
+msgstr ""
+
 msgid "fasilitas"
 msgstr "fasilitas"
 
@@ -1518,6 +1629,9 @@ msgstr "harga per hari"
 
 msgid "hari"
 msgstr "hari"
+
+msgid "id transaksi gateway"
+msgstr ""
 
 msgid "jadwal"
 msgstr "jadwal"
@@ -1540,6 +1654,9 @@ msgstr "jam tiba"
 msgid "jarak (km)"
 msgstr "jarak (km)"
 
+msgid "jenis"
+msgstr ""
+
 msgid "jika pakai sopir"
 msgstr "jika pakai sopir"
 
@@ -1560,6 +1677,9 @@ msgstr "kategori"
 
 msgid "keberangkatan setiap hari"
 msgstr "keberangkatan setiap hari"
+
+msgid "kedaluwarsa"
+msgstr ""
 
 msgid "kelas"
 msgstr "kelas"
@@ -1606,6 +1726,9 @@ msgstr "label kursi"
 msgid "lama sewa (hari)"
 msgstr "lama sewa (hari)"
 
+msgid "link pembayaran"
+msgstr ""
+
 msgid "log audit"
 msgstr ""
 
@@ -1629,6 +1752,9 @@ msgstr "mobil"
 
 msgid "mobil rental"
 msgstr "mobil rental"
+
+msgid "mode sandbox"
+msgstr ""
 
 msgid "mulai"
 msgstr "mulai"
@@ -1654,8 +1780,14 @@ msgstr "no. WhatsApp"
 msgid "noindex"
 msgstr ""
 
+msgid "nominal (IDR)"
+msgstr ""
+
 msgid "nomor polisi"
 msgstr "nomor polisi"
+
+msgid "order id"
+msgstr ""
 
 msgid "path"
 msgstr ""
@@ -1665,6 +1797,12 @@ msgstr ""
 
 msgid "pemesanan"
 msgstr "pemesanan"
+
+msgid "penyedia"
+msgstr ""
+
+msgid "perlu tinjauan admin"
+msgstr ""
 
 msgid "provinsi"
 msgstr "provinsi"
@@ -1699,8 +1837,14 @@ msgstr ""
 msgid "tersedia"
 msgstr "tersedia"
 
+msgid "total dibayar"
+msgstr ""
+
 msgid "total harga"
 msgstr "total harga"
+
+msgid "transaksi pembayaran"
+msgstr ""
 
 msgid "transmisi"
 msgstr "transmisi"

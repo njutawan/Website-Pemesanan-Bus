@@ -4,11 +4,12 @@ Audit 20 kontrol keamanan untuk Website Pemesanan Bus & Rental Mobil.
 Dokumen ini adalah **bukti audit** yang dapat dilampirkan saat go-live;
 setiap kontrol menyebutkan implementasi, test otomatis, dan sisa risiko.
 
-- Tanggal audit: **2026-10-18**
+- Tanggal audit: **2026-10-18** · pembaruan integrasi Pakasir: **2026-10-19**
 - Basis kode: branch `arena/0fe36235-website-pemesanan-bus`
 - Stack: Django 5.2.18, PostgreSQL 16, Gunicorn, Nginx, Redis (opsional)
-- Hasil test: **230 test OK** (termasuk 117 test keamanan khusus:
-  68 di `core/tests_security.py` + 49 di `core/tests_hardening.py`)
+- Hasil test: **287 test OK** (termasuk 174 test keamanan khusus:
+  69 `core/tests_security.py` + 49 `core/tests_hardening.py` +
+  56 `core/tests_pakasir.py`)
 - Hasil `security_audit`: **PASS 16, WARN 2, FAIL 0, N/A 2**
 - Hasil `security_review` (19 kontrol hardening): **PASS 19, WARN 0, FAIL 0**
   dengan role DB non-superuser + SMTP
@@ -37,15 +38,15 @@ python manage.py check --deploy --fail-level WARNING   # dengan env produksi
 | 1 | Rate limit API/endpoint | ✅ PASS | `core/middleware.py` `RateLimitMiddleware`, `RATELIMIT_RULES`, Nginx `limit_req` |
 | 2 | CORS ketat | ✅ PASS | `CorsMiddleware`, allowlist eksplisit, wildcard ditolak |
 | 3 | CSRF | ✅ PASS | `CsrfViewMiddleware`, token semua form, cookie SameSite/Secure |
-| 4 | SSRF | ✅ PASS (N/A) | Tidak ada outbound HTTP/subprocess; URL internal divalidasi |
+| 4 | SSRF | ✅ PASS | Satu HTTP client keluar (Pakasir) dengan host tetap `https://app.pakasir.com`, path tervalidasi, tanpa redirect; URL internal divalidasi |
 | 5 | Path traversal | ✅ PASS | Normalisasi media, allowlist ekstensi, 404 + CSP sandbox |
 | 6 | Validasi input | ✅ PASS | `core/validators.py`, form Django, batas upload |
 | 7 | Validasi output | ✅ PASS | Autoescape, JSON-LD `\u003c`, `csv_safe`, escape URL |
 | 8 | Proteksi admin | ⚠️ PASS (WARN IP) | Login staf, rate limit, audit; allowlist IP opsional belum diset |
 | 9 | Password default & data sensitif | ✅ PASS | Tidak ada password bawaan; seed wajib env di produksi |
 | 10 | Audit endpoint | ✅ PASS | `core.AuditLog`, admin read-only, PII disamarkan |
-| 11 | Verifikasi webhook | ✅ PASS (siap) | HMAC-SHA256, timestamp, anti-replay (`core/payments.py`) |
-| 12 | Payment server | ✅ PASS (N/A) | Transfer manual/QRIS; tidak ada data kartu |
+| 11 | Verifikasi webhook | ✅ PASS (aktif/N/A) | Pakasir v2: `X-Secret` constant-time + verifikasi ulang status API + idempoten (`core/payment_service.py`) |
+| 12 | Payment server | ✅ PASS (aktif/N/A) | QRIS hosted Pakasir; tanpa data kartu, API key hanya di server; transfer manual tetap tersedia |
 | 13 | Anti-tamper harga | ✅ PASS | Harga dihitung server, `select_for_update`, field klien diabaikan |
 | 14 | IDOR | ✅ PASS | Kode acak 8 karakter, grant media per sesi, upload hanya status pending |
 | 15 | Log tidak bocorkan secret | ✅ PASS | `RedactSecretsFilter`, audit masking, log Nginx disamarkan |
@@ -53,7 +54,7 @@ python manage.py check --deploy --fail-level WARNING   # dengan env produksi
 | 17 | Update dependency | ✅ PASS | Patch keamanan minimum, Dependabot, `pip-audit` di CI |
 | 18 | Test backup restore | ✅ PASS | `deploy/*.sh` + drill otomatis di CI |
 | 19 | Security header | ✅ PASS | CSP hash, HSTS, XFO, nosniff, Referrer/Permissions-Policy, COOP/CORP |
-| 20 | Test keamanan pra-rilis | ✅ PASS (WARN lokal) | 230 test + CI; `DEBUG=0` wajib saat go-live |
+| 20 | Test keamanan pra-rilis | ✅ PASS (WARN lokal) | 287 test + CI; `DEBUG=0` wajib saat go-live |
 
 ### Hasil audit mode produksi
 
@@ -62,7 +63,12 @@ Dengan `DJANGO_DEBUG=0`, HTTPS/cookie Secure, `POSTGRES_SSLMODE=require`,
 
 ```text
 python manage.py security_audit --no-fail
-→ 20 kontrol — PASS 18, WARN 0, FAIL 0, N/A 2
+→ 20 kontrol — PASS 18, WARN 0, FAIL 0, N/A 2   # gateway manual
+
+PAYMENT_GATEWAY_PROVIDER=pakasir \
+PAKASIR_SLUG=… PAKASIR_API_KEY=… PAKASIR_WEBHOOK_SECRET=… \
+python manage.py security_audit --no-fail
+→ 20 kontrol — PASS 20, WARN 0, FAIL 0, N/A 0   # QRIS online aktif
 
 python manage.py check --deploy --fail-level WARNING
 → System check identified no issues (0 silenced).
@@ -84,7 +90,7 @@ FAIL) dan `deploy/scan_secrets.sh` (pemindai rahasia HEAD + riwayat git).
 
 | # | Titik periksa | Hasil | Bukti |
 |---|---|---|---|
-| 1 | API key aman | ✅ PASS | Tidak ada key literal; `PAYMENT_WEBHOOK_SECRET`/`EMAIL_PASSWORD` hanya dari env; nilai disamarkan di log |
+| 1 | API key aman | ✅ PASS | Tidak ada key literal; `PAKASIR_API_KEY`/`PAKASIR_WEBHOOK_SECRET`/`EMAIL_PASSWORD` hanya dari env; dikirim lewat header & disamarkan di log |
 | 2 | File `.env` tidak publik | ✅ PASS | `.gitignore` + tidak ter-track; Nginx `location ~ /\.` → 404; `deploy/scan_secrets.sh` |
 | 3 | Tidak ada secret hardcoded | ✅ PASS (prod) | `SECRET_KEY` hanya placeholder dev (WARN lokal, `core.E002` menolak di produksi); password DB/email dari env |
 | 4 | Secret di riwayat git | ✅ PASS | 2 commit dipindai; tanpa kunci/token/privat key. Password demo lama (`admin123`) hanya di `.env.example` pra-hardening, sudah dihapus di HEAD — bukan secret produksi |
@@ -120,9 +126,10 @@ dan 17 (cookie belum `Secure`/`SameSite=None`) — semuanya **kondisi lokal,
 bukan celah kode**, dan hilang saat env produksi diisi (lihat
 `deploy/db_setup.sql` untuk role `nt_app`).
 
-**Catatan 11/12:** pembayaran memakai transfer manual/QRIS, jadi tidak ada
-"server pembayaran" pihak ketiga. Helper verifikasi HMAC
-(`core/payments.py`) sudah siap dan diuji untuk saat gateway diaktifkan.
+**Catatan 11/12:** saat ini QRIS online **Pakasir** aktif, sehingga kedua
+kontrol pada audit 20-kontrol berstatus PASS (webhook `X-Secret` +
+verifikasi ulang status API). Bila gateway dimatikan, keduanya kembali N/A
+dan transfer manual/QRIS statis tetap berfungsi.
 
 ### Perubahan kode pada pass ini
 
@@ -139,6 +146,23 @@ bukan celah kode**, dan hilang saat env produksi diisi (lihat
   role owner/app dan DB tanpa port publik.
 - `deploy/scan_secrets.sh`, `make` targets, `core/tests_hardening.py` (49 test).
 
+### Integrasi QRIS Pakasir (2026-10-19)
+
+- `core/pakasir.py` — klien API v2 (`create-transaction`,
+  `transaction-status`): host tetap `https://app.pakasir.com`, timeout,
+  respons ≤ 64 KiB, tanpa redirect, `X-Api-Key` header-only, error disanitasi.
+- `core/models.PaymentTransaction` (migrasi `core.0005`) — order_id unik,
+  nominal, status, expiry, sandbox, `needs_review`; read-only di admin.
+- `core/payment_service.py` — pembuatan link idempoten (maks. 5 percobaan),
+  sinkronisasi status manual (cooldown 4 detik), settlement atomik
+  `select_for_update`, penanganan pembayaran terlambat.
+- `core/payment_views.py` — `POST /pembayaran/{bus|rental}/<kode>/`,
+  `/status/`, dan webhook `POST /pembayaran/pakasir/webhook/`.
+- Template: panel “QRIS Online” di halaman booking bus & sewa; QRIS statis
+  manual disembunyikan saat gateway aktif.
+- `core/tests_pakasir.py` — 56 test (klien, webhook, settlement, IDOR/CSRF,
+  konfigurasi, admin read-only).
+
 ## 1. Rate limit API/endpoint
 
 **Implementasi** — `core/middleware.py::RateLimitMiddleware` menerapkan
@@ -153,6 +177,9 @@ bukan celah kode**, dan hilang saat env produksi diisi (lihat
 | `booking_create` | 15 / 3600 dtk | buat booking bus & rental |
 | `proof_upload` | 15 / 3600 dtk | unggah bukti bayar |
 | `lookup` | 120 / 600 dtk | cek booking via kode |
+| `payment_create` | 10 / 3600 dtk | buat link bayar QRIS (per IP) |
+| `payment_sync` | 30 / 600 dtk | cek status transaksi ke Pakasir |
+| `payment_webhook` | 120 / 60 dtk | webhook Pakasir |
 
 Respons `429` menyertakan header **`Retry-After`** dan `Cache-Control:
 no-store`; pelanggaran pertama per jendela dicatat ke audit
@@ -212,20 +239,28 @@ tanpa `Secure` pada mode produksi.
 
 ## 4. Pencegahan SSRF
 
-**Implementasi** — Aplikasi **tidak melakukan request HTTP keluar** sama
-sekali: tidak ada `requests`, `urllib.request`, `httpx`, `aiohttp`,
-`socket`, `subprocess`, atau `eval` di kode aplikasi. URL yang dapat
-diadministrasikan (`SeoKeyword.url`, `PageMeta.path`,
-`django.contrib.redirects.new_path`) divalidasi sebagai **path internal**
-(`/...`, bukan `//host`, bukan skema apa pun) sehingga tidak bisa dipakai
-mengalihkan pengunjung ke domain luar.
+**Implementasi** — Hanya ada **satu** HTTP client keluar: klien Pakasir di
+`core/pakasir.py`. Pengamanannya:
+
+- Host **dikunci** ke `https://app.pakasir.com` (konstanta + validasi
+  `PAKASIR_BASE_URL`); tidak ada URL yang bisa dikendalikan pengguna.
+- `slug`, `order_id`, dan `txn_id` dicocokkan regex lalu di-`quote()` sebelum
+  masuk path; tidak ada query/URL bebas.
+- `http.client` **tidak mengikuti redirect**; respons dibatasi 64 KiB;
+  timeout 1–30 detik; TLS default (verifikasi sertifikat & hostname).
+- API key hanya header `X-Api-Key`; pesan error disanitasi dari kredensial.
+- Tidak ada `requests`, `urlopen`, `httpx`, `aiohttp`, `socket`, `subprocess`,
+  atau `eval` di kode aplikasi lain. URL yang dapat diadministrasikan
+  (`SeoKeyword.url`, `PageMeta.path`, `django.contrib.redirects.new_path`)
+  divalidasi sebagai **path internal** (`/...`, bukan `//host`, bukan skema).
 
 **Test** — `SsrfTest`: validator menolak `https://`, `//host`,
 `javascript:`; `SafeRedirectForm` menolak tujuan eksternal; pemindai kode
-memastikan tidak ada HTTP client keluar.
+memastikan hanya `core/pakasir.py` yang memuat `http.client`, dan klien
+tersebut memakai host tetap serta header `X-Api-Key`.
 
-**Status** — N/A untuk SSRF klasik (tidak ada URL yang di-fetch server),
-tetapi kontrol open-redirect tetap diuji.
+**Status** — **PASS**: risiko SSRF dikendalikan dengan host tetap dan input
+tervalidasi, bukan dengan menghilangkan seluruh outbound HTTP.
 
 ---
 
@@ -364,68 +399,84 @@ superuser.
 
 ## 11. Verifikasi webhook
 
-**Implementasi** — `core/payments.py`:
+**Implementasi** — `core/payment_views.py`, `core/payment_service.py`,
+`core/pakasir.py`:
 
-- `verify_webhook_signature(payload, header, secret, now, tolerance)`:
-  HMAC-SHA256 atas `"{timestamp}.{payload}"`, format `t=…,v1=…`,
-  perbandingan `hmac.compare_digest`, toleransi waktu default 300 detik,
-  tolak secret kosong/header rusak;
-- `parse_event`: hanya JSON objek, tolak array/XML/body besar;
-- `claim_webhook_event`: anti-replay idempoten (event ID diklaim sekali;
-  cache atomik), aman untuk retry gateway.
+- Endpoint `POST /pembayaran/pakasir/webhook/` (`@csrf_exempt`, hanya POST,
+  di luar `i18n_patterns` agar URL stabil).
+- Header `X-Secret` dari halaman proyek Pakasir dibandingkan dengan
+  `hmac.compare_digest`; secret kosong/berbeda → **401** dan audit
+  `WEBHOOK_REJECTED`. Tanpa secret, QRIS online tidak diaktifkan sama sekali.
+- Body dibatasi **16 KiB** dan wajib JSON objek; `order_id`, `txn_id`,
+  `amount`, `status`, `is_sandbox` divalidasi tipenya (bukan mempercayai
+  string/boolean palsu). Content-Type tidak dijadikan gerbang karena contoh
+  resmi Pakasir memakai `curl --data` (form-urlencoded) dengan body JSON.
+- `order_id` dicari ke `PaymentTransaction`; `txn_id`, nominal, dan mode
+  sandbox harus cocok dengan yang tercatat di database.
+- **Verifikasi ulang wajib:** server memanggil
+  `GET /api/v2/transaction-status/{slug}/{txn_id}` dengan `X-Api-Key` dan
+  mensyaratkan `status=completed`, `order_id` sama, `amount` sama. Body
+  webhook saja **tidak pernah** cukup untuk mengonfirmasi booking.
+- Settlement atomik (`select_for_update` pada transaksi + booking),
+  idempoten; audit `PAYMENT_RECEIVED` / `PAYMENT_UNMATCHED`.
+- Balasan: `200` sukses/duplikat, `400` payload/nominal/status salah,
+  `401` secret salah, `404` order tak dikenal, `409` belum lunas menurut API,
+  `503` API tidak terjangkau (Pakasir retry).
 
-**Status** — **N/A saat ini**: situs memakai transfer manual/QRIS tanpa
-callback. Helper sudah siap dan diuji agar integrasi gateway berikutnya
-tidak mengulang kesalahan umum (tanpa verifikasi signature/replay).
-
-**Test** — `WebhookTest`: signature valid, secret salah, timestamp basi,
-secret kosong, replay ditolak, payload non-objek ditolak.
-
-**Saat gateway diaktifkan** — audit berpindah otomatis dari N/A ke kontrol
-aktif. Sudah diuji:
+**Status** — **PASS** saat gateway Pakasir aktif; **N/A** bila memakai
+transfer manual. Hasil uji konfigurasi:
 
 | Kondisi | Hasil |
 |---|---|
-| `PAYMENT_GATEWAY_PROVIDER=midtrans` + `PAYMENT_WEBHOOK_SECRET` terisi | butir 11 **PASS**, ringkasan `PASS 19, WARN 0, FAIL 0, N/A 1` |
-| `PAYMENT_GATEWAY_PROVIDER=midtrans` tanpa secret | `manage.py check` **gagal** (`core.E015`), audit **FAIL** (exit 1) |
+| `PAYMENT_GATEWAY_PROVIDER=pakasir` + slug/API key/webhook secret | butir 11 & 12 **PASS**, ringkasan `PASS 20, WARN 0, FAIL 0, N/A 0` |
+| `pakasir` tanpa kredensial lengkap | `manage.py check` **gagal** (`core.E020`), audit **FAIL** |
+| Provider tak dikenal (`midtrans`, dll.) | `core.E019`, audit **FAIL** |
+| Tanpa provider (transfer manual) | **N/A** (2 kontrol), alur lama tetap berjalan |
 
-Artinya konfigurasi gateway tidak bisa "lupa verifikasi": sistem menolak
-hidup tanpa secret. Checklist integrasi saat memakai Midtrans/Xendit:
+**Test** — `core/tests_pakasir.WebhookTest` (22 test): secret salah/kosong,
+GET ditolak, JSON rusak, body > 16 KiB, `order_id`
+tidak dikenal, `txn_id`/nominal/sandbox tidak cocok, API masih pending,
+API error → 503 tanpa konfirmasi, webhook ganda idempoten, pembayaran
+setelah EXPIRED/melewati batas waktu → `needs_review`, webhook sewa,
+amount numerik berbentuk string, dan CSRF-exempt.
 
-1. `PAYMENT_GATEWAY_PROVIDER=midtrans` (atau `xendit`), `PAYMENT_WEBHOOK_SECRET`
-   acak ≥ 32 byte dari dashboard gateway.
-2. Buat view webhook `@csrf_exempt` yang membaca `request.body` **mentah**,
-   panggil `verify_webhook_signature()` → `parse_event()` →
-   `claim_webhook_event(event['id'])`, lalu cocokkan `order_id`/nominal
-   dengan `Booking.code` + `total_price` di database.
-3. Jangan pernah memakai nominal/status dari payload untuk membuat booking
-   baru; payload hanya memverifikasi pembayaran yang sudah ada.
-4. Balas `2xx` hanya setelah status tersimpan; selain itu `4xx` agar gateway
-   tidak retry tanpa henti. Retry ganda aman karena idempoten.
-5. Tambahkan endpoint ke `RATELIMIT_EXEMPT_PREFIXES` (gateway punya IP
-   dinamis) dan batasi dengan signature, bukan rate limit.
-6. Uji di sandbox gateway sebelum produksi; pantau audit `PAYMENT_VERIFIED`.
-
-**Sisa risiko** — endpoint webhook adalah permukaan serangan baru: wajib
-HTTPS, secret kuat, toleransi waktu kecil (300 s), dan log tidak boleh
-memuat secret/header signature.
+**Sisa risiko** — `X-Secret` bersifat statis (bukan signature per-request
+seperti HMAC). Bila secret bocor, penyerang bisa mengirim event palsu;
+karena itu setiap event tetap diverifikasi ulang ke API dengan API key
+server-side. Rotasi secret dari dashboard bila dicurigai bocor, wajib HTTPS,
+dan pantau audit `WEBHOOK_REJECTED`. Endpoint publik dibatasi 120
+permintaan/menit per IP (di samping batas global).
 
 ---
 
 ## 12. Pemeriksaan payment server
 
-**Implementasi** — Alur pembayaran adalah **transfer manual / QRIS**:
-pelanggan mengunggah bukti, staf memverifikasi di admin. Tidak ada server
-pembayaran, callback, atau penyimpanan data kartu. Status booking hanya
-bisa diubah oleh staf melalui admin (aksi "Konfirmasi pembayaran"), yang
-memicu audit `PAYMENT_VERIFIED`.
+**Implementasi** — QRIS diproses di **halaman hosted Pakasir**
+(`payment_link` + `qris_only=1`). Situs tidak menerima, memproses, atau
+menyimpan PAN/CVV/data kartu apa pun. Yang disimpan hanya `txn_id`,
+`order_id`, nominal, `fee`, `total_payment`, status, `expires_at`,
+`is_sandbox`, dan URL pembayaran resmi (`https://app.pakasir.com/pay-v2/…`).
 
-**Status** — **N/A** (tidak ada payment server). Bila gateway ditambahkan,
-wajib: signature (butir 11), idempotensi, rekonsiliasi nominal server-side,
-dan jangan pernah menyimpan PAN/CVV. Karena situs tidak menyimpan data kartu
-dan tidak menerima callback, tidak ada PCIDSS scope saat ini; memakai
-halaman pembayaran hosted (Midtrans Snap / Xendit Checkout) menjaga kondisi
-ini — jangan membuat form kartu sendiri.
+- API key hanya dikirim dari server lewat header `X-Api-Key` (tidak pernah ke
+  browser, template, URL, atau log).
+- `PaymentTransaction` read-only untuk superuser; tidak ada tombol
+  "tandai lunas" manual. Pembayaran yang tidak bisa dicocokkan ditandai
+  `needs_review` dan tidak mengubah status booking.
+- Transfer bank manual + verifikasi admin tetap tersedia sebagai fallback
+  bila gateway mati atau pelanggan memilih bank transfer.
+- Nominal tidak pernah berasal dari klien: dibuat dari `total_price` di
+  database; nominal di webhook/API dicocokkan dengan nilai tersebut.
+
+**Status** — **PASS** saat gateway aktif; **N/A** saat hanya transfer manual.
+
+**Sisa risiko** — ketersediaan pihak ketiga: bila API Pakasir down, pembuatan
+link dan sinkronisasi status gagal dengan pesan aman (booking tetap PENDING
+dan dapat dibayar via transfer manual). Biaya gateway (`total_payment =
+amount + fee`) ditanggung pembeli dan ditampilkan di halaman Pakasir. Link
+berlaku 24 jam, sedangkan booking kedaluwarsa 2 jam — pembayaran setelah
+EXPIRED tidak dikonfirmasi otomatis dan perlu refund/tinjauan admin. Karena
+halaman pembayaran di-host Pakasir, scope PCI DSS tetap di sisi mereka;
+jangan pernah membuat form kartu sendiri di situs ini.
 
 ---
 
@@ -621,7 +672,7 @@ setiap push/PR:
 1. `pip check` + `pip-audit -r requirements.txt`;
 2. `flake8` (error sintaks/undefined name);
 3. `python manage.py check`;
-4. `python manage.py test` (230 test, termasuk 117 test keamanan);
+4. `python manage.py test` (287 test, termasuk 174 test keamanan);
 5. `python manage.py security_audit --no-fail`;
 6. `python manage.py check --deploy --fail-level WARNING` dengan env
    produksi (DEBUG=0, HTTPS, cookie Secure, admin IP, Redis, `sslmode=require`);
@@ -659,9 +710,16 @@ python manage.py security_audit
 - [ ] `DJANGO_ADMIN_ALLOWED_IPS` diisi (loopback + CIDR LAN kantor)
 - [ ] Password admin diganti; `DJANGO_ADMIN_PASSWORD` tidak ada di repo
 - [ ] `CORS_ALLOWED_ORIGINS` kosong atau origin eksplisit (tanpa `*`)
-- [ ] `PAYMENT_WEBHOOK_SECRET` diisi bila gateway diaktifkan
+- [ ] QRIS online: `PAYMENT_GATEWAY_PROVIDER=pakasir`, `PAKASIR_SLUG`,
+      `PAKASIR_API_KEY`, `PAKASIR_WEBHOOK_SECRET`, `PAKASIR_SANDBOX=0`
+- [ ] Webhook URL di dashboard Pakasir =
+      `https://domain-anda/pembayaran/pakasir/webhook/` (HTTPS)
+- [ ] Uji 1 pembayaran QRIS nyata bernominal kecil + 1 transaksi sandbox;
+      pastikan booking otomatis `CONFIRMED`
+- [ ] Transfer manual + unggah bukti tetap berfungsi saat gateway dimatikan
 - [ ] `python manage.py check --deploy --fail-level WARNING` → 0 issue
 - [ ] `python manage.py security_audit` → FAIL 0, WARN ditinjau
+      (`PASS 20` bila Pakasir aktif; `N/A 2` bila manual)
 - [ ] `python manage.py test` → semua lulus
 - [ ] Backup harian + drill restore ≤ 30 hari, salinan off-site
 - [ ] Nginx `server_tokens off`, HSTS, TLS 1.2/1.3, `nginx -t` lulus

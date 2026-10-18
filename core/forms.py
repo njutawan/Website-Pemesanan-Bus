@@ -8,13 +8,29 @@ from django.utils.translation import gettext_lazy as _
 from core.settings import PAYMENT_METHODS
 
 
+def manual_payment_methods():
+    """Metode yang perlu bukti transfer manual.
+
+    Saat QRIS online (Pakasir) aktif, opsi QRIS statis disembunyikan agar
+    pelanggan tidak membayar ke dua kanal QRIS yang berbeda.
+    """
+    from core.pakasir import is_enabled
+    if is_enabled():
+        return [item for item in PAYMENT_METHODS if item[0] != 'qris']
+    return list(PAYMENT_METHODS)
+
+
 class PaymentProofForm(forms.Form):
     """Upload bukti transfer/QRIS oleh pelanggan."""
     payment_method = forms.TypedChoiceField(
         label=_('Metode pembayaran'),
-        choices=PAYMENT_METHODS,
+        choices=[],
         widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
     )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['payment_method'].choices = manual_payment_methods()
+
     payment_proof = forms.ImageField(
         label=_('Bukti pembayaran'),
         help_text=_('Format JPG/PNG, maks. 5 MB. Screenshot m-banking atau foto struk/QRIS.'),

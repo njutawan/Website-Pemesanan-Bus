@@ -1,7 +1,8 @@
 """Verifikasi webhook pembayaran (provider-agnostik, tanpa panggilan keluar).
 
-Situs ini memakai transfer manual/QRIS + verifikasi admin, jadi TIDAK ADA
-endpoint webhook yang aktif. Modul ini disiapkan untuk integrasi gateway
+Situs ini memakai Pakasir API v2 untuk QRIS online (lihat
+``core/payment_service.py``) dan transfer manual sebagai fallback. Modul ini
+menyediakan helper HMAC generik untuk provider lain di masa depan
 (midtrans/Xendit/dll.) dengan kontrak yang aman:
 
 1. Endpoint webhook WAJIB membaca **raw body** (``request.body``), bukan

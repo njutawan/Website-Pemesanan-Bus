@@ -19,7 +19,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from booking.models import Booking, BookingSeat
-from core.models import AuditLog, PageMeta, SeoKeyword
+from core.models import AuditLog, PageMeta, PaymentTransaction, SeoKeyword
 from rental.models import RentalBooking
 
 
@@ -101,6 +101,39 @@ class AuditLogAdmin(admin.ModelAdmin):
     readonly_fields = (
         'created_at', 'actor', 'action', 'success', 'target', 'ip',
         'user_agent', 'request_id', 'metadata')
+    list_per_page = 50
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_view_permission(self, request, obj=None):
+        return bool(request.user.is_active and request.user.is_superuser)
+
+    def has_module_permission(self, request):
+        return bool(request.user.is_active and request.user.is_superuser)
+
+
+@admin.register(PaymentTransaction, site=admin_site)
+class PaymentTransactionAdmin(admin.ModelAdmin):
+    """Transaksi gateway read-only — rekonsiliasi tanpa bisa diubah manual."""
+
+    list_display = (
+        'created_at', 'order_id', 'kind', 'booking_code', 'amount',
+        'status', 'is_sandbox', 'needs_review')
+    list_filter = ('provider', 'kind', 'status', 'is_sandbox', 'needs_review')
+    search_fields = ('order_id', 'booking_code', 'txn_id')
+    date_hierarchy = 'created_at'
+    readonly_fields = (
+        'provider', 'order_id', 'kind', 'booking_code', 'amount', 'fee',
+        'total_payment', 'txn_id', 'payment_url', 'status', 'is_sandbox',
+        'needs_review', 'expires_at', 'paid_at', 'last_event',
+        'created_at', 'updated_at')
     list_per_page = 50
 
     def has_add_permission(self, request):

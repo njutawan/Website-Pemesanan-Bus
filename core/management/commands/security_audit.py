@@ -78,9 +78,18 @@ class Command(BaseCommand):
         sinks = self._grep_code((
             'requests.', 'urlopen(', 'httpx.', 'aiohttp.', 'socket.socket(',
         ))
-        self._add(4, 'Cegah SSRF', PASS if not sinks else WARN,
-                  'Tidak ada HTTP client keluar; URL admin/SEO divalidasi '
-                  'internal.' if not sinks else f'Tinjau: {sinks[:3]}')
+        pakasir = (Path(settings.BASE_DIR) / 'core' / 'pakasir.py')
+        if sinks:
+            self._add(4, 'Cegah SSRF', WARN, f'Tinjau: {sinks[:3]}')
+        elif pakasir.exists():
+            self._add(4, 'Cegah SSRF', PASS,
+                      'Satu HTTP client keluar (core/pakasir.py) dengan host '
+                      'tetap https://app.pakasir.com, path tervalidasi, tanpa '
+                      'redirect; URL admin/SEO internal.')
+        else:
+            self._add(4, 'Cegah SSRF', PASS,
+                      'Tidak ada HTTP client keluar; URL admin/SEO '
+                      'divalidasi internal.')
 
         self._add(5, 'Cegah Path Traversal', PASS,
                   'Media dinormalisasi + allowlist ekstensi + safe_join; '
@@ -116,19 +125,41 @@ class Command(BaseCommand):
                   'core.AuditLog + /admin/core/auditlog/ (read-only, superuser), '
                   'login/gagal/logout, pembayaran, upload, rate limit.')
 
-        if getattr(s, 'PAYMENT_GATEWAY_PROVIDER', ''):
-            ok = bool(getattr(s, 'PAYMENT_WEBHOOK_SECRET', ''))
-            self._add(11, 'Verifikasi webhook', PASS if ok else FAIL,
-                      'HMAC + timestamp + idempotensi tersedia.' if ok
-                      else 'Gateway aktif tanpa PAYMENT_WEBHOOK_SECRET.')
+        provider = (getattr(s, 'PAYMENT_GATEWAY_PROVIDER', '') or '').lower()
+        if provider == 'pakasir':
+            creds_ok = bool(
+                getattr(s, 'PAKASIR_SLUG', '')
+                and getattr(s, 'PAKASIR_API_KEY', '')
+                and getattr(s, 'PAKASIR_WEBHOOK_SECRET', ''))
+            self._add(
+                11, 'Verifikasi webhook',
+                PASS if creds_ok else FAIL,
+                'Pakasir v2: header X-Secret (constant-time) + verifikasi '
+                'ulang transaction-status API + nominal/order dicocokkan '
+                'server-side sebelum booking dikonfirmasi.' if creds_ok
+                else 'Gateway Pakasir aktif tanpa kredensial lengkap '
+                     '(slug/api key/webhook secret).')
+        elif provider:
+            self._add(11, 'Verifikasi webhook', FAIL,
+                      f'Provider {provider!r} tidak didukung; hanya '
+                      "'pakasir' atau kosong (manual).")
         else:
             self._add(11, 'Verifikasi webhook', NA,
                       'Tidak ada webhook/gateway (transfer manual). '
                       'Helper HMAC siap di core.payments.')
 
-        self._add(12, 'Cek payment server', NA,
-                  'Tidak ada payment server/gateway; tidak ada data kartu. '
-                  'Status hanya diubah staf lewat admin.')
+        if provider == 'pakasir':
+            self._add(12, 'Cek payment server', PASS,
+                      'QRIS diproses halaman hosted Pakasir; tidak ada data '
+                      'kartu/QR mentah yang disimpan. API key hanya di server, '
+                      'nominal dari DB, webhook diverifikasi ulang ke API.')
+        elif provider:
+            self._add(12, 'Cek payment server', FAIL,
+                      'Provider pembayaran tidak didukung.')
+        else:
+            self._add(12, 'Cek payment server', NA,
+                      'Tidak ada payment server/gateway; tidak ada data kartu. '
+                      'Status hanya diubah staf lewat admin.')
 
         self._add(13, 'Harga anti-tamper', PASS,
                   'Harga selalu dari DB (schedule.price / vehicle.price_per_day); '
