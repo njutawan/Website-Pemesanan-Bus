@@ -43,6 +43,22 @@ CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # =============================================================================
+# Standardisasi URL & kanonik (SEO)
+# =============================================================================
+# /bus -> 301 /bus/ (CommonMiddleware). Semua pola URL memakai trailing slash.
+APPEND_SLASH = True
+# Standar domain utama: TANPA www. www dialihkan 301 di level Nginx
+# (deploy/nginx.conf) — lebih hemat satu hop aplikasi.
+PREPEND_WWW = False
+# Paksa HTTPS di level aplikasi HANYA saat env produksi di-set — jangan
+# hardcode True agar preview/lokal HTTP tetap berfungsi. Redirect utama
+# HTTP->HTTPS ada di Nginx.
+SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SSL_REDIRECT', '0') == '1'
+if SECURE_SSL_REDIRECT:
+    SECURE_HSTS_SECONDS = 31_536_000          # HSTS 1 tahun
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+# =============================================================================
 # Aplikasi
 # =============================================================================
 INSTALLED_APPS = [
@@ -70,6 +86,8 @@ SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # /BUS/ -> 301 /bus/ (path kapital tidak resmi; kode booking dipertahankan)
+    'core.middleware.LowercasePathMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     # Deteksi bahasa (/id/, /en/) — wajib sebelum CommonMiddleware

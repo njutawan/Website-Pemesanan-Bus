@@ -72,6 +72,14 @@ dwibahasa **Indonesia / English**.
   dan flag noindex per path. Baris tanpa prefiks (`/bus/`) berlaku untuk ID &
   EN; buat `/en/bus/` bila ingin judul khusus EN. Prioritas:
   **PageMeta > judul halaman/objek > default templat**
+- **Standardisasi URL (anti-duplikat kanonik)**: `APPEND_SLASH = True`
+  (`/bus` → 301 `/bus/`), middleware `LowercasePathMiddleware`
+  (`/BUS/` → 301 `/bus/`; kode booking kapital `NT-XXXXXX` tidak disentuh),
+  standar domain **tanpa www** (`PREPEND_WWW = False`; `www` → apex 301 di
+  Nginx), dan paksa HTTPS via env `DJANGO_SSL_REDIRECT=1` (lapis kedua —
+  redirect utama HTTP→HTTPS ada di blok Nginx, lengkap HSTS). Canonical
+  selalu self-referential **tanpa parameter tracking** (`?utm_*`, `?page`
+  otomatis gugur karena memakai `request.path`)
 - **Structured data (JSON-LD)**: dibangun sebagai dict Python di context view,
   dirender via filter aman `jsonld` (escaping `</`, `<`, `&` — pola `json_script`
   bawaan Django) melalui `{% block schema_json %}` di `<head>`. Tipe per halaman:

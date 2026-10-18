@@ -230,3 +230,36 @@ class JSONLDTest(TestCase):
         self.assertEqual(prod['offers']['priceCurrency'], 'IDR')
         self.assertEqual(prod['offers']['price'], '350000')
         self.assertIn('/media/vehicles/', prod['image'])
+
+
+class URLNormalizationTest(TestCase):
+    """Standardisasi URL: trailing slash, huruf kecil, canonical bebas utm."""
+
+    def test_tanpa_slash_redirect_301(self):
+        r = self.client.get('/bus')
+        self.assertEqual(r.status_code, 301)
+        self.assertEqual(r['Location'], '/bus/')
+
+    def test_path_kapital_redirect_301_ke_kecil(self):
+        r = self.client.get('/BUS/')
+        self.assertEqual(r.status_code, 301)
+        self.assertEqual(r['Location'], '/bus/')
+        r = self.client.get('/Tentang/?utm_source=ig')
+        self.assertEqual(r.status_code, 301)
+        self.assertEqual(r['Location'], '/tentang/?utm_source=ig')  # query utuh
+
+    def test_kode_booking_kapital_tidak_diredirect(self):
+        # path resolve (kode NT-XXXXXX memang kapital) -> lewat ke view -> 404
+        r = self.client.get('/bus/booking/NT-ABC123/')
+        self.assertEqual(r.status_code, 404)
+        self.assertNotIn('Location', r)
+
+    def test_canonical_bebas_parameter_tracking(self):
+        html = self.client.get('/tentang/?utm_source=ig&utm_campaign=x&page=3').content.decode()
+        self.assertIn('rel="canonical" href="http://testserver/tentang/"', html)
+
+    def test_setting_standar(self):
+        from django.conf import settings
+        self.assertTrue(settings.APPEND_SLASH)
+        self.assertFalse(settings.PREPEND_WWW)
+        self.assertFalse(settings.SECURE_SSL_REDIRECT)  # default env: mati (preview HTTP)
