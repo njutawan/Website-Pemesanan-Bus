@@ -1,14 +1,66 @@
+<div align="center">
+
+<img src="static/img/logo.png" width="90" alt="Nusantara Trans">
+
 # 🚌 Nusantara Trans — Website Pemesanan Tiket Bus & Rental Mobil
 
-Aplikasi web pemesanan **tiket bus antar kota** (dengan pemilihan kursi) dan **rental mobil**,
-dibangun dengan **Python (Django)**, **Bootstrap 5**, **Font Awesome 6**, siap di-deploy
-di belakang **Nginx**, dengan SEO **Open Graph** + `sitemap.xml` + `hreflang`, dan
-dwibahasa **Indonesia / English**.
+Pesan **tiket bus antar kota** dengan denah kursi interaktif & pembayaran QRIS,
+plus **rental mobil** — lengkap dengan panel admin, SEO siap ranking, dan dwibahasa ID/EN.
 
-> Demo data: kota Jember & sekitarnya (Jawa Timur). Rute, jadwal, armada, dan mobil
-> rental sudah diisi lewat perintah seed.
+**Dibangun dengan [Django 5.2](https://www.djangoproject.com/) + [PostgreSQL](https://www.postgresql.org/) + [Bootstrap 5](https://getbootstrap.com/). Didukung [Docker](https://www.docker.com/), [Nginx](https://nginx.org/) & [Redis](https://redis.io/) — demo data Jember & sekitarnya.**
+
+<br>
+
+<a href="#quick-start">
+  <img height="42" src="https://img.shields.io/badge/GETTING%20STARTED-24292e?style=for-the-badge&amp;logo=github&amp;logoColor=white" alt="Getting Started">
+  <img height="42" src="https://img.shields.io/badge/MULAI%20SEKARANG-2ea44f?style=for-the-badge" alt="Mulai Sekarang">
+</a>
+<a href="#deploy">
+  <img height="42" src="https://img.shields.io/badge/DEPLOY%20PRODUKSI-24292e?style=for-the-badge&amp;logo=docker&amp;logoColor=white" alt="Deploy Produksi">
+  <img height="42" src="https://img.shields.io/badge/DOCKER%20%26%20NGINX-1f6feb?style=for-the-badge" alt="Docker & Nginx">
+</a>
+
+<br>
+
+<a href="#quick-start"><strong>Mulai Cepat</strong></a> · <a href="#fitur"><strong>Fitur</strong></a> · <a href="#alur-pemesanan"><strong>Alur Pemesanan</strong></a> · <a href="#deploy"><strong>Deploy</strong></a> · <a href="#stack"><strong>Stack</strong></a>
+
+<br><br>
+
+<img src="https://img.shields.io/badge/framework-Django-0C4B33" alt="framework Django">
+<img src="https://img.shields.io/badge/database-PostgreSQL-4169E1" alt="database PostgreSQL">
+<img src="https://img.shields.io/badge/ui-Bootstrap%205-7952B3" alt="ui Bootstrap 5">
+<img src="https://img.shields.io/badge/python-3.11%2B-3776AB" alt="python 3.11+">
+<img src="https://img.shields.io/badge/language-ID%20%7C%20EN-6e40c9" alt="language ID | EN">
+<img src="https://img.shields.io/github/stars/njutawan/Website-Pemesanan-Bus?label=stars&amp;color=2ea44f" alt="stars">
+
+<br><br>
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <sub>⚡ <b>CEPAT DIJALANKAN</b></sub><br><br>
+      <strong>4 Perintah ke Demo Lokal</strong><br>
+      <sub>install → migrate → seed → runserver</sub>
+    </td>
+    <td align="center" width="50%">
+      <sub>🔍 <b>SEO &amp; PERFORMA</b></sub><br><br>
+      <strong>JSON-LD · Sitemap · WebP · Cache</strong><br>
+      <sub>TTFB ~5–10 ms · Core Web Vitals terjaga</sub>
+    </td>
+  </tr>
+</table>
+
+<br>
+
+<img src="static/img/hero-bus-900.webp" width="100%" alt="Nusantara Trans — tiket bus antar kota & rental mobil">
+
+</div>
+
+> 📍 Demo data: kota **Jember & sekitarnya** (Jawa Timur). Rute, jadwal, armada, dan mobil rental sudah diisi lewat perintah `seed_data`.
 
 ---
+
+<a id="fitur"></a>
 
 ## ✨ Fitur
 
@@ -205,6 +257,8 @@ dwibahasa **Indonesia / English**.
 
 ---
 
+<a id="quick-start"></a>
+
 ## 🚀 Menjalankan Proyek
 
 ### 1. Instalasi
@@ -258,6 +312,8 @@ docker compose down                        # berhenti
 docker compose down -v                     # berhenti + hapus data database
 ```
 
+<a id="alur-pemesanan"></a>
+
 ### 3. Alur pemesanan (untuk dicoba)
 
 1. Beranda → cari `Jember → Surabaya` → pilih jadwal
@@ -304,6 +360,8 @@ ada kamusnya terdaftar sebagai *fallback* di output perintah — tinggal tambahk
 
 ---
 
+<a id="deploy"></a>
+
 ## 🖥️ Deploy Produksi (Gunicorn + Nginx)
 
 ```bash
@@ -343,11 +401,13 @@ Konfigurasi Nginx reverse proxy lengkap (static/media/cache/gzip/HTTPS) tersedia
 └── deploy/nginx.conf      # Config Nginx produksi
 ```
 
+<a id="stack"></a>
+
 ## 🧰 Stack
 
 | Lapisan | Teknologi |
 |---|---|
-| Bahasa | PHP *(tidak dipakai — final: Python)*, Python 3.11+ |
+| Bahasa | Python 3.11+ |
 | Framework | Django 5.2 |
 | UI | Bootstrap 5.3, Font Awesome 6.7, Plus Jakarta Sans |
 | Web server | Nginx (reverse proxy) + Gunicorn + WhiteNoise |
@@ -356,3 +416,17 @@ Konfigurasi Nginx reverse proxy lengkap (static/media/cache/gzip/HTTPS) tersedia
 | i18n | Django LocaleMiddleware + katalog gettext (ID/EN) |
 | Redirect | `django.contrib.redirects` + `RedirectFallbackMiddleware` (301 dari DB) |
 | Pembayaran | Transfer manual / QRIS + verifikasi admin |
+
+---
+
+## 🏷️ About & Kata Kunci Repository
+
+Salin-tempel ke **GitHub → Settings → General**:
+
+**Description (About)** — maks. 350 karakter:
+
+> 🚌 Nusantara Trans — website pemesanan tiket bus antar kota (denah kursi interaktif, bayar QRIS, e-tiket) & rental mobil. Dibangun dengan Django 5.2 + PostgreSQL + Bootstrap 5: panel admin + grafik, SEO lengkap (JSON-LD, sitemap, topic cluster), dwibahasa ID/EN, siap deploy Docker & Nginx.
+
+**Topics (kata kunci)**:
+
+`django` `python` `django-app` `bus-booking` `ticket-booking` `booking-system` `car-rental` `postgresql` `bootstrap` `seo` `open-graph` `docker` `nginx` `gunicorn` `qris` `indonesia` `web-application` `i18n`
