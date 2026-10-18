@@ -68,9 +68,21 @@ PREPEND_WWW = False
 # hardcode True agar preview/lokal HTTP tetap berfungsi. Redirect utama
 # HTTP->HTTPS ada di Nginx.
 SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SSL_REDIRECT', '0') == '1'
+
+# Header keamanan yang aman di semua mode (tidak mengganggu iframe pratinjau)
+SECURE_CONTENT_TYPE_NOSNIFF = True   # X-Content-Type-Options: nosniff
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+# Header produksi penuh (ikuti DJANGO_SSL_REDIRECT=1): HSTS + anti-clickjacking.
+# X-Frame-Options: DENY sengaja env-gated — bila aktif di sandbox, pratinjau
+# berbasis iframe langsung rusak; di produksi dilarang diframe siapa pun.
 if SECURE_SSL_REDIRECT:
-    SECURE_HSTS_SECONDS = 31_536_000          # HSTS 1 tahun
+    SECURE_HSTS_SECONDS = 31_536_000          # HSTS 1 tahun (31536000)
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    X_FRAME_OPTIONS = 'DENY'
+    MIDDLEWARE.append('django.middleware.clickjacking.XFrameOptionsMiddleware')
+else:
+    X_FRAME_OPTIONS = 'SAMEORIGIN'  # tidak dipakai (middleware tak terpasang)
 
 # =============================================================================
 # Aplikasi
@@ -99,6 +111,8 @@ INSTALLED_APPS = [
 SITE_ID = 1
 
 MIDDLEWARE = [
+    # Kompresi payload HTML/CSS/JSON (paling atas agar semua respons terkompres)
+    'django.middleware.gzip.GZipMiddleware',
     'django.middleware.security.SecurityMiddleware',
     # /BUS/ -> 301 /bus/ (path kapital tidak resmi; kode booking dipertahankan)
     'core.middleware.LowercasePathMiddleware',
@@ -114,9 +128,8 @@ MIDDLEWARE = [
     # Harus PALING BAWAH: hanya bertindak saat request tidak ditangani apa pun
     # (404) — URL lama yang berpindah tidak lagi menghasilkan broken link.
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-    # Catatan: XFrameOptionsMiddleware sengaja dilepas agar pratinjau sandbox
-    # bisa ditampilkan dalam iframe. Untuk produksi, aktifkan kembali:
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Bot: X-Robots-Tag utk admin, media, & hasil pencarian dinamis
+    'core.middleware.XRobotsTagMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'

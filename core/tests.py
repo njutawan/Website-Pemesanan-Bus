@@ -1,4 +1,4 @@
-"""Uji manajemen redirect (django.contrib.redirects) & halaman inti."""
+from django.test import TestCase, override_settings
 from django.contrib.redirects.models import Redirect
 from django.contrib.sites.models import Site
 from django.test import TestCase
@@ -430,3 +430,47 @@ class PasswordHashingTest(TestCase):
         # ...dan hash otomatis di-upgrade ke bcrypt
         u.refresh_from_db()
         self.assertTrue(u.password.startswith('bcrypt_sha256$'))
+
+
+class SecurityHeadersTest(TestCase):
+    """Header keamanan & bot: nosniff, gzip, X-Robots-Tag, frame DENY produksi."""
+
+    def test_nosniff_selalu_aktif(self):
+        r = self.client.get('/')
+        self.assertEqual(r['X-Content-Type-Options'], 'nosniff')
+        self.assertEqual(r['Referrer-Policy'], 'strict-origin-when-cross-origin')
+
+    def test_gzip_middleware(self):
+        r = self.client.get('/', HTTP_ACCEPT_ENCODING='gzip, deflate, br')
+        self.assertEqual(r['Content-Encoding'], 'gzip')
+        self.assertIn('Accept-Encoding', r['Vary'])
+
+    def test_x_robots_admin_dan_media(self):
+        r = self.client.get('/admin/login/')
+        self.assertEqual(r['X-Robots-Tag'], 'noindex, nofollow')
+        r = self.client.get('/media/vehicles/toyota-avanza.webp')
+        self.assertEqual(r['X-Robots-Tag'], 'noindex, nofollow')
+
+    def test_x_robots_hasil_pencarian_dinamis(self):
+        r = self.client.get('/bus/?origin=1&destination=2&date=2026-12-01')
+        self.assertEqual(r['X-Robots-Tag'], 'noindex, follow')
+        # halaman publik normal bebas header (tetap dapat diindeks)
+        for url in ('/', '/bus/', '/tentang/', '/robots.txt'):
+            self.assertNotIn('X-Robots-Tag', self.client.get(url))
+
+    def test_frame_deny_hsts_di_produksi(self):
+        from django.conf import settings
+        mw = [m for m in settings.MIDDLEWARE
+              if 'XFrameOptions' not in m] + ['django.middleware.clickjacking.XFrameOptionsMiddleware']
+        with override_settings(MIDDLEWARE=mw, X_FRAME_OPTIONS='DENY',
+                               SECURE_SSL_REDIRECT=True, SECURE_HSTS_SECONDS=31536000,
+                               SECURE_HSTS_INCLUDE_SUBDOMAINS=True):
+            r = self.client.get('/', secure=True)
+            self.assertEqual(r['X-Frame-Options'], 'DENY')
+            self.assertEqual(r['Strict-Transport-Security'],
+                             'max-age=31536000; includeSubDomains')
+
+    def test_preview_tanpa_x_frame_options(self):
+        # mode default (tanpa DJANGO_SSL_REDIRECT): tidak ada header XFO
+        r = self.client.get('/')
+        self.assertNotIn('X-Frame-Options', r)

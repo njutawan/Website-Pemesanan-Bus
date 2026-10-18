@@ -28,3 +28,28 @@ class LowercasePathMiddleware:
                 target = path.lower() + (f'?{query}' if query else '')
                 return HttpResponsePermanentRedirect(target)
         return self.get_response(request)
+
+
+class XRobotsTagMiddleware:
+    """Header X-Robots-Tag: kendali perayapan per-respons (melengkapi robots.txt).
+
+    * /admin/ & /media/ -> ``noindex, nofollow`` — halaman internal dan
+      berkas unggahan (termasuk bukti pembayaran) tidak untuk mesin pencari.
+    * Halaman dengan parameter pencarian dinamis (origin/destination/kode)
+      -> ``noindex, follow`` — hasil pencarian per-kombinasi bukan konten
+      kanonik; link-nya tetap boleh diikuti crawler.
+    """
+
+    NOINDEX_PREFIXES = ('/admin/', '/media/')
+    SEARCH_PARAMS = {'origin', 'destination', 'kode', 'code'}
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        if request.path.startswith(self.NOINDEX_PREFIXES):
+            response.headers.setdefault('X-Robots-Tag', 'noindex, nofollow')
+        elif request.GET and set(request.GET) & self.SEARCH_PARAMS:
+            response.headers.setdefault('X-Robots-Tag', 'noindex, follow')
+        return response

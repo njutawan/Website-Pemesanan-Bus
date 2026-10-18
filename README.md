@@ -72,6 +72,14 @@ dwibahasa **Indonesia / English**.
   dan flag noindex per path. Baris tanpa prefiks (`/bus/`) berlaku untuk ID &
   EN; buat `/en/bus/` bila ingin judul khusus EN. Prioritas:
   **PageMeta > judul halaman/objek > default templat**
+- **Security & bot headers**: `SECURE_CONTENT_TYPE_NOSNIFF` +
+  Referrer-Policy selalu aktif; **HSTS 31536000** & `X-Frame-Options: DENY`
+  otomatis saat produksi (`DJANGO_SSL_REDIRECT=1` — XFO env-gated agar
+  pratinjau sandbox yang berbasis iframe tidak rusak).
+  `GZipMiddleware` mengompres payload dinamis (statik via WhiteNoise/Nginx).
+  `X-Robots-Tag`: `noindex, nofollow` utk `/admin/` & `/media/` (juga di
+  Nginx), `noindex, follow` utk halaman berparameter pencarian
+  (`?origin=…&destination=…`) — kendali perayapan per-respons
 - **Password bcrypt**: `PASSWORD_HASHERS` memakai
   `BCryptSHA256PasswordHasher` (cost 12, pre-hash SHA-256 agar password
   panjang tidak terpotong 72-byte) untuk semua password baru — termasuk
