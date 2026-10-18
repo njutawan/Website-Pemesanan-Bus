@@ -37,6 +37,9 @@ msgstr "4 Steps to Your Journey"
 msgid "AC"
 msgstr ""
 
+msgid "Ada bukti"
+msgstr "With proof"
+
 msgid "Ada kursi yang tidak ditemukan pada bus ini."
 msgstr "Some seats were not found on this bus."
 
@@ -51,6 +54,9 @@ msgstr "Denpasar Agent — Ubung Terminal"
 
 msgid "Agen Surabaya — Terminal Purabaya"
 msgstr "Surabaya Agent — Purabaya Terminal"
+
+msgid "Aksi Cepat"
+msgstr "Quick Actions"
 
 msgid "Ambil"
 msgstr "Pick-up"
@@ -91,6 +97,9 @@ msgstr ""
 msgid "Batalkan pesanan yang dipilih"
 msgstr ""
 
+msgid "Batas"
+msgstr "Deadline"
+
 msgid "Batas waktu pembayaran sudah lewat."
 msgstr "The payment deadline has passed."
 
@@ -110,11 +119,29 @@ msgstr "Pay & go"
 msgid "Bayar sebelum"
 msgstr "Pay before"
 
+msgid "Belum Bayar"
+msgstr "Unpaid"
+
+msgid "Belum ada booking."
+msgstr "No bookings yet."
+
+msgid "Belum ada data pemesanan."
+msgstr "No booking data yet."
+
 msgid "Belum ada jadwal untuk rute & tanggal ini"
 msgstr "No schedules for this route & date yet"
 
 msgid "Belum ada mobil pada kategori ini"
 msgstr "No vehicles in this category yet"
+
+msgid "Belum ada penumpang untuk keberangkatan hari ini."
+msgstr "No passengers for today's departures yet."
+
+msgid "Belum ada pesanan sewa."
+msgstr "No rental orders yet."
+
+msgid "Belum unggah"
+msgstr "Not uploaded"
 
 msgid "Beranda"
 msgstr "Home"
@@ -131,8 +158,20 @@ msgstr "Pay via QRIS."
 msgid "Booking"
 msgstr "Booking"
 
+msgid "Booking %s dikonfirmasi."
+msgstr "Booking %s confirmed."
+
+msgid "Booking & Pendapatan — 14 Hari Terakhir"
+msgstr "Bookings & Revenue — Last 14 Days"
+
 msgid "Booking Berhasil Dibuat!"
 msgstr "Booking Created Successfully!"
+
+msgid "Booking Hari Ini"
+msgstr "Bookings Today"
+
+msgid "Booking Terbaru"
+msgstr "Latest Bookings"
 
 msgid "Booking berhasil dibuat! Selesaikan pembayaran sebelum batas waktu."
 msgstr "Booking created! Complete the payment before the deadline."
@@ -149,6 +188,9 @@ msgstr "This booking is no longer active."
 msgid "Booking ini sudah tidak bisa menerima unggahan bukti."
 msgstr "This booking can no longer accept proof uploads."
 
+msgid "Booking tidak berstatus menunggu pembayaran."
+msgstr "Booking is not awaiting payment."
+
 msgid "Buat Booking"
 msgstr "Create Booking"
 
@@ -157,6 +199,9 @@ msgstr "Open Navigation"
 
 msgid "Buka navigasi"
 msgstr "Toggle navigation"
+
+msgid "Bukti"
+msgstr "Proof"
 
 msgid "Bukti pembayaran"
 msgstr "Payment proof"
@@ -243,6 +288,9 @@ msgstr "Try another date, or contact us on WhatsApp for a custom charter."
 msgid "Dari"
 msgstr "From"
 
+msgid "Dasbor"
+msgstr "Dashboard"
+
 msgid "Data Pemesan"
 msgstr "Booking Details"
 
@@ -273,6 +321,9 @@ msgstr "Built with Django & Bootstrap"
 msgid "Dibatalkan"
 msgstr "Cancelled"
 
+msgid "Dibuat"
+msgstr "Created"
+
 msgid "Digunakan untuk konfirmasi & e-tiket."
 msgstr "Used for confirmation & your e-ticket."
 
@@ -290,6 +341,9 @@ msgstr "Economy"
 
 msgid "Eksekutif"
 msgstr "Executive"
+
+msgid "Ekspor CSV yang dipilih"
+msgstr "Export selected as CSV"
 
 msgid "Email"
 msgstr "Email"
@@ -331,6 +385,9 @@ msgstr "Contact Information"
 
 msgid "Isi data"
 msgstr "Fill in details"
+
+msgid "Jadwal"
+msgstr "Schedule"
 
 msgid "Jadwal Hari Ini & Setelahnya"
 msgstr "Today's & Upcoming Schedules"
@@ -391,6 +448,9 @@ msgstr "To"
 msgid "Keberangkatan"
 msgstr "Departure"
 
+msgid "Keberangkatan Hari Ini"
+msgstr "Departures Today"
+
 msgid "Kedaluwarsa"
 msgstr "Expired"
 
@@ -402,6 +462,9 @@ msgstr "Go Back & Retry"
 
 msgid "Kirim Bukti Pembayaran"
 msgstr "Submit Payment Proof"
+
+msgid "Kode"
+msgstr "Code"
 
 msgid "Kode Booking"
 msgstr "Booking Code"
@@ -415,6 +478,12 @@ msgstr "Your booking code is issued once payment is verified."
 msgid "Kode booking terlihat seperti: NT-A7K2QP"
 msgstr "A booking code looks like: NT-A7K2QP"
 
+msgid "Konfirmasi pembayaran ini"
+msgstr "Confirm this payment"
+
+msgid "Konfirmasi pembayaran sewa ini"
+msgstr "Confirm this rental payment"
+
 msgid "Konfirmasi pembayaran yang dipilih"
 msgstr ""
 
@@ -423,6 +492,9 @@ msgstr "Confirm via WhatsApp"
 
 msgid "Kontak"
 msgstr "Contact"
+
+msgid "Kota"
+msgstr "City"
 
 msgid "Kota Asal"
 msgstr "Origin City"
@@ -533,6 +605,12 @@ msgstr ""
 msgid "Menghubungkan kota-kota di Jawa Timur & Bali sejak 2015"
 msgstr "Connecting cities across East Java & Bali since 2015"
 
+msgid "Menunggu Verifikasi"
+msgstr "Awaiting Verification"
+
+msgid "Menunggu Verifikasi Pembayaran"
+msgstr "Payments Awaiting Verification"
+
 msgid "Menunggu pembayaran"
 msgstr "Awaiting payment"
 
@@ -596,6 +674,9 @@ msgstr "Account number"
 msgid "Nomor telepon tidak valid. Contoh: 081234567890"
 msgstr "Invalid phone number. Example: 081234567890"
 
+msgid "Nusantara Trans Admin"
+msgstr "Nusantara Trans Admin"
+
 msgid ""
 "Nusantara Trans dimulai tahun 2015 dari satu bus ekonomi rute "
 "Jember–Surabaya. Dukungan pelanggan membuat kami bertumbuh: kini kami "
@@ -606,8 +687,17 @@ msgstr ""
 "Jember–Surabaya route. Our customers made us grow: we now run buses of "
 "various classes and a car rental service with experienced drivers."
 
+msgid "Nusantara Trans — Panel Operasional"
+msgstr "Nusantara Trans — Operations Panel"
+
+msgid "Okupansi"
+msgstr "Occupancy"
+
 msgid "Org"
 msgstr "Pax"
+
+msgid "Panel Operasional"
+msgstr "Operations Panel"
 
 msgid "Pastikan cookie diizinkan di browser Anda."
 msgstr "Make sure cookies are allowed in your browser."
@@ -626,6 +716,15 @@ msgstr "Payment Verified"
 
 msgid "Pembayaran: Transfer Bank & QRIS"
 msgstr "Payment: Bank Transfer & QRIS"
+
+msgid "Pemesan"
+msgstr "Customer"
+
+msgid "Pendapatan Bulan Ini"
+msgstr "Revenue This Month"
+
+msgid "Penuh"
+msgstr "Full"
 
 msgid "Penumpang"
 msgstr "Passengers"
@@ -689,12 +788,24 @@ msgstr ""
 msgid "Pesanan Sewa Berhasil Dibuat!"
 msgstr "Rental Order Created Successfully!"
 
+msgid "Pesanan Sewa Menunggu"
+msgstr "Rental Orders Awaiting"
+
+msgid "Pesanan Sewa Terbaru"
+msgstr "Latest Rental Orders"
+
 msgid "Pesanan ini sudah tidak bisa menerima unggahan bukti."
 msgstr "This order can no longer accept proof uploads."
+
+msgid "Pesanan sewa %s dikonfirmasi."
+msgstr "Rental order %s confirmed."
 
 msgid ""
 "Pesanan sewa berhasil dibuat! Selesaikan pembayaran sebelum batas waktu."
 msgstr "Rental order created! Complete the payment before the deadline."
+
+msgid "Pesanan sewa tidak berstatus menunggu pembayaran."
+msgstr "Rental order is not awaiting payment."
 
 msgid "Pilih Kelas Sesuai Budget"
 msgstr "Pick a Class That Fits Your Budget"
@@ -753,6 +864,9 @@ msgstr "Daily Routes"
 msgid "Rute Populer"
 msgstr "Popular Routes"
 
+msgid "Rute Terpopuler — 30 Hari"
+msgstr "Top Routes — 30 Days"
+
 msgid "Rute paling dicari"
 msgstr "Most searched routes"
 
@@ -780,6 +894,9 @@ msgstr "Completed"
 
 msgid "Semua"
 msgstr "All"
+
+msgid "Semua Modul"
+msgstr "All Modules"
 
 msgid ""
 "Semua armada dirawat rutin dan diperiksa sebelum berangkat. Pilih kelas yang"
@@ -859,6 +976,15 @@ msgstr "Trained drivers and support staff who help wholeheartedly."
 msgid "Sopir gratis"
 msgstr "Driver included"
 
+msgid "Status"
+msgstr "Status"
+
+msgid "Status Booking"
+msgstr "Booking Status"
+
+msgid "Sudah unggah"
+msgstr "Uploaded"
+
 msgid "Syarat sewa:"
 msgstr "Rental requirements:"
 
@@ -891,6 +1017,9 @@ msgstr "Invalid travel date."
 
 msgid "Tanpa antre — pilih kursi sendiri, bayar transfer/QRIS."
 msgstr "No queues — pick your own seat, pay by transfer/QRIS."
+
+msgid "Tanpa bukti"
+msgstr "No proof"
 
 msgid "Tanya CS"
 msgstr "Ask Support"
@@ -927,6 +1056,9 @@ msgstr "Confirmed"
 
 msgid "Tersedia"
 msgstr "Available"
+
+msgid "Tidak ada booking yang menunggu verifikasi. 🎉"
+msgstr "No bookings awaiting verification. 🎉"
 
 msgid "Tiket Bus"
 msgstr "Bus Tickets"
@@ -1005,6 +1137,9 @@ msgstr "For partnerships, charters, & feedback."
 
 msgid "Van / Minibus (10–16 penumpang)"
 msgstr "Van / Minibus (10–16 passengers)"
+
+msgid "Verifikasi"
+msgstr "Verify"
 
 msgid "Waktu"
 msgstr ""
@@ -1203,6 +1338,9 @@ msgstr ""
 
 msgid "nomor polisi"
 msgstr ""
+
+msgid "pemesanan"
+msgstr "bookings"
 
 msgid "provinsi"
 msgstr ""

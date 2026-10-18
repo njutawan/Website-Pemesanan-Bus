@@ -31,8 +31,21 @@ dwibahasa **Indonesia / English**.
 ### Umum
 - **Dwibahasa**: Indonesia (`/`) & English (`/en/`) — URL terpisah, ramah SEO
 - **Open Graph** + Twitter Card di semua halaman, `sitemap.xml`, `robots.txt`
-- Panel admin Django untuk: kota, rute, bus, jadwal, booking, mobil, sewa
 - Desain responsif Bootstrap 5.3 + tema kustom (navy/oranye)
+
+### 🎛️ Panel Admin & Dasbor Operasional (`/admin/`)
+- **Dasbor kustom**: kartu statistik (booking hari ini, menunggu verifikasi,
+  belum bayar, pendapatan bulan ini, sewa pending, keberangkatan hari ini)
+- **Grafik Chart.js**: booking & pendapatan 14 hari terakhir + donat status booking
+- **Antrean verifikasi pembayaran** langsung dari dasbor + tombol
+  **Konfirmasi 1-klik** di halaman edit booking/sewa (via `response_change`)
+- **Okupansi keberangkatan hari ini**: kursi terjual/total per jadwal dengan bar warna
+- Rute terpopuler 30 hari, booking & sewa terbaru, aksi cepat tambah data
+- Optimasi performa: `list_select_related` (anti N+1), `autocomplete_fields`
+  untuk jadwal/bus/mobil (tidak lagi memuat semua opsi sekaligus), `list_per_page`
+- **Ekspor CSV** booking & sewa (delimiter `;` + BOM UTF-8, siap Excel Indonesia)
+- Filter **bukti pembayaran** (sudah/belum unggah) + kolom status bukti
+- Branding admin kustom (header navy/oranye, ikon Font Awesome)
 
 ---
 

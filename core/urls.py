@@ -1,4 +1,3 @@
-from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
@@ -7,15 +6,12 @@ from django.contrib.sitemaps.views import sitemap
 from django.views.i18n import JavaScriptCatalog
 
 from core import views, sitemaps
-
-admin.site.site_header = 'Nusantara Trans — Panel Admin'
-admin.site.site_title = 'Admin Nusantara Trans'
-admin.site.index_title = 'Dasbor Operasional'
+from core.admin import admin_site
 
 SITEMAPS = sitemaps.SITEMAPS
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin_site.urls),
 ]
 
 # Halaman berbahasa — ID tanpa prefiks ("/"), EN dengan prefiks ("/en/")

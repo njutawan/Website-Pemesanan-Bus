@@ -37,6 +37,9 @@ msgstr "4 Langkah Menuju Perjalanan"
 msgid "AC"
 msgstr "AC"
 
+msgid "Ada bukti"
+msgstr "Ada bukti"
+
 msgid "Ada kursi yang tidak ditemukan pada bus ini."
 msgstr "Ada kursi yang tidak ditemukan pada bus ini."
 
@@ -51,6 +54,9 @@ msgstr "Agen Denpasar — Terminal Ubung"
 
 msgid "Agen Surabaya — Terminal Purabaya"
 msgstr "Agen Surabaya — Terminal Purabaya"
+
+msgid "Aksi Cepat"
+msgstr "Aksi Cepat"
 
 msgid "Ambil"
 msgstr "Ambil"
@@ -91,6 +97,9 @@ msgstr "Batalkan booking yang dipilih"
 msgid "Batalkan pesanan yang dipilih"
 msgstr "Batalkan pesanan yang dipilih"
 
+msgid "Batas"
+msgstr "Batas"
+
 msgid "Batas waktu pembayaran sudah lewat."
 msgstr "Batas waktu pembayaran sudah lewat."
 
@@ -110,11 +119,29 @@ msgstr "Bayar & berangkat"
 msgid "Bayar sebelum"
 msgstr "Bayar sebelum"
 
+msgid "Belum Bayar"
+msgstr "Belum Bayar"
+
+msgid "Belum ada booking."
+msgstr "Belum ada booking."
+
+msgid "Belum ada data pemesanan."
+msgstr "Belum ada data pemesanan."
+
 msgid "Belum ada jadwal untuk rute & tanggal ini"
 msgstr "Belum ada jadwal untuk rute & tanggal ini"
 
 msgid "Belum ada mobil pada kategori ini"
 msgstr "Belum ada mobil pada kategori ini"
+
+msgid "Belum ada penumpang untuk keberangkatan hari ini."
+msgstr "Belum ada penumpang untuk keberangkatan hari ini."
+
+msgid "Belum ada pesanan sewa."
+msgstr "Belum ada pesanan sewa."
+
+msgid "Belum unggah"
+msgstr "Belum unggah"
 
 msgid "Beranda"
 msgstr "Beranda"
@@ -131,8 +158,20 @@ msgstr "Bisa bayar lewat QRIS."
 msgid "Booking"
 msgstr "Booking"
 
+msgid "Booking %s dikonfirmasi."
+msgstr "Booking %s dikonfirmasi."
+
+msgid "Booking & Pendapatan — 14 Hari Terakhir"
+msgstr "Booking & Pendapatan — 14 Hari Terakhir"
+
 msgid "Booking Berhasil Dibuat!"
 msgstr "Booking Berhasil Dibuat!"
+
+msgid "Booking Hari Ini"
+msgstr "Booking Hari Ini"
+
+msgid "Booking Terbaru"
+msgstr "Booking Terbaru"
 
 msgid "Booking berhasil dibuat! Selesaikan pembayaran sebelum batas waktu."
 msgstr "Booking berhasil dibuat! Selesaikan pembayaran sebelum batas waktu."
@@ -150,6 +189,9 @@ msgstr "Booking ini sudah tidak aktif."
 msgid "Booking ini sudah tidak bisa menerima unggahan bukti."
 msgstr "Booking ini sudah tidak bisa menerima unggahan bukti."
 
+msgid "Booking tidak berstatus menunggu pembayaran."
+msgstr "Booking tidak berstatus menunggu pembayaran."
+
 msgid "Buat Booking"
 msgstr "Buat Booking"
 
@@ -158,6 +200,9 @@ msgstr "Buka Navigasi"
 
 msgid "Buka navigasi"
 msgstr "Buka navigasi"
+
+msgid "Bukti"
+msgstr "Bukti"
 
 msgid "Bukti pembayaran"
 msgstr "Bukti pembayaran"
@@ -244,6 +289,9 @@ msgstr ""
 msgid "Dari"
 msgstr "Dari"
 
+msgid "Dasbor"
+msgstr "Dasbor"
+
 msgid "Data Pemesan"
 msgstr "Data Pemesan"
 
@@ -274,6 +322,9 @@ msgstr "Dibangun dengan Django & Bootstrap"
 msgid "Dibatalkan"
 msgstr "Dibatalkan"
 
+msgid "Dibuat"
+msgstr "Dibuat"
+
 msgid "Digunakan untuk konfirmasi & e-tiket."
 msgstr "Digunakan untuk konfirmasi & e-tiket."
 
@@ -291,6 +342,9 @@ msgstr "Ekonomi"
 
 msgid "Eksekutif"
 msgstr "Eksekutif"
+
+msgid "Ekspor CSV yang dipilih"
+msgstr "Ekspor CSV yang dipilih"
 
 msgid "Email"
 msgstr "Email"
@@ -331,6 +385,9 @@ msgstr "Informasi Kontak"
 
 msgid "Isi data"
 msgstr "Isi data"
+
+msgid "Jadwal"
+msgstr "Jadwal"
 
 msgid "Jadwal Hari Ini & Setelahnya"
 msgstr "Jadwal Hari Ini & Setelahnya"
@@ -393,6 +450,9 @@ msgstr "Ke"
 msgid "Keberangkatan"
 msgstr "Keberangkatan"
 
+msgid "Keberangkatan Hari Ini"
+msgstr "Keberangkatan Hari Ini"
+
 msgid "Kedaluwarsa"
 msgstr "Kedaluwarsa"
 
@@ -404,6 +464,9 @@ msgstr "Kembali & Ulangi"
 
 msgid "Kirim Bukti Pembayaran"
 msgstr "Kirim Bukti Pembayaran"
+
+msgid "Kode"
+msgstr "Kode"
 
 msgid "Kode Booking"
 msgstr "Kode Booking"
@@ -417,6 +480,12 @@ msgstr "Kode booking dikirim setelah pembayaran terverifikasi."
 msgid "Kode booking terlihat seperti: NT-A7K2QP"
 msgstr "Kode booking terlihat seperti: NT-A7K2QP"
 
+msgid "Konfirmasi pembayaran ini"
+msgstr "Konfirmasi pembayaran ini"
+
+msgid "Konfirmasi pembayaran sewa ini"
+msgstr "Konfirmasi pembayaran sewa ini"
+
 msgid "Konfirmasi pembayaran yang dipilih"
 msgstr "Konfirmasi pembayaran yang dipilih"
 
@@ -425,6 +494,9 @@ msgstr "Konfirmasi via WhatsApp"
 
 msgid "Kontak"
 msgstr "Kontak"
+
+msgid "Kota"
+msgstr "Kota"
 
 msgid "Kota Asal"
 msgstr "Kota Asal"
@@ -536,6 +608,12 @@ msgstr ""
 msgid "Menghubungkan kota-kota di Jawa Timur & Bali sejak 2015"
 msgstr "Menghubungkan kota-kota di Jawa Timur & Bali sejak 2015"
 
+msgid "Menunggu Verifikasi"
+msgstr "Menunggu Verifikasi"
+
+msgid "Menunggu Verifikasi Pembayaran"
+msgstr "Menunggu Verifikasi Pembayaran"
+
 msgid "Menunggu pembayaran"
 msgstr "Menunggu pembayaran"
 
@@ -599,6 +677,9 @@ msgstr "Nomor rekening"
 msgid "Nomor telepon tidak valid. Contoh: 081234567890"
 msgstr "Nomor telepon tidak valid. Contoh: 081234567890"
 
+msgid "Nusantara Trans Admin"
+msgstr "Nusantara Trans Admin"
+
 msgid ""
 "Nusantara Trans dimulai tahun 2015 dari satu bus ekonomi rute "
 "Jember–Surabaya. Dukungan pelanggan membuat kami bertumbuh: kini kami "
@@ -610,8 +691,17 @@ msgstr ""
 "mengoperasikan armada bus berbagai kelas dan layanan rental mobil dengan "
 "sopir berpengalaman."
 
+msgid "Nusantara Trans — Panel Operasional"
+msgstr "Nusantara Trans — Panel Operasional"
+
+msgid "Okupansi"
+msgstr "Okupansi"
+
 msgid "Org"
 msgstr "Org"
+
+msgid "Panel Operasional"
+msgstr "Panel Operasional"
 
 msgid "Pastikan cookie diizinkan di browser Anda."
 msgstr "Pastikan cookie diizinkan di browser Anda."
@@ -630,6 +720,15 @@ msgstr "Pembayaran Terverifikasi"
 
 msgid "Pembayaran: Transfer Bank & QRIS"
 msgstr "Pembayaran: Transfer Bank & QRIS"
+
+msgid "Pemesan"
+msgstr "Pemesan"
+
+msgid "Pendapatan Bulan Ini"
+msgstr "Pendapatan Bulan Ini"
+
+msgid "Penuh"
+msgstr "Penuh"
 
 msgid "Penumpang"
 msgstr "Penumpang"
@@ -692,13 +791,25 @@ msgstr "Pesanan"
 msgid "Pesanan Sewa Berhasil Dibuat!"
 msgstr "Pesanan Sewa Berhasil Dibuat!"
 
+msgid "Pesanan Sewa Menunggu"
+msgstr "Pesanan Sewa Menunggu"
+
+msgid "Pesanan Sewa Terbaru"
+msgstr "Pesanan Sewa Terbaru"
+
 msgid "Pesanan ini sudah tidak bisa menerima unggahan bukti."
 msgstr "Pesanan ini sudah tidak bisa menerima unggahan bukti."
+
+msgid "Pesanan sewa %s dikonfirmasi."
+msgstr "Pesanan sewa %s dikonfirmasi."
 
 msgid ""
 "Pesanan sewa berhasil dibuat! Selesaikan pembayaran sebelum batas waktu."
 msgstr ""
 "Pesanan sewa berhasil dibuat! Selesaikan pembayaran sebelum batas waktu."
+
+msgid "Pesanan sewa tidak berstatus menunggu pembayaran."
+msgstr "Pesanan sewa tidak berstatus menunggu pembayaran."
 
 msgid "Pilih Kelas Sesuai Budget"
 msgstr "Pilih Kelas Sesuai Budget"
@@ -757,6 +868,9 @@ msgstr "Rute Harian"
 msgid "Rute Populer"
 msgstr "Rute Populer"
 
+msgid "Rute Terpopuler — 30 Hari"
+msgstr "Rute Terpopuler — 30 Hari"
+
 msgid "Rute paling dicari"
 msgstr "Rute paling dicari"
 
@@ -784,6 +898,9 @@ msgstr "Selesai"
 
 msgid "Semua"
 msgstr "Semua"
+
+msgid "Semua Modul"
+msgstr "Semua Modul"
 
 msgid ""
 "Semua armada dirawat rutin dan diperiksa sebelum berangkat. Pilih kelas yang"
@@ -863,6 +980,15 @@ msgstr "Sopir dan CS terlatih membantu dengan sepenuh hati."
 msgid "Sopir gratis"
 msgstr "Sopir gratis"
 
+msgid "Status"
+msgstr "Status"
+
+msgid "Status Booking"
+msgstr "Status Booking"
+
+msgid "Sudah unggah"
+msgstr "Sudah unggah"
+
 msgid "Syarat sewa:"
 msgstr "Syarat sewa:"
 
@@ -895,6 +1021,9 @@ msgstr "Tanggal perjalanan tidak valid."
 
 msgid "Tanpa antre — pilih kursi sendiri, bayar transfer/QRIS."
 msgstr "Tanpa antre — pilih kursi sendiri, bayar transfer/QRIS."
+
+msgid "Tanpa bukti"
+msgstr "Tanpa bukti"
 
 msgid "Tanya CS"
 msgstr "Tanya CS"
@@ -931,6 +1060,9 @@ msgstr "Terkonfirmasi"
 
 msgid "Tersedia"
 msgstr "Tersedia"
+
+msgid "Tidak ada booking yang menunggu verifikasi. 🎉"
+msgstr "Tidak ada booking yang menunggu verifikasi. 🎉"
 
 msgid "Tiket Bus"
 msgstr "Tiket Bus"
@@ -1008,6 +1140,9 @@ msgstr "Untuk kerja sama, charter, & feedback."
 
 msgid "Van / Minibus (10–16 penumpang)"
 msgstr "Van / Minibus (10–16 penumpang)"
+
+msgid "Verifikasi"
+msgstr "Verifikasi"
 
 msgid "Waktu"
 msgstr "Waktu"
@@ -1206,6 +1341,9 @@ msgstr "no. WhatsApp"
 
 msgid "nomor polisi"
 msgstr "nomor polisi"
+
+msgid "pemesanan"
+msgstr "pemesanan"
 
 msgid "provinsi"
 msgstr "provinsi"

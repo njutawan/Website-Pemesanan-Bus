@@ -35,3 +35,18 @@ def get_item(dictionary, key):
     if dictionary is None:
         return None
     return dictionary.get(key)
+
+
+STATUS_CLASS = {
+    'PENDING': 'warn',
+    'CONFIRMED': 'ok',
+    'EXPIRED': 'muted',
+    'CANCELLED': 'bad',
+    'COMPLETED': 'ok',
+}
+
+
+@register.filter
+def status_class(status):
+    """'PENDING' -> 'warn' — kelas warna badge status untuk dasbor admin."""
+    return STATUS_CLASS.get(status, 'muted')

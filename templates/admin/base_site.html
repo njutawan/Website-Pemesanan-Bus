@@ -1,0 +1,15 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}{{ title }} | Nusantara Trans{% endblock %}
+
+{% block branding %}
+<span class="nt-brand"><i class="fa-solid fa-bus"></i> Nusantara<em>Trans</em></span>
+<span class="nt-brand-sub">— {% trans 'Panel Operasional' %}</span>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+<link rel="stylesheet" href="{% static 'admin/admin_extra.css' %}">
+{% endblock %}
