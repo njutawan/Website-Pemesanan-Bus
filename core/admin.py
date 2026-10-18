@@ -9,6 +9,8 @@ aktivitas terbaru.
 from datetime import timedelta
 
 from django.contrib import admin
+from django.contrib.redirects.admin import RedirectAdmin as DjangoRedirectAdmin
+from django.contrib.redirects.models import Redirect
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import TruncDate
 from django.utils import timezone
@@ -31,6 +33,11 @@ class NusantaraAdminSite(admin.AdminSite):
 
 
 admin_site = NusantaraAdminSite(name='admin')
+
+# Manajemen redirect — muncul di panel admin: /admin/ → "Redirects".
+# Isi "old path" (URL lama) & "new path" (URL baru). Middleware bawaan
+# memancarkan 301 permanen (terbaik untuk SEO) hanya untuk URL yang 404.
+admin_site.register(Redirect, DjangoRedirectAdmin)
 
 
 def build_dashboard_context() -> dict:

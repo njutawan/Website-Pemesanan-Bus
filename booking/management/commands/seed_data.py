@@ -146,6 +146,21 @@ VEHICLES = [
      'Sertifikasi KIR & uji berkala.'),
 ]
 
+# Redirect lama -> baru (django.contrib.redirects via RedirectFallbackMiddleware).
+# Catatan: middleware bawaan Django SELALU memancarkan 301 (pindah permanen —
+# terbaik untuk SEO). Hanya berlaku untuk URL yang TIDAK dikenai view apa pun
+# (aman, tidak akan menimpa halaman nyata).
+REDIRECTS = [
+    # (path lama, path baru)
+    ('/tiket/', '/bus/'),
+    ('/sewa-mobil/', '/rental/'),
+    ('/travel/', '/bus/'),
+    ('/jadwal/', '/bus/'),
+    ('/cek/', '/bus/cek-booking/'),
+    ('/tentang-kami/', '/tentang/'),
+    ('/hubungi/', '/kontak/'),
+]
+
 
 class Command(BaseCommand):
     help = 'Mengisi data demo: kota, rute, bus, jadwal, mobil rental, akun admin.'
@@ -250,5 +265,27 @@ class Command(BaseCommand):
                 '(GANTI di produksi!)'))
         else:
             self.stdout.write('• Admin sudah ada, dilewati.')
+
+        # ---- Redirect 301 (SEO) + record Site ----
+        from django.contrib.redirects.models import Redirect
+        from django.contrib.sites.models import Site
+        site, _ = Site.objects.get_or_create(
+            pk=getattr(settings, 'SITE_ID', 1),
+            defaults={'domain': 'localhost:8000', 'name': 'Nusantara Trans'},
+        )
+        if site.domain == 'example.com':
+            site.domain = 'localhost:8000'
+            site.name = 'Nusantara Trans'
+            site.save()
+        n_red = 0
+        for old_path, new_path in REDIRECTS:
+            _, created = Redirect.objects.update_or_create(
+                site=site, old_path=old_path,
+                defaults={'new_path': new_path},
+            )
+            n_red += int(created)
+        self.stdout.write(self.style.SUCCESS(
+            f'✔ Redirect: {Redirect.objects.count()} aturan '
+            f'({n_red} baru)'))
 
         self.stdout.write(self.style.SUCCESS('Seed selesai. 🚍'))

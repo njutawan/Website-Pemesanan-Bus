@@ -54,11 +54,17 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
     'django.contrib.humanize',
+    # Manajemen 301 redirect (SEO) — syarat: django.contrib.sites
+    'django.contrib.sites',
+    'django.contrib.redirects',
     # Aplikasi lokal
     'core.apps.CoreConfig',
     'booking.apps.BookingConfig',
     'rental.apps.RentalConfig',
 ]
+
+# ID baris situs di tabel django_site (dipakai django.contrib.redirects & sitemaps)
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -70,6 +76,10 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    # Manajemen redirect 301 dari database (django.contrib.redirects).
+    # Harus PALING BAWAH: hanya bertindak saat request tidak ditangani apa pun
+    # (404) — URL lama yang berpindah tidak lagi menghasilkan broken link.
+    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     # Catatan: XFrameOptionsMiddleware sengaja dilepas agar pratinjau sandbox
     # bisa ditampilkan dalam iframe. Untuk produksi, aktifkan kembali:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',

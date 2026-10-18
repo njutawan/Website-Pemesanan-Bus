@@ -47,6 +47,18 @@ dwibahasa **Indonesia / English**.
 - Filter **bukti pembayaran** (sudah/belum unggah) + kolom status bukti
 - Branding admin kustom (header navy/oranye, ikon Font Awesome)
 
+### 🔀 Manajemen 301 Redirect (`django.contrib.redirects`)
+- `RedirectFallbackMiddleware` terpasang (paling bawah di MIDDLEWARE):
+  URL lama yang 404 dicek ke tabel redirect → jawab **301 permanen** ke URL
+  baru, sehingga perpindahan URL tidak jadi broken link di mata mesin pencari
+- Kelola lewat panel admin: **/admin/ → Redirects** (old path → new path)
+- Contoh seed: `/tiket/` → `/bus/`, `/sewa-mobil/` → `/rental/`,
+  `/cek/` → `/bus/cek-booking/`, dll. (`seed_data`)
+- Perilaku bawaan Django yang perlu diketahui: pencocokan old_path **persis
+  termasuk query string** (daftarkan old_path dengan query bila perlu), dan
+  redirect selalu 301 (middleware hanya menyapa respons 404 — halaman nyata
+  tidak akan tertimpa)
+
 ### ⚡ Optimasi Core Web Vitals
 - **LCP**: gambar hero WebP dua ukuran (`srcset` 900w/1600w) + `fetchpriority="high"`
   + `<link rel="preload" imagesrcset>`; gambar WebP untuk semua foto (hero 222→92KB,
@@ -204,4 +216,5 @@ Konfigurasi Nginx reverse proxy lengkap (static/media/cache/gzip/HTTPS) tersedia
 | Database | SQLite (dev default) → PostgreSQL (env `DJANGO_DB_ENGINE=postgres`, docker-compose tersedia) |
 | SEO | Open Graph, Twitter Card, sitemap.xml, robots.txt, hreflang |
 | i18n | Django LocaleMiddleware + katalog gettext (ID/EN) |
+| Redirect | `django.contrib.redirects` + `RedirectFallbackMiddleware` (301 dari DB) |
 | Pembayaran | Transfer manual / QRIS + verifikasi admin |
