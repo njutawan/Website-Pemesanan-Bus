@@ -1,7 +1,9 @@
 """View rental: katalog mobil, detail, form sewa, upload bukti bayar."""
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
+from django.views.decorators.cache import never_cache
 from django.views.generic import TemplateView, View
 
 from core.forms import PaymentProofForm
@@ -86,6 +88,7 @@ class CreateRentalView(View):
         return redirect('rental:detail_booking', code=booking.code)
 
 
+@method_decorator(never_cache, name='dispatch')
 class RentalDetailView(TemplateView):
     """Detail pesanan sewa + instruksi pembayaran + upload bukti."""
     template_name = 'rental/detail_booking.html'

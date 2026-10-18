@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n cache %}
 
 {% block title %}{% trans 'Rental Mobil' %} — {{ SITE_NAME }}{% endblock %}
 {% block og_title %}{% trans 'Sewa Mobil Harian dengan Sopir' %} — {{ SITE_NAME }}{% endblock %}
@@ -27,6 +27,7 @@
     {% endfor %}
   </div>
 
+  {% cache 600 vehicle_grid active_category %}
   <div class="row g-4">
     {% for vehicle in vehicles %}
     <div class="col-md-6 col-lg-4">
@@ -40,6 +41,7 @@
     </div>
     {% endfor %}
   </div>
+  {% endcache %}
 
   <div class="alert alert-light border rounded-4 mt-5 d-flex align-items-start gap-3">
     <i class="fa-solid fa-circle-info text-primary fs-4"></i>

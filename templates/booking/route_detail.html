@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n booking_extras %}
+{% load i18n cache booking_extras %}
 
 {% block title %}{% blocktranslate with origin=route.origin.name dest=route.destination.name %}Tiket Bus {{ origin }} ke {{ dest }} — Jadwal & Harga{% endblocktranslate %} | {{ SITE_NAME }}{% endblock %}
 {% block og_title %}{% blocktranslate with origin=route.origin.name dest=route.destination.name %}Tiket Bus {{ origin }} → {{ dest }}{% endblocktranslate %} — {{ SITE_NAME }}{% endblock %}
@@ -30,13 +30,13 @@
   <div class="row g-4">
     <div class="col-lg-8">
       <h5 class="fw-bold mb-3"><i class="fa-regular fa-calendar-check text-primary me-2"></i>{% trans 'Jadwal Hari Ini & Setelahnya' %}</h5>
-      {% if schedules %}
+      {% cache 300 schedule_list route.slug %}{% if schedules %}
         {% for schedule in schedules %}
           {% include 'includes/schedule_card.html' with date=today passengers=1 %}
         {% endfor %}
       {% else %}
         <div class="alert alert-info"><i class="fa-solid fa-circle-info me-1"></i>{% trans 'Jadwal untuk rute ini belum tersedia. Hubungi kami untuk info terbaru.' %}</div>
-      {% endif %}
+      {% endif %}{% endcache %}
     </div>
     <div class="col-lg-4">
       <div class="card border-0 shadow-sm rounded-4 position-sticky" style="top:90px">

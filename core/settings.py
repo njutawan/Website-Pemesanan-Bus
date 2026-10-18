@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
     'django.contrib.humanize',
+    # Minifikasi & penggabungan CSS/JS (Core Web Vitals)
+    'compressor',
     # Manajemen 301 redirect (SEO) — syarat: django.contrib.sites
     'django.contrib.sites',
     'django.contrib.redirects',
@@ -162,8 +164,47 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+]
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# =============================================================================
+# django-compressor: minifikasi + gabung CSS/JS menjadi satu berkas
+# - DEBUG=1 (pengembangan): nonaktif → sumber asli, mudah di-debug
+# - DEBUG=0 (produksi): aktif + mode offline → jalankan
+#   `python manage.py compress` SEBELUM collectstatic (wajib!)
+# =============================================================================
+COMPRESS_ENABLED = os.environ.get('DJANGO_COMPRESS_ENABLED', '1' if not DEBUG else '0') == '1'
+COMPRESS_OFFLINE = os.environ.get('DJANGO_COMPRESS_OFFLINE', '1' if not DEBUG else '0') == '1'
+
+# Output compressor dibuat + pra-gzip (bekerja rapi dengan WhiteNoise & nginx gzip_static).
+COMPRESS_STORAGE = 'compressor.storage.GzipCompressorFileStorage'
+
+# =============================================================================
+# Cache
+# - REDIS_URL terisi  → Redis (produksi / docker-compose, service `redis`)
+# - tanpa REDIS_URL  → LocMemCache (cukup utk dev single-process)
+# Dipakai: cache queryset beranda/rute, template fragment, sitemap.
+# =============================================================================
+if os.environ.get('REDIS_URL'):
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': os.environ['REDIS_URL'],
+        }
+    }
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'nusantara-trans',
+        }
+    }
+CACHE_TTL_DEFAULT = 600  # detik
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

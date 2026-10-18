@@ -30,6 +30,18 @@ services:
       timeout: 3s
       retries: 12
 
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
   web:
     build: .
     restart: unless-stopped
@@ -50,10 +62,14 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nusantar}
       POSTGRES_HOST: db            # nama service db di jaringan compose
       POSTGRES_PORT: "5432"
+      REDIS_URL: redis://redis:6379/1   # cache TTFB (django RedisCache)
       DJANGO_ADMIN_PASSWORD: ${DJANGO_ADMIN_PASSWORD:-admin123}
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
 
 volumes:
   pgdata:
+  redisdata:

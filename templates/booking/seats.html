@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n booking_extras static %}
+{% load i18n compress booking_extras static %}
 
 {% block title %}{% trans 'Pilih Kursi' %} — {{ schedule.route.origin.name }} → {{ schedule.route.destination.name }} | {{ SITE_NAME }}{% endblock %}
 {% block og_title %}{% trans 'Pilih Kursi Bus' %} — {{ SITE_NAME }}{% endblock %}
@@ -111,5 +111,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/seat-map.js' %}" defer></script>
+{% compress js %}
+<script src="{% static 'js/seat-map.js' %}"></script>
+{% endcompress %}
 {% endblock %}

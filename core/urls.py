@@ -3,6 +3,7 @@ from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.urls import include, path
 from django.contrib.sitemaps.views import sitemap
+from django.views.decorators.cache import cache_page
 from django.views.i18n import JavaScriptCatalog
 
 from core import views, sitemaps
@@ -29,7 +30,8 @@ urlpatterns += i18n_patterns(
 )
 
 urlpatterns += [
-    path('sitemap.xml', sitemap, {'sitemaps': SITEMAPS}, name='django.contrib.sitemaps.views.sitemap'),
+    # Sitemap publik & identik untuk semua — aman di-cache 30 menit (TTFB crawler)
+    path('sitemap.xml', cache_page(1800)(sitemap), {'sitemaps': SITEMAPS}, name='django.contrib.sitemaps.views.sitemap'),
     path('robots.txt', views.RobotsView.as_view(), name='robots'),
 ]
 

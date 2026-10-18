@@ -70,6 +70,24 @@ dwibahasa **Indonesia / English**.
   `content-visibility: auto` untuk section di bawah lipatan
 - **Server**: WhiteNoise (gzip + cache header panjang static), Nginx
   `gzip_static` + `open_file_cache` (`deploy/nginx.conf`)
+- **Minifikasi & penggabungan (`django-compressor`)**: Bootstrap 5.3.3
+  di-vendor lokal (`static/vendor/bootstrap/`, tanpa CDN jsdelivr) lalu
+  digabung + diminifikasi dengan CSS/JS tema via `{% compress %}` — beranda
+  hanya memuat **1 berkas CSS + 1 berkas JS** (CSS 244KB → 34KB, JS 82KB →
+  24KB setelah gzip). Output di-pra-gzip otomatis
+  (`COMPRESS_STORAGE = GzipCompressorFileStorage`) sehingga cocok dengan
+  WhiteNoise dan `gzip_static` Nginx. `rental-form.js` sengaja di luar blok
+  compress karena butuh atribut `data-*` per-request.
+- **Caching (TTFB ~5–10 ms)**: cache backend Redis bila `REDIS_URL`
+  terisi (otomatis di Docker Compose), selain itu LocMem. Level aplikasi:
+  beranda `home:data` (10 mnt), jadwal per rute `route:<slug>:schedules`
+  (5 mnt) — **0 query DB** saat cache hangat; level fragment: grid jadwal
+  rute (`{% cache 300 %}`) dan grid armada rental (`{% cache 600 %}`);
+  sitemap `cache_page(1800)`. Halaman dinamis pribadi (detail booking &
+  sewa) `never_cache` agar tidak bocor ke cache bersama.
+- **Mode produksi (`DJANGO_DEBUG=0`)**: compressor berjalan offline —
+  jalankan `DJANGO_DEBUG=0 python3 manage.py compress --force` **sebelum**
+  `collectstatic` (manifest 4 blok: CSS base, JS base, seat-map, countdown).
 
 ---
 
@@ -175,6 +193,7 @@ ada kamusnya terdaftar sebagai *fallback* di output perintah — tinggal tambahk
 
 ```bash
 python manage.py migrate && python manage.py compile_i18n
+DJANGO_DEBUG=0 python manage.py compress --force   # minifikasi offline (WAJIB sebelum collectstatic)
 python manage.py collectstatic --noinput
 gunicorn core.wsgi:application --bind 127.0.0.1:8001 --workers 3
 ```
@@ -183,6 +202,7 @@ Konfigurasi Nginx reverse proxy lengkap (static/media/cache/gzip/HTTPS) tersedia
 [`deploy/nginx.conf`](deploy/nginx.conf). Produksi sebaiknya juga:
 - Ganti `DJANGO_SECRET_KEY` & `DJANGO_DEBUG=0`
 - PostgreSQL: set env `DJANGO_DB_ENGINE=postgres` + `POSTGRES_*` (lihat `.env.example`)
+- Cache bersama: set `REDIS_URL` (otomatis di Docker Compose) — tanpa ini LocMem per-proses
 - Aktifkan kembali `XFrameOptionsMiddleware` di `core/settings.py`
 - Ganti password admin demo
 

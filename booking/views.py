@@ -3,12 +3,17 @@ cari jadwal → pilih kursi → isi data → booking dibuat → upload bukti bay
 """
 from datetime import date as date_cls
 
+from django.conf import settings
+
 from django.contrib import messages
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
+from django.views.decorators.cache import never_cache
 from django.views.generic import FormView, TemplateView, View
 
 from booking.forms import PassengerForm, SearchForm
@@ -186,6 +191,7 @@ class CreateBookingView(View):
         }, status=status)
 
 
+@method_decorator(never_cache, name='dispatch')
 class BookingDetailView(TemplateView):
     """Langkah 4: detail booking + instruksi pembayaran + upload bukti + e-tiket."""
     template_name = 'booking/detail.html'
@@ -255,10 +261,15 @@ class RouteDetailView(TemplateView):
     def get(self, request, slug):
         route = get_object_or_404(
             Route.objects.select_related('origin', 'destination'), slug=slug)
-        schedules = (
-            Schedule.objects.filter(route=route, is_active=True)
-            .select_related('bus')
-            .order_by('departure_time')
+        # Daftar jadwal jarang berubah — cache per rute (queryset -> list).
+        schedules = cache.get_or_set(
+            f'route:{slug}:schedules',
+            lambda: list(
+                Schedule.objects.filter(route=route, is_active=True)
+                .select_related('bus')
+                .order_by('departure_time')
+            ),
+            getattr(settings, 'CACHE_TTL_DEFAULT', 600) // 2,
         )
         return render(request, self.template_name, {
             'route': route,

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n booking_extras static %}
+{% load i18n compress booking_extras static %}
 
 {% block title %}{% trans 'Sewa' %} {{ booking.code }} — {{ SITE_NAME }}{% endblock %}
 {% block og_title %}{% trans 'Detail Pesanan Sewa' %} {{ booking.code }} — {{ SITE_NAME }}{% endblock %}
@@ -83,7 +83,9 @@
           <h5 class="fw-bold mb-3"><i class="fa-solid fa-cloud-arrow-up text-primary me-2"></i>{% trans 'Unggah Bukti Pembayaran' %}</h5>
           {% if booking.payment_proof %}
           <div class="alert alert-info small d-flex align-items-center gap-3">
-            <img src="{{ booking.payment_proof.url }}" alt="bukti" style="width:70px;height:70px;object-fit:cover;border-radius:8px">
+            <img src="{{ booking.payment_proof.url }}" alt="bukti" width="70" height="70"
+                 loading="lazy" decoding="async"
+                 style="width:70px;height:70px;object-fit:cover;border-radius:8px">
             <div>
               <strong>{% trans 'Bukti sudah diterima' %}</strong><br>
               <span class="text-muted">{% trans 'Metode:' %} {{ booking.payment_method|upper }} — {% trans 'menunggu verifikasi admin (maks. 15 menit).' %}</span>
@@ -150,5 +152,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/countdown.js' %}" defer></script>
+{% compress js %}
+<script src="{% static 'js/countdown.js' %}"></script>
+{% endcompress %}
 {% endblock %}
