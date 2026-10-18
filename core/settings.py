@@ -158,31 +158,23 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 # =============================================================================
-# Database
-# - Default  : SQLite (cukup untuk pengembangan tanpa Docker)
-# - PostgreSQL set DJANGO_DB_ENGINE=postgres (dipakai docker-compose.yml
-#   dan produksi). Lihat .env.example untuk daftar variabelnya.
+# Database: PostgreSQL murni (tidak ada fallback SQLite)
+# - Docker Compose menyediakan service db (postgres:16-alpine) + REDIS_URL.
+# - Tanpa Docker: isi POSTGRES_* di .env (lihat .env.example).
+# - Produksi: sslmode=require & jangan expose port db.
 # =============================================================================
-if os.environ.get('DJANGO_DB_ENGINE') == 'postgres':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('POSTGRES_DB', 'nusantartrans'),
-            'USER': os.environ.get('POSTGRES_USER', 'nusantar'),
-            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'nusantar'),
-            'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
-            'PORT': os.environ.get('POSTGRES_PORT', '5432'),
-            'CONN_MAX_AGE': 60,  # koneksi persisten — mengurangi overhead koneksi
-            'OPTIONS': {'sslmode': os.environ.get('POSTGRES_SSLMODE', 'prefer')},
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRES_DB', 'nusantartrans'),
+        'USER': os.environ.get('POSTGRES_USER', 'nusantar'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'nusantar'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+        'CONN_MAX_AGE': 60,  # koneksi persisten — mengurangi overhead koneksi
+        'OPTIONS': {'sslmode': os.environ.get('POSTGRES_SSLMODE', 'prefer')},
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},

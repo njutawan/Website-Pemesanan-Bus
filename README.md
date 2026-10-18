@@ -241,9 +241,10 @@ Compose menjalankan dua service:
 | `db` | PostgreSQL 16 + volume `pgdata` + healthcheck | `127.0.0.1:5432` |
 | `web` | Django: migrate → compile_i18n → seed_data → runserver (hot-reload) | `8000` |
 
-`DJANGO_DB_ENGINE=postgres` otomatis di-set oleh compose; tanpa Docker,
-aplikasi tetap jalan di SQLite seperti biasa. Koneksi dari host
-(psql/DBeaver): host `localhost`, user/pass `nusantar`/`nusantar`, db `nusantartrans`.
+Proyek memakai **PostgreSQL murni** (tidak ada fallback SQLite). Di dalam
+compose, host db = `db`. Tanpa Docker, jalankan PostgreSQL sendiri lalu set
+env `POSTGRES_*` (lihat `.env.example`). Koneksi dari host (psql/DBeaver):
+host `localhost`, user/pass `nusantar`/`nusantar`, db `nusantartrans`.
 
 ```bash
 docker compose logs -f web                 # ikuti log
@@ -313,7 +314,7 @@ gunicorn core.wsgi:application --bind 127.0.0.1:8001 --workers 3
 Konfigurasi Nginx reverse proxy lengkap (static/media/cache/gzip/HTTPS) tersedia di
 [`deploy/nginx.conf`](deploy/nginx.conf). Produksi sebaiknya juga:
 - Ganti `DJANGO_SECRET_KEY` & `DJANGO_DEBUG=0`
-- PostgreSQL: set env `DJANGO_DB_ENGINE=postgres` + `POSTGRES_*` (lihat `.env.example`)
+- PostgreSQL murni: sesuaikan env `POSTGRES_*` (lihat `.env.example`), `sslmode=require` di produksi
 - Cache bersama: set `REDIS_URL` (otomatis di Docker Compose) — tanpa ini LocMem per-proses
 - Aktifkan kembali `XFrameOptionsMiddleware` di `core/settings.py`
 - Ganti password admin demo
@@ -345,7 +346,7 @@ Konfigurasi Nginx reverse proxy lengkap (static/media/cache/gzip/HTTPS) tersedia
 | Framework | Django 5.2 |
 | UI | Bootstrap 5.3, Font Awesome 6.7, Plus Jakarta Sans |
 | Web server | Nginx (reverse proxy) + Gunicorn + WhiteNoise |
-| Database | SQLite (dev default) → PostgreSQL (env `DJANGO_DB_ENGINE=postgres`, docker-compose tersedia) |
+| Database | **PostgreSQL 16 (murni)** via psycopg 3 — docker-compose tersedia; tanpa fallback SQLite |
 | SEO | Open Graph, Twitter Card, sitemap.xml, robots.txt, hreflang |
 | i18n | Django LocaleMiddleware + katalog gettext (ID/EN) |
 | Redirect | `django.contrib.redirects` + `RedirectFallbackMiddleware` (301 dari DB) |

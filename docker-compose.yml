@@ -56,7 +56,6 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DJANGO_DB_ENGINE: postgres
       POSTGRES_DB: ${POSTGRES_DB:-nusantartrans}
       POSTGRES_USER: ${POSTGRES_USER:-nusantar}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nusantar}
