@@ -1,6 +1,6 @@
 # Image untuk service "web" di docker-compose.yml (development).
 # Untuk produksi, gunakan Gunicorn (lihat deploy/nginx.conf & README).
-FROM python:3.11-slim
+FROM python:3.14-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
