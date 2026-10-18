@@ -80,7 +80,6 @@ if SECURE_SSL_REDIRECT:
     SECURE_HSTS_SECONDS = 31_536_000          # HSTS 1 tahun (31536000)
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     X_FRAME_OPTIONS = 'DENY'
-    MIDDLEWARE.append('django.middleware.clickjacking.XFrameOptionsMiddleware')
 else:
     X_FRAME_OPTIONS = 'SAMEORIGIN'  # tidak dipakai (middleware tak terpasang)
 
@@ -131,6 +130,9 @@ MIDDLEWARE = [
     # Bot: X-Robots-Tag utk admin, media, & hasil pencarian dinamis
     'core.middleware.XRobotsTagMiddleware',
 ]
+
+if SECURE_SSL_REDIRECT:
+    MIDDLEWARE.append('django.middleware.clickjacking.XFrameOptionsMiddleware')
 
 ROOT_URLCONF = 'core.urls'
 

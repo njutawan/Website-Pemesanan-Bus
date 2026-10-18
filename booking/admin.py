@@ -2,7 +2,7 @@
 import csv
 
 from django.contrib import admin, messages
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
 
