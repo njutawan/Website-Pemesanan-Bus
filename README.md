@@ -88,6 +88,31 @@ Buka http://127.0.0.1:8000 — beranda Indonesia, http://127.0.0.1:8000/en/ untu
 Perintah lain: `python manage.py seed_data --flush` (hapus data demo),
 `python manage.py test` (14 unit test).
 
+### 2b. Alternatif: Docker Compose (PostgreSQL)
+
+```bash
+cp .env.example .env      # opsional — sesuaikan password dulu
+docker compose up --build
+```
+
+Compose menjalankan dua service:
+
+| Service | Isi | Port |
+|---|---|---|
+| `db` | PostgreSQL 16 + volume `pgdata` + healthcheck | `127.0.0.1:5432` |
+| `web` | Django: migrate → compile_i18n → seed_data → runserver (hot-reload) | `8000` |
+
+`DJANGO_DB_ENGINE=postgres` otomatis di-set oleh compose; tanpa Docker,
+aplikasi tetap jalan di SQLite seperti biasa. Koneksi dari host
+(psql/DBeaver): host `localhost`, user/pass `nusantar`/`nusantar`, db `nusantartrans`.
+
+```bash
+docker compose logs -f web                 # ikuti log
+docker compose exec web python manage.py shell
+docker compose down                        # berhenti
+docker compose down -v                     # berhenti + hapus data database
+```
+
 ### 3. Alur pemesanan (untuk dicoba)
 
 1. Beranda → cari `Jember → Surabaya` → pilih jadwal
@@ -145,7 +170,7 @@ gunicorn core.wsgi:application --bind 127.0.0.1:8001 --workers 3
 Konfigurasi Nginx reverse proxy lengkap (static/media/cache/gzip/HTTPS) tersedia di
 [`deploy/nginx.conf`](deploy/nginx.conf). Produksi sebaiknya juga:
 - Ganti `DJANGO_SECRET_KEY` & `DJANGO_DEBUG=0`
-- Gunakan PostgreSQL (ganti `DATABASES`)
+- PostgreSQL: set env `DJANGO_DB_ENGINE=postgres` + `POSTGRES_*` (lihat `.env.example`)
 - Aktifkan kembali `XFrameOptionsMiddleware` di `core/settings.py`
 - Ganti password admin demo
 
@@ -176,7 +201,7 @@ Konfigurasi Nginx reverse proxy lengkap (static/media/cache/gzip/HTTPS) tersedia
 | Framework | Django 5.2 |
 | UI | Bootstrap 5.3, Font Awesome 6.7, Plus Jakarta Sans |
 | Web server | Nginx (reverse proxy) + Gunicorn + WhiteNoise |
-| Database | SQLite (dev) → PostgreSQL (produksi) |
+| Database | SQLite (dev default) → PostgreSQL (env `DJANGO_DB_ENGINE=postgres`, docker-compose tersedia) |
 | SEO | Open Graph, Twitter Card, sitemap.xml, robots.txt, hreflang |
 | i18n | Django LocaleMiddleware + katalog gettext (ID/EN) |
 | Pembayaran | Transfer manual / QRIS + verifikasi admin |

@@ -1,0 +1,59 @@
+# =============================================================================
+# Docker Compose — lingkungan pengembangan lokal (PostgreSQL + Django)
+#
+# Jalankan:
+#   docker compose up --build
+#   → web  : http://localhost:8000   (migrasi + seed data otomatis)
+#   → admin: http://localhost:8000/admin/  (admin / admin123)
+#
+# Berhenti:   docker compose down
+# Hapus data: docker compose down -v   (-v menghapus volume PostgreSQL)
+# =============================================================================
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-nusantartrans}
+      POSTGRES_USER: ${POSTGRES_USER:-nusantar}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nusantar}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      # Diekspos ke host untuk psql/pgAdmin/DBeaver saat development.
+      # Untuk produksi: hapus blok ports ini (cukup jaringan internal).
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-nusantar} -d ${POSTGRES_DB:-nusantartrans}"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  web:
+    build: .
+    restart: unless-stopped
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py compile_i18n &&
+             python manage.py seed_data &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app               # hot-reload kode saat development
+      - /app/.venv           # jangan timpa venv host (bila ada)
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_DB_ENGINE: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-nusantartrans}
+      POSTGRES_USER: ${POSTGRES_USER:-nusantar}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nusantar}
+      POSTGRES_HOST: db            # nama service db di jaringan compose
+      POSTGRES_PORT: "5432"
+      DJANGO_ADMIN_PASSWORD: ${DJANGO_ADMIN_PASSWORD:-admin123}
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
