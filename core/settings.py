@@ -11,6 +11,13 @@ from django.utils.translation import gettext_lazy as _
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Versi aplikasi (single source of truth untuk rilis)
+# Diperbarui manual saat rilis; juga diekspos ke template via context processor.
+try:
+    APP_VERSION = (BASE_DIR / "VERSION").read_text(encoding="utf-8").strip()
+except FileNotFoundError:
+    APP_VERSION = "1.1.0"
+
 
 def _env_bool(name, default=False):
     """True hanya untuk nilai env yang tegas (1/true/yes/on)."""
