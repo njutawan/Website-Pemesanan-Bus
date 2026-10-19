@@ -7,7 +7,7 @@
 Pesan **tiket bus antar kota** dengan denah kursi interaktif & pembayaran QRIS,
 plus **rental mobil** — lengkap dengan panel admin, SEO siap ranking, dan dwibahasa ID/EN.
 
-**Dibangun dengan [Django 5.2](https://www.djangoproject.com/) + [PostgreSQL](https://www.postgresql.org/) + [Bootstrap 5](https://getbootstrap.com/). Didukung [Docker](https://www.docker.com/), [Nginx](https://nginx.org/) & [Redis](https://redis.io/) — demo data Jember & sekitarnya.**
+**Dibangun dengan [Django 6.1](https://www.djangoproject.com/) + [PostgreSQL](https://www.postgresql.org/) + [Bootstrap 5](https://getbootstrap.com/). Didukung [Docker](https://www.docker.com/), [Nginx](https://nginx.org/) & [Redis](https://redis.io/) — demo data Jember & sekitarnya.**
 
 <br>
 
@@ -29,7 +29,7 @@ plus **rental mobil** — lengkap dengan panel admin, SEO siap ranking, dan dwib
 <img src="https://img.shields.io/badge/framework-Django-0C4B33" alt="framework Django">
 <img src="https://img.shields.io/badge/database-PostgreSQL-4169E1" alt="database PostgreSQL">
 <img src="https://img.shields.io/badge/ui-Bootstrap%205-7952B3" alt="ui Bootstrap 5">
-<img src="https://img.shields.io/badge/python-3.11%2B-3776AB" alt="python 3.11+">
+<img src="https://img.shields.io/badge/python-3.12%2B-3776AB" alt="python 3.12+">
 <img src="https://img.shields.io/badge/language-ID%20%7C%20EN-6e40c9" alt="language ID | EN">
 <img src="https://img.shields.io/github/stars/njutawan/Website-Pemesanan-Bus?label=stars&amp;color=2ea44f" alt="stars">
 
@@ -557,8 +557,8 @@ per poin ada di [`SECURITY.md`](SECURITY.md#audit-lanjutan--19-titik-hardening).
 
 | Lapisan | Teknologi |
 |---|---|
-| Bahasa | Python 3.11+ |
-| Framework | Django 5.2 |
+| Bahasa | Python 3.12+ |
+| Framework | Django 6.1 |
 | UI | Bootstrap 5.3, Font Awesome 6.7, Plus Jakarta Sans |
 | Web server | Nginx (reverse proxy) + Gunicorn + WhiteNoise |
 | Database | **PostgreSQL 16 (murni)** via psycopg 3 — docker-compose tersedia; tanpa fallback SQLite |
@@ -575,7 +575,7 @@ Salin-tempel ke **GitHub → Settings → General**:
 
 **Description (About)** — maks. 350 karakter:
 
-> 🚌 Nusantara Trans — website pemesanan tiket bus antar kota (denah kursi interaktif, bayar QRIS, e-tiket) & rental mobil. Dibangun dengan Django 5.2 + PostgreSQL + Bootstrap 5: panel admin + grafik, SEO lengkap (JSON-LD, sitemap, topic cluster), dwibahasa ID/EN, siap deploy Docker & Nginx.
+> 🚌 Nusantara Trans — website pemesanan tiket bus antar kota (denah kursi interaktif, bayar QRIS, e-tiket) & rental mobil. Dibangun dengan Django 6.1 + PostgreSQL + Bootstrap 5: panel admin + grafik, SEO lengkap (JSON-LD, sitemap, topic cluster), dwibahasa ID/EN, siap deploy Docker & Nginx.
 
 **Topics (kata kunci)**:
 

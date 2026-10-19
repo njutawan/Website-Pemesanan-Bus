@@ -671,7 +671,7 @@ class SourceMapAndDependencyTest(TestCase):
 
     def test_requirements_memakai_versi_patch_keamanan(self):
         req = (Path(settings.BASE_DIR) / 'requirements.txt').read_text()
-        self.assertIn('Django>=5.2.18', req)
+        self.assertIn('Django>=6.1.2', req)
         self.assertIn('Pillow>=13.0.0', req)
         self.assertIn('bcrypt>=5.0.0', req)
 
