@@ -16,6 +16,7 @@ def site_settings(request):
     return {
         'SITE_NAME': settings.SITE_NAME,
         'SITE_TAGLINE': settings.SITE_TAGLINE,
+        'APP_VERSION': getattr(settings, 'APP_VERSION', '1.1.0'),
         'WHATSAPP_NUMBER': settings.WHATSAPP_NUMBER,
         'CONTACT': {
             'email': settings.CONTACT_EMAIL,

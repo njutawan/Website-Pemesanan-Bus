@@ -32,6 +32,8 @@ plus **rental mobil** — lengkap dengan panel admin, SEO siap ranking, dan dwib
 <img src="https://img.shields.io/badge/python-3.12%2B-3776AB" alt="python 3.12+">
 <img src="https://img.shields.io/badge/language-ID%20%7C%20EN-6e40c9" alt="language ID | EN">
 <img src="https://img.shields.io/github/stars/njutawan/Website-Pemesanan-Bus?label=stars&amp;color=2ea44f" alt="stars">
+<img src="https://img.shields.io/badge/version-1.1.0-2ea44f" alt="version 1.1.0">
+<a href="CHANGELOG.md"><img src="https://img.shields.io/badge/changelog-1.1.0-informational" alt="changelog 1.1.0"></a>
 
 <br><br>
 
@@ -566,6 +568,7 @@ per poin ada di [`SECURITY.md`](SECURITY.md#audit-lanjutan--19-titik-hardening).
 | i18n | Django LocaleMiddleware + katalog gettext (ID/EN) |
 | Redirect | `django.contrib.redirects` + `RedirectFallbackMiddleware` (301 dari DB) |
 | Pembayaran | Transfer manual / QRIS + verifikasi admin |
+| Rilis | **v1.1.0** (2026-10-19) — lihat [CHANGELOG.md](CHANGELOG.md) |
 
 ---
 
