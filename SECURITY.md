@@ -6,7 +6,7 @@ setiap kontrol menyebutkan implementasi, test otomatis, dan sisa risiko.
 
 - Tanggal audit: **2026-10-18** · pembaruan integrasi Pakasir: **2026-10-19**
 - Basis kode: branch `arena/0fe36235-website-pemesanan-bus`
-- Stack: Django 5.2.18, PostgreSQL 16, Gunicorn, Nginx, Redis (opsional)
+- Stack: Django 6.1.2, PostgreSQL 16, Gunicorn, Nginx, Redis (opsional)
 - Hasil test: **287 test OK** (termasuk 174 test keamanan khusus:
   69 `core/tests_security.py` + 49 `core/tests_hardening.py` +
   56 `core/tests_pakasir.py`)
@@ -576,11 +576,11 @@ Nginx.
 ## 17. Update dependency
 
 **Implementasi** — `requirements.txt` mematok **versi minimum patch
-keamanan** (per 2026-10-18):
+keamanan** (per 2026-10-19):
 
 | Paket | Minimum |
 |---|---|
-| Django | 5.2.18,<5.3 (LTS) |
+| Django | 6.1.2,<6.2 |
 | Pillow | 13.0.0 |
 | gunicorn | 26.2.0 |
 | whitenoise | 6.12.0 |
@@ -599,8 +599,8 @@ keamanan** (per 2026-10-18):
 **Test** — `SourceMapAndDependencyTest.test_requirements_memakai_versi_patch_keamanan`.
 
 **Sisa risiko** — `pip-audit` bergantung pada database CVE; jalankan juga
-`pip list --outdated` dan review Dependabot PR secara berkala. Django 6.x
-belum dipakai (tetap di LTS 5.2).
+`pip list --outdated` dan review Dependabot PR secara berkala. Django 6.1
+menaikkan syarat minimum Python ke 3.12 — CI & dokumentasi mengikutinya.
 
 ---
 

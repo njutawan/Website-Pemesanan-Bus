@@ -253,7 +253,7 @@ class Command(BaseCommand):
 
     def _deps(self):
         floors = {
-            'Django': (5, 2, 18), 'Pillow': (13, 0, 0),
+            'Django': (6, 1, 2), 'Pillow': (13, 0, 0),
             'gunicorn': (26, 0, 0), 'whitenoise': (6, 12, 0),
             'psycopg': (3, 3, 6), 'django-compressor': (4, 6, 0),
             'redis': (8, 1, 0), 'bcrypt': (5, 0, 0),
