@@ -1,6 +1,6 @@
 # Image untuk service "web" di docker-compose.yml (development).
 # Untuk produksi, gunakan Gunicorn (lihat deploy/nginx.conf & README).
-FROM python:3.14-slim
+FROM python:3.15-slim
 LABEL org.opencontainers.image.version="1.1.0"
 LABEL org.opencontainers.image.title="Nusantara Trans"
 
